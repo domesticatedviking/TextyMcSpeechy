@@ -11,7 +11,8 @@ a NVIDIA GPU is strongly recommended for training
 5. Applio: https://github.com/IAHispano/Applio (optional) Used to batch-convert a generic voice into the target voice using an RVC model.
 6. A NVIDIA GPU is highly recommended for training.
 
-## Overview of process
+
+## Option A: convert a generic dataset into the target voice using an RVC model, then train TTS.
 1. Install Piper
 2. Install Applio
 3. Experiment with Applio until you find the voice you wish to turn into a text-to-speech model
@@ -22,6 +23,17 @@ a NVIDIA GPU is strongly recommended for training
 8. Use Piper to fine-tune the existing text-to-speech model using the converted dataset.
 9. Convert the fine-tuned `.ckpt` file to a `.onnx` file that can be used by Piper directly to generate speech from text.
 10. Test the new text-to-speech model.
+
+
+## Option B: train TTS using your own dataset (audio files in target voice and text transcript)
+1. Install Piper
+(skip steps 2,3,4,and,5)
+6. Prepare the converted dataset for use with Piper
+7. Get a checkpoint `ckpt` file for an existing text-to-speech model similar in tone/accent to the target voice.
+8. Use Piper to fine-tune the existing text-to-speech model using the converted dataset.
+9. Convert the fine-tuned `.ckpt` file to a `.onnx` file that can be used by Piper directly to generate speech from text.
+10. Test the new text-to-speech model.
+
 
 ## Step 1: Installing Piper
 *important* - use python 3.10 as torch does not support python 3.11
