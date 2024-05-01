@@ -1,7 +1,11 @@
 # TextyMcSpeechy
-Convenience scripts for making text-to-speech models in any voice for rhasspy/piper
+A workflow with convenience scripts for making any voice into a piper text-to-speech (TTS) model.
+- Make a custom text-to-speech (TTS) model out of your own voice samples
+- Make a custom TTS model out of any existing voice dataset
+- Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
+- Rapidly train high quality TTS by using pretrained checkpoint files
 
-# TextyMcSpeechy TTS dojo:
+# Shortcut to the TextyMcSpeechy TTS dojo:
 If you:
 - have already installed Piper
 - have a folder full of `wav` samples in your target voice and a `metadata.csv` with the transcriptions
