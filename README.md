@@ -1,10 +1,11 @@
 # TextyMcSpeechy
 Convenience scripts for making text-to-speech models in any voice for rhasspy/piper
 
-# TL:DR;
-
-If you already have piper installed and a dataset with your target voice,
-you can skip directly to the TTS dojo guide here.
+# TextyMcSpeechy TTS dojo:
+If you:
+- have already installed Piper
+- have a folder full of `wav` samples in your target voice and a `metadata.csv` with the transcriptions
+you may proceed directly to the TTS Dojo documentation here.
 
 ## Tools used
 1. Piper: `https://github.com/rhasspy/piper`
@@ -40,8 +41,7 @@ you can skip directly to the TTS dojo guide here.
 10. Test the new text-to-speech model.
 
 
-
-# How to do it the long way
+# Guide
 
 ## Step 1: Installing Piper
 *important* - use python 3.10 as torch does not support python 3.11
@@ -160,9 +160,7 @@ cp /path/to/training_dir/config.json \
 
 
 
-# How to do it the easy way
 
-Read the TTS dojo guide here which will help you organize your files and automate the training process.
 
 
 
