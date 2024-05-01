@@ -13,7 +13,7 @@ Convenience scripts and directory structure for making text-to-speech models in 
 
 # Overview of the process
 
-## Option A: convert a generic dataset into the target voice using an RVC model, then train TTS.
+### Option A: convert a generic dataset into the target voice using an RVC model, then train TTS.
 1. Install Piper
 2. Install Applio
 3. Experiment with Applio until you find the voice you wish to turn into a text-to-speech model
@@ -26,7 +26,7 @@ Convenience scripts and directory structure for making text-to-speech models in 
 10. Test the new text-to-speech model.
 
 
-## Option B: train TTS using your own dataset (audio files in target voice and text transcript)
+### Option B: train TTS using your own dataset (audio files in target voice and text transcript)
 1. Install Piper
 (skip steps 2,3,4,and,5)
 6. Prepare the converted dataset for use with Piper
@@ -35,7 +35,15 @@ Convenience scripts and directory structure for making text-to-speech models in 
 9. Convert the fine-tuned `.ckpt` file to a `.onnx` file that can be used by Piper directly to generate speech from text.
 10. Test the new text-to-speech model.
 
-# Instructions
+
+# The fast way
+1. Install Piper (see step 1 of "The Long Way" below)
+2. (optional) Install Applio (see steps 2 and 3 of "The Long Way" below)
+3. Read the rest of "The Long Way" to understand what files you need.
+4. Use the *TextyMcSpeechy dojo* to organize your files and train your model
+
+
+# The long way
 
 ## Step 1: Installing Piper
 *important* - use python 3.10 as torch does not support python 3.11
