@@ -1,14 +1,11 @@
 # TextyMcSpeechy
 Convenience scripts and directory structure for making text-to-speech models in any voice for rhasspy/piper
-(Currently under construction)
-
-- a NVIDIA GPU is strongly recommended for training
 
 ## Tools used
 1. Piper: `https://github.com/rhasspy/piper`
 3. A checkpoint `ckpt` file of any existing pretrained text-to-speech model.  (available [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main/en/en_US))
 4. A voice dataset with audio files and text transcriptions.  These can either be samples of the target voice, or a generic dataset that will be converted into another voice with Applio.
-5. Applio: https://github.com/IAHispano/Applio (optional) Used to batch-convert a generic voice into the target voice using an RVC model.
+5. Applio: https://github.com/IAHispano/Applio Used to batch-convert a generic voice dataset into the target voice using an RVC model.
 6. A NVIDIA GPU is highly recommended for training.
 
 # Overview of the process
