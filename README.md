@@ -1,5 +1,5 @@
 # TextyMcSpeechy
-Convenience scripts to help you make text-to-speech models in any voice
+Convenience scripts and directory structure for making text-to-speech models in any voice for rhasspy/piper
 (Currently under construction)
 
 a NVIDIA GPU is strongly recommended for training
