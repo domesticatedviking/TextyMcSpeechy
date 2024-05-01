@@ -1,5 +1,10 @@
 # TextyMcSpeechy
-Convenience scripts and directory structure for making text-to-speech models in any voice for rhasspy/piper
+Convenience scripts for making text-to-speech models in any voice for rhasspy/piper
+
+# TL:DR;
+
+If you already have piper installed and a dataset with your target voice,
+you can skip directly to the TTS dojo guide here.
 
 ## Tools used
 1. Piper: `https://github.com/rhasspy/piper`
@@ -24,8 +29,10 @@ Convenience scripts and directory structure for making text-to-speech models in 
 
 
 ### Option B: train TTS using your own dataset (audio files in target voice and text transcript)
-1. Install Piper
-(skip steps 2,3,4,and,5)
+1. Install Piper 
+
+ (skip steps 2,3,4,and,5)
+ 
 6. Prepare the converted dataset for use with Piper
 7. Get a checkpoint `ckpt` file for an existing text-to-speech model similar in tone/accent to the target voice.
 8. Use Piper to fine-tune the existing text-to-speech model using the converted dataset.
