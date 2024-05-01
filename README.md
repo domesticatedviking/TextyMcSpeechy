@@ -10,7 +10,7 @@ If you:
 - have already installed Piper
 - have a folder full of `wav` samples in your target voice and a `metadata.csv` with the transcriptions
   
-    you may proceed directly to the TTS Dojo documentation here.
+### proceed directly to the TTS Dojo documentation here.
 
 ## Tools used
 1. Piper: `https://github.com/rhasspy/piper`
