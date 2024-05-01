@@ -40,14 +40,8 @@ you can skip directly to the TTS dojo guide here.
 10. Test the new text-to-speech model.
 
 
-# The fast way
-1. Install Piper (see step 1 of "The Long Way" below)
-2. (optional) Install Applio (see steps 2 and 3 of "The Long Way" below)
-3. Read the rest of "The Long Way" to understand what files you need.
-4. Use the *TextyMcSpeechy dojo* to organize your files and train your model
 
-
-# The long way
+# How to do it the long way
 
 ## Step 1: Installing Piper
 *important* - use python 3.10 as torch does not support python 3.11
@@ -163,6 +157,14 @@ cp /path/to/training_dir/config.json \
 ## Step 10: Testing:
 - `echo 'Thank you. Thank you very much!' | piper -m /path/to/elvisTTS/elvis.onnx --output_file testaudio.wav`
 - Play the wav file either by double clicking it in your filesystem or with `aplay testaudio.wav`
+
+
+
+# How to do it the easy way
+
+Read the TTS dojo guide here which will help you organize your files and automate the training process.
+
+
 
 # Appendix: How I used the VCTK dataset for training
 - the VCTK dataset can be found here: https://datashare.ed.ac.uk/handle/10283/3443
