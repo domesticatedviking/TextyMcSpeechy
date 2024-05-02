@@ -14,10 +14,10 @@ If you:
 
 ## Tools used
 1. Piper: `https://github.com/rhasspy/piper`
-3. A checkpoint `ckpt` file of any existing pretrained text-to-speech model.  (available [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main/en/en_US))
-4. A voice dataset with audio files and text transcriptions.  These can either be samples of the target voice, or a generic dataset that will be converted into another voice with Applio.
-5. Applio: https://github.com/IAHispano/Applio Used to batch-convert a generic voice dataset into the target voice using an RVC model.
-6. A NVIDIA GPU is highly recommended for training.
+2. A checkpoint `ckpt` file of any existing pretrained text-to-speech model.  (available [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main/en/en_US))
+3. A voice dataset with audio files and text transcriptions.  These can either be samples of the target voice, or a generic dataset that will be converted into another voice with Applio.
+4. Applio: https://github.com/IAHispano/Applio Used to batch-convert a generic voice dataset into the target voice using an RVC model.
+5. A NVIDIA GPU is highly recommended for training.
 
 # Overview of the process
 
@@ -66,9 +66,8 @@ If torchmetrics causes an error when training, downgrade to 0.11.4 `pip install 
 ## Step 2: Installing Applio
 - Follow instructions here `https://github.com/IAHispano/Applio`
 
-## Step 3: Finding the voice you want in Applio
-- More to come later
-- (It has a nice gui - it isn't very hard to figure out)
+## Step 3: Experiment with changing voices in Applio
+- Applio has a nice gui - it isn't very hard to figure out
 
 ## Step 4: Getting a training dataset
 1. A dataset is a collection of audio clips with matching text transcriptions.  There are many options available in the public domain, or you can record and transcribe your own voice.  A repo with many public domain datasets can be found here:  https://github.com/jim-schwoebel/voice_datasets
@@ -85,7 +84,9 @@ p316_003_mic1_output|0|Six spoons of fresh snow peas, five thick slabs of blue c
 - see Appendix below for some helpful scripts for generating metatata.csv if your model uses individual text files
 
 ## Step 5: Convert dataset into the target voice
-1. Convert all of the audio files in the dataset into the target voice using Applio.  There's a very useful batch-conversion option here.
+- Convert all of the audio files in the dataset into the target voice using Applio.
+- Batch conversion of a generic dataset into another voice can be done on the "Inference" tab.
+- Select the Batch tab, choose a voice model, specify the location of your input and output folders, then click "Convert"
 
 ## Step 6: Preparing your dataset for use with Piper
 1. Ensure that your audio files are all in  `wav` format with an appropriate sampling rate (22050 Hz or 16000 Hz) and kept together in a folder named `wav`.
