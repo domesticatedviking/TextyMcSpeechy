@@ -1,0 +1,11 @@
+python3 -m piper_train \
+    --dataset-dir ./optimusv2_trained/ \
+    --accelerator gpu \
+    --devices 1 \
+    --batch-size 8 \
+    --validation-split 0.0 \
+    --num-test-examples 0 \
+    --max_epochs 30000 \
+    --resume_from_checkpoint /home/erik/code/tts/piper_tts_official/lessac/low/epoch=2307-step=558536.ckpt \
+    --checkpoint-epochs 1 \
+    --precision 32
