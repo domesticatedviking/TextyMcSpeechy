@@ -1,7 +1,7 @@
 # TTS Dojo
 
 The TTS Dojo is a simplified workflow for training text-to-speech models using [rhasspy/piper](https://github.com/rhasspy/piper).
-Piper must be installed to use the dojo.
+Piper must be installed before you can use the dojo.
 
 # Files you will need to gather to use the dojo
 - a dataset for your target voice consisting of a collection of `wav` files and a `metadata.csv` file containing the transcripts.
