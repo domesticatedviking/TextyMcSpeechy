@@ -8,14 +8,14 @@ A workflow with convenience scripts for making any voice into a Piper text-to-sp
 
 ## NOTE: THIS IS A AN EARLY DRAFT. PLEASE DOCUMENT ANY ERRORS OR OMISSIONS.
 
-# Shortcut to the TextyMcSpeechy TTS dojo:
+## Shortcut to the TextyMcSpeechy TTS dojo:
 If you:
 - have already installed Piper
 - have a folder full of `wav` samples in your target voice and a `metadata.csv` with the transcriptions
   
 #### [proceed directly to the TTS Dojo documentation](TTS_dojo_guide.md).
 
-## Tools used
+## Tools required
 1. Piper: `https://github.com/rhasspy/piper`
 2. A checkpoint `ckpt` file of any existing pretrained text-to-speech model.  (available [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main/en/en_US))
 3. A voice dataset with audio files and text transcriptions.  These can either be samples of the target voice, or a generic dataset that will be converted into another voice with Applio.
