@@ -1,3 +1,3 @@
 python3 -m piper_train.export_onnx \
-    ./training_folder/lightning_logs/version_0/checkpoints/*.ckpt \
-    ./finished_tts_voice
+    /path/to//lightning_logs/version_<N>/checkpoints/<EPOCH____>.ckpt \
+    /path/to/elvisTTS/elvis.onnx
