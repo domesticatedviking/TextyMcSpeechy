@@ -3,7 +3,7 @@
 The TTS Dojo is a simplified workflow for changing the voice of text-to-speech models using [rhasspy/piper](https://github.com/rhasspy/piper).
 Piper must be installed before you can use the dojo.
 
-## NOTE: THIS IS A AN EARLY DRAFT. PLEASE DOCUMENT ANY ERRORS OR OMISSIONS.
+## NOTE: THIS IS A AN EARLY DRAFT / WORK IN PROGRESS. PLEASE DOCUMENT ANY ERRORS OR OMISSIONS.
 
 ## Files needed
 - a dataset for your target voice consisting of a collection of `wav` files and a `metadata.csv` file containing the transcripts.
