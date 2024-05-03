@@ -6,8 +6,6 @@
 - Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
 - Rapidly train high quality TTS by using pretrained checkpoint files
 
-## NOTE: THIS IS A AN EARLY DRAFT / WORK IN PROGRESS. PLEASE DOCUMENT ANY ERRORS OR OMISSIONS.
-
 ## Shortcut to the TextyMcSpeechy TTS dojo:
 If you:
 - have already installed Piper
