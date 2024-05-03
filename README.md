@@ -54,14 +54,15 @@ If you:
 ## Step 1: Installing Piper
 *important* - use python 3.10 as torch does not support python 3.11
 1. `sudo apt-get install python3.dev`
-2. `git clone https://github.com/rhasspy/piper.git`  ** official docs say "pip install piper-tts"
+2. `git clone https://github.com/rhasspy/piper.git`  
 3. `cd piper/src/python`
 4. `python3.10 -m venv .venv`  note - Torch needs python 3.10 and won't work on 3.11
 5. `source ./.venv/bin/activate`
-6. `pip install pip wheel setuptools -U`  (the -U is not in official docs?)
-7. `pip install build` -- maybe?
-8. `python -m build` -- maybe? testing.
-9. `pip install -e .`
+6. `pip install pip wheel setuptools -U`  
+7. `pip install piper-tts`
+8. `pip install build` -- maybe?
+9. `python -m build` -- maybe? 
+10. `pip install -e .`
 7. `pip3 install -r requirements.txt`
 8. `bash ./build_monotonic_align.sh`
 9. `sudo apt-get install espeak-ng`
