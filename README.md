@@ -59,7 +59,9 @@ If you:
 4. `python3.10 -m venv .venv`  note - Torch needs python 3.10 and won't work on 3.11
 5. `source ./.venv/bin/activate`
 6. `pip install pip wheel setuptools -U`  (the -U is not in official docs?)
-7. `pip install -e .`
+7. `pip install build` -- maybe?
+8. `python -m build` -- maybe? testing.
+9. `pip install -e .`
 7. `pip3 install -r requirements.txt`
 8. `bash ./build_monotonic_align.sh`
 9. `sudo apt-get install espeak-ng`
