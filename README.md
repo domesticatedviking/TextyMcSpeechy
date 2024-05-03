@@ -75,6 +75,8 @@ If you:
 - Applio has a nice gui - it isn't very hard to figure out
 
 ## Step 4: Getting a training dataset
+ Update: For an easy way to do this, see  [VCTK_dataset_tools/using_vctk_dataset.md](VCTK_dataset_tools/using_vctk_dataset.md)
+
 1. A dataset is a collection of audio clips with matching text transcriptions.  There are many options available in the public domain, or you can record and transcribe your own voice.  A repo with many public domain datasets can be found here:  https://github.com/jim-schwoebel/voice_datasets
 2. For voice cloning, it is best if the person speaking in the dataset has a voice similar in tone and accent to the target voice.  Keep in mind that some datasets include audio from multiple speakers.
 3. Piper requires transcription data to be gathered into a single `metadata.csv` file, with one line per wav file in the following format:
