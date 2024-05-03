@@ -54,7 +54,7 @@ If you:
 ## Step 1: Installing Piper
 *important* - use python 3.10 as torch does not support python 3.11
 1. `sudo apt-get install python3.dev`
-2. `git clone https://github.com/rhasspy/piper.git`
+2. `git clone https://github.com/rhasspy/piper.git`  ** official docs say "pip install piper-tts"
 3. `cd piper/src/python`
 4. `python3.10 -m venv .venv`  note - Torch needs python 3.10 and won't work on 3.11
 5. `source ./.venv/bin/activate`
