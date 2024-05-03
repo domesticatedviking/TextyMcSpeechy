@@ -21,6 +21,8 @@ If you:
 5. A NVIDIA GPU is highly recommended for training.
 
 # Overview of the process
+## Note 1: regardless of which workflow you use to get your dataset, the [TTS Dojo](TTS_dojo_guide.md) will make it significantly easier to train and package your model.
+## Note 2: need an easy-to-use english dataset?  Be sure to check out the scripts [here](VCTK_dataset_tools/using_vctk_dataset.md).
 
 ### Option A: convert a generic dataset into the target voice using an RVC model, then train TTS.
 1. Install Piper
