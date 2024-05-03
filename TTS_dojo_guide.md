@@ -35,7 +35,8 @@ You will need:
     aplay testaudio.wav  # or play it using any other player you like
 ```
 
-  
+## TODO:
+- currently the only way to change training parameters and sampling rates is to edit the the scripts in `yourvoice_dojo/scripts`.
   
 
 
