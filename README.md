@@ -58,14 +58,15 @@ If you:
 5. `source ./.venv/bin/activate`
 6. `pip install pip wheel setuptools -U`  
 7. `pip install piper-tts`
-8. `pip install build` -- maybe?
-9. `python -m build` -- maybe? 
+8. `pip install build` 
+9. `python -m build` 
 10. `pip install -e .`
-7. `pip3 install -r requirements.txt`
-8. `bash ./build_monotonic_align.sh`
-9. `sudo apt-get install espeak-ng`
+11. `pip3 install -r requirements.txt`
+12. `bash ./build_monotonic_align.sh`
+13. `sudo apt-get install espeak-ng`
+14. `pip install torchmetrics==0.11.4`  (this is a downgrade to avoid an error)
 
-If torchmetrics causes an error when training, downgrade to 0.11.4 `pip install torchmetrics==0.11.4`
+
 
 ## Step 2: Installing Applio
 - Follow instructions here `https://github.com/IAHispano/Applio`
