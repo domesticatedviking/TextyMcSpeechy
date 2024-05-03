@@ -3,7 +3,14 @@
 # Set a default value for SOURCE_FOLDER
 DEFAULT_SOURCE_FOLDER="../MY_FILES"
 echo
-echo
+echo  "usage: add_my_files.sh /path/to/<YOUR_FILES>"
+echo  "<YOUR_FILES> is a directory containing three things"
+echo  "1.          wav - a directory with your training audio files"
+echo  "2. metadata.csv - a transcription of all your training audio files"
+echo  "3.  epoch*.ckpt - a partially trained TTS model"
+echo 
+
+
 # If a parameter is provided, use it as SOURCE_FOLDER
 if [ $# -eq 1 ]; then
     SOURCE_FOLDER="$1"
