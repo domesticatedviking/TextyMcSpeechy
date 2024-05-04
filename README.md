@@ -14,7 +14,7 @@ If you:
 #### [proceed directly to the TTS Dojo documentation](TTS_dojo_guide.md).
 
 ## Tools required
-1. Piper: `https://github.com/rhasspy/piper`
+1. Piper: [https://github.com/rhasspy/piper](https://github.com/rhasspy/piper)
 2. A checkpoint `ckpt` file of any existing pretrained text-to-speech model.  (available [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main/en/en_US))
 3. A voice dataset with audio files and text transcriptions.  These can either be samples of the target voice, or a generic dataset that will be converted into another voice with Applio.
 4. Applio: https://github.com/IAHispano/Applio Used to batch-convert a generic voice dataset into the target voice using an RVC model.
