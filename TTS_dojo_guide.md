@@ -22,8 +22,8 @@ You will need:
 
 ## Usage
 1. Make sure your python venv is activated eg `source ./.venv/bin/activate`
-2. run `newdojo.sh <VOICE_NAME>` to create the directory structure (inside `<VOICE_NAME>_dojo`)  for the components of your new model.
-3. `cd <VOICE_NAME>_dojo`
+2. run `newdojo.sh <VOICE_NAME>` to create the directory structure (inside `<VOICE_NAME>_dojo`)  for the components of your new model.  Note: newdojo.sh stores several paths in hidden files inside the dojo folder.  If you move your dojo folder to another location after creating it, the scripts will not work.
+3. `cd <VOICE_NAME>_dojo` 
 4. If you copied your training files into `tts_dojo/MY_FILES` you can run `add_my_files.sh` to move them into the expected folders.  You can also use `add_my_files.sh /path/to/<somedir>` to populate your dojo from a different directory.
 5. Run `start_training.sh`.  This script will automatically preprocess your training files, morph the pre-trained model to sound like the target voice, and generate the `yourvoice.onnx` and `yourvoice.onnx.json` voice files that piper uses.
 6. IMPORTANT: Training can take a long time (minutes to hours).  This script cannot determine when your model is sufficiently trained, so you will need to to manually end training when you believe that your model is sufficiently trained by pressing `<CTRL> C`
