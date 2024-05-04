@@ -82,9 +82,10 @@ If you:
 1. A dataset is a collection of audio clips with matching text transcriptions.  There are many options available in the public domain, or you can record and transcribe your own voice.  A repo with many public domain datasets can be found here:  https://github.com/jim-schwoebel/voice_datasets
 2. For voice cloning, it is best if the person speaking in the dataset has a voice similar in tone and accent to the target voice.  Keep in mind that some datasets include audio from multiple speakers.
 3. Piper requires transcription data to be gathered into a single `metadata.csv` file, with one line per wav file in the following format:
-   - `FILENAME` | `SPEAKER ID` | `transcript`
-
-Here's an example of what a metadata.csv file should look like for a single speaker dataset
+   - `FILENAME` | `transcript`  is the form for single speaker datasets (I haven't used this format yet but it is likely the one that should be used)
+   - `FILENAME` | `SPEAKER ID` | `transcript` is the form for multiple speaker datasets
+   
+This is what the metadata.csv file I created from the VCTK dataset looks like.   I expect I will be removing the middle collumn in a future commit, but need to test this first.
 ```
 p316_001_mic1_output|0|Please call Stella.
 p316_002_mic1_output|0|Ask her to bring these things with her from the store.
