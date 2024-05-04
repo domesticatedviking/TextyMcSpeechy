@@ -75,6 +75,7 @@ If you:
 
 ## Step 3: Experiment with changing voices in Applio
 - Applio has a nice gui - it isn't very hard to figure out
+- Todo - write or link to a more comprehensive guide
 
 ## Step 4: Getting a training dataset
  Update: For an easy way to do this, see  [VCTK_dataset_tools/using_vctk_dataset.md](VCTK_dataset_tools/using_vctk_dataset.md)
