@@ -38,8 +38,9 @@ You will need:
 ```
 
 ## TODO:
-- currently the only way to change training parameters and sampling rates is to edit the the scripts in `yourvoice_dojo/scripts`.
+- currently the only way to change training parameters and sampling rates is to edit the the scripts in `your_dojo/scripts`.  You can also edit `DOJOCONTENTS/scripts` to make these changes for all future dojos you create.
 - implement better error handling when one script in the workflow fails
+- implement automatic sampling rate detection
 - clean the dojo after an aborted training attempt
 - tidy up output while training processes are running
   
