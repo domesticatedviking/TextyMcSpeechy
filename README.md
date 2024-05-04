@@ -91,7 +91,7 @@ p316_001_mic1_output|0|Please call Stella.
 p316_002_mic1_output|0|Ask her to bring these things with her from the store.
 p316_003_mic1_output|0|Six spoons of fresh snow peas, five thick slabs of blue cheese
 ```
-- see Appendix below for some helpful scripts for generating metatata.csv if your model uses individual text files
+- see [VCTK_dataset_tools](VCTK_dataset_tools/using_vctk_dataset.md) for some helpful scripts for generating metatata.csv if your model uses individual text files
 
 ## Step 5: Convert dataset into the target voice
 - Convert all of the audio files in the dataset into the target voice using Applio.
