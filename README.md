@@ -71,7 +71,7 @@ If you:
 
 
 ## Step 2: Installing Applio
-- Follow instructions here `https://github.com/IAHispano/Applio`
+- Follow instructions here: [https://github.com/IAHispano/Applio](https://github.com/IAHispano/Applio)
 
 ## Step 3: Experiment with changing voices in Applio
 - Applio has a nice gui - it isn't very hard to figure out
