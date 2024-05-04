@@ -85,7 +85,7 @@ If you:
    - `FILENAME` | `transcript`  is the form for single speaker datasets (I haven't used this format yet but it is likely the one that should be used)
    - `FILENAME` | `SPEAKER ID` | `transcript` is the form for multiple speaker datasets
    
-This is what the metadata.csv file I created from the VCTK dataset looks like.   I expect I will be removing the middle collumn in a future commit, but need to test this first.
+This is what the metadata.csv file I created from the VCTK dataset looks like.   (note: I expect I will be removing the middle column in a future commit, but need to test this first.)
 ```
 p316_001_mic1_output|0|Please call Stella.
 p316_002_mic1_output|0|Ask her to bring these things with her from the store.
