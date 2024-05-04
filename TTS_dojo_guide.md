@@ -24,7 +24,7 @@ You will need:
 3. `cd <VOICE_NAME>_dojo`
 4. If you copied your training files into `tts_dojo/MY_FILES` you can run `add_my_files.sh` to move them into the expected folders.  You can also use `add_my_files.sh /path/to/<somedir>` to populate your dojo from a different directory.
 5. Run `start_training.sh`.  This script will automatically preprocess your training files, morph the pre-trained model to sound like the target voice, and generate the `yourvoice.onnx` and `yourvoice.onnx.json` voice files that piper uses.
-6. IMPORTANT: Training can take a long time (minutes to hours).  This script cannot determine when your model is sufficiently trained, so you will need to to manually end training when you believe that your model is sufficiently trained by pressing <CTRL>C.
+6. IMPORTANT: Training can take a long time (minutes to hours).  This script cannot determine when your model is sufficiently trained, so you will need to to manually end training when you believe that your model is sufficiently trained by pressing `<CTRL> C`
 7. You will know training is working when you see the epoch numbers increasing in the file names of `EPOCH=nnnnn.ckpt` files in the output.
 8. ~100 epochs of training should be sufficient to make the pretrained model sound like the target voice.
 9. If you would prefer a more data-driven approach to knowing when your model is trained, open a second terminal window while training is in progress and run `view_training_progress.sh` to launch the tensorboard server and open  [http://localhost:6006/](http://localhost:6006/) in your web browser.  When the graph for "loss_disc_all" levels off, your model is ready.
