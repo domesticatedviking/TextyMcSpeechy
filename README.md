@@ -129,7 +129,7 @@ python3 -m piper_train.preprocess  \
 - This model should be similar in tone and accent to the target voice, as well as being in the target language.
 - It must also use the same sampling rate as your training data
 - The file you need will have a name like `epoch=2164-step=135554.ckpt`
-- Checkpoint files for piper's built in models can be found at https://huggingface.co/datasets/piper-checkpoints/
+- Checkpoint files for piper's built in models can be found at [https://huggingface.co/datasets/piper-checkpoints/tree/main](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main)
 - Here's a link to the lessac medium quality voice which I used in testing
 https://huggingface.co/datasets/rhasspy/piper-checkpoints/blob/main/en/en_US/lessac/medium/epoch%3D2164-step%3D1355540.ckpt
 - copy this checkpoint file into your `elvis_training` directory
