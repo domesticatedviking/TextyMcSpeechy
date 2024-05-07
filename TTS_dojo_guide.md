@@ -9,6 +9,7 @@ These scripts are working, but this project is still a work in progress.   Quite
 1. Piper must be installed before you can use the dojo.
 1. The scripts assume that your `.venv` directory will be located in `/piper/src/python`. You will need to edit `PIPER_PATH` in `newdojo.sh` to point to the directory where you cloned the piper repo if this is not the case.
 3. `tts_dojo/DOJO_CONTENTS` is the directory structure that will be cloned for each model you train.  Don't change the contents of this folder unless you know what you're wanting to accomplish.
+4. You will need to make sure your dataset has been converted to a sampling rate appropriate for your pretrained text-to-speech checkpoint file. Use 16000Hz for x-low and low pretrained models, and 22050Hz for medium and high models.
 
 
 ## Gathering your training files.
