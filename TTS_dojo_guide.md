@@ -29,7 +29,7 @@ You will need:
 5. Run `start_training.sh`.  This script will automatically preprocess your training files, morph the pre-trained model to sound like the target voice, and generate the `yourvoice.onnx` and `yourvoice.onnx.json` voice files that piper uses.
 6. IMPORTANT: Training can take a long time (minutes to hours).  This script cannot determine when your model is sufficiently trained, so you will need to to manually end training when you believe that your model is sufficiently trained by pressing `<CTRL> C`
 7. You will know training is working when you see the epoch numbers increasing in the file names of `EPOCH=nnnnn.ckpt` files in the output.
-8. ~100 epochs of training should be sufficient to make the pretrained model sound like the target voice.
+8. ~100 epochs of training should be sufficient to make the pretrained model sound like the target voice.  Edit: I am still experimenting with this.  Elsewhere I have seen recommendations of 1000 epochs. 
 9. If you would prefer a more data-driven approach to knowing when your model is trained, open a second terminal window while training is in progress and run `view_training_progress.sh` to launch the tensorboard server and open  [http://localhost:6006/](http://localhost:6006/) in your web browser.  When the graph for "loss_disc_all" levels off, your model is ready.
 10. After you stop training, your finished model will be created in `tts_dojo/<voicename>_dojo/finished_tts_voice/<voicename>`
 11. Listen to your new voice:
@@ -44,6 +44,9 @@ You will need:
 - implement automatic sampling rate detection
 - clean the dojo after an aborted training attempt
 - tidy up output while training processes are running
+- add epoch suffix to name and subfolder for final TTS models to make incremental comparisons easier
+- add option to automatically speak a test phrase when the model is done training
+- add option to speak a test phrase in every incrementally trained TTS voice in the `finished_tts_voice` folder
   
 
 
