@@ -11,7 +11,7 @@ If you:
 - have already installed Piper
 - have a folder full of `wav` samples in your target voice and a `metadata.csv` with the transcriptions
   
-#### [proceed directly to the TTS Dojo documentation](TTS_dojo_guide.md).
+#### [proceed directly to the TTS Dojo documentation](tts_dojo/TTS_dojo_guide.md).
 
 ## Tools required
 1. Piper: [https://github.com/rhasspy/piper](https://github.com/rhasspy/piper)
@@ -21,7 +21,7 @@ If you:
 5. A NVIDIA GPU is highly recommended for training.
 
 # Overview of the process
-## Note 1: regardless of which workflow you use to get your dataset, the [TTS Dojo](TTS_dojo_guide.md) will make it significantly easier to train and package your model.
+## Note 1: regardless of which workflow you use to get your dataset, the [TTS Dojo](tts_dojo/TTS_dojo_guide.md) will make it significantly easier to train and package your model.
 ## Note 2: need an easy-to-use english dataset?  Be sure to check out the scripts [here](VCTK_dataset_tools/using_vctk_dataset.md).
 
 ### Option A: convert a generic dataset into the target voice using an RVC model, then train TTS.
