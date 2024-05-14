@@ -52,11 +52,12 @@ If you:
 # Guide
 
 ## Step 1: Installing Piper
-*important* - use python 3.10 as torch does not support python 3.11
+new: this can now also be accomplished by running `install_piper.sh`
+
 1. `sudo apt-get install python3.dev`
 2. `git clone https://github.com/rhasspy/piper.git`  
 3. `cd piper/src/python`  (You will have an easier time if you put your venv in this directory)
-4. `python3.10 -m venv .venv`  note - Torch needs python 3.10 and won't work on 3.11. 
+4. `python3.10 -m venv .venv`  note - Torch needs python 3.10 and won't work on 3.11 without extra steps. 
 5. `source ./.venv/bin/activate`
 6. `pip install pip wheel setuptools -U`  
 7. `pip install piper-tts`
