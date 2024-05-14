@@ -2,7 +2,7 @@
 ## Quick instructions
 1. `download_vctk_dataset.sh`  Download and unzip dataset.  Note that it is quite large (over 11GB)
 2. `single_voice_from_VCTK_dataset.sh pNNN` Repackages a single speaker's voice from this dataset and generates `metadata.csv`
-3. `downsample_and_convert --dataset_dir pNNN_original_speaker --sampling_rate 16000`  Batch converts flac files to wav and downsamples them.  Original files are backed up in `flac` directory prior to conversion.
+3. `batch_resample_and_convert --dataset_dir pNNN_original_speaker --sampling_rate 16000`  Batch converts flac files to wav and downsamples them.  Original files are backed up in `flac` directory prior to conversion.
 
 
 
