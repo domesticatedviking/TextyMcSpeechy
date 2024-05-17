@@ -4,6 +4,8 @@ The TTS Dojo is a simplified workflow for changing the voice of text-to-speech m
 
 These scripts are working, but this project is still a work in progress.   Quite a few configuration settings are currently hardcoded in the scripts in `DOJOCONTENTS/scripts`, and there is minimal error handling implemented at this point, so if any step fails there may be unpredictable results.   I will be chipping away at these issues over the next few weeks.
 
+UPDATE MAY 17 2024:  I have finished writing and am currently testing a dataset verification script which is able to identify and fix issues related to file format and sampling rate.  This script is capable of automatically configuring the sampling rate in piper's preprocessing script, as well as setting an appropriate value for `max-workers` (see closed issue #2).  It should be available in the next few days.
+
 
 ## Notes before we begin
 1. Piper must be installed before you can use the dojo.
@@ -37,6 +39,7 @@ You will need:
     echo 'Thank you. Thank you very much!' | piper -m /path/to/yourvoice.onnx --output_file testaudio.wav
     aplay testaudio.wav  # or play it using any other player you like
 ```
+
 
 ## TODO:
 - currently the only way to change training parameters and sampling rates is to edit the the scripts in `your_dojo/scripts`.  You can also edit `DOJOCONTENTS/scripts` to make these changes for all future dojos you create.
