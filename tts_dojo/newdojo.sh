@@ -1,4 +1,12 @@
 #!/bin/bash
+RESET='\033[0m' # Reset text color to default
+BLACK='\033[0;30m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 
 PIPER_PATH="" # /path/to/piper (the place where you cloned the repo)
 
@@ -83,12 +91,14 @@ cp .BIN_DIR ./scripts
 cp .DOJO_DIR ./scripts
 cp .VOICE_NAME ./scripts
 echo
-echo "/path/to/piper is inferred to be at: $PIPER_PATH" 
-echo
-echo "  For this inference to work properly your venv folder must be in /piper/src/python "
+echo "  PIPER_PATH is set to $PIPER_PATH" 
 echo "  PIPER_PATH can also be hardcoded by editing tts_dojo/newdojo.sh"
 echo  
-echo "Dojo complete."
-echo "View $DIRECTORY/README.txt for next steps."
+echo -e "  Dojo is ready! You will find it here:  ${CYAN}${DOJO_DIR}${RESET}"
+echo
+echo "  To use it, copy your dataset and pretrained .ckpt files to MY_FILES"
+echo -e "  then run ${YELLOW}add_my_files.sh${RESET} from inside the new dojo directory."
+echo -e "  After that, use ${YELLOW}start_training.sh${RESET} to guide you through the training process"
+echo
 echo
 exit 0
