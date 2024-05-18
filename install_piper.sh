@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Known to work with Piper commit: a0f09cdf9155010a45c243bc8a4286b94f286ef4
 # Define color variables
 RED='\033[0;31m'
 GREEN='\033[0;32m'
