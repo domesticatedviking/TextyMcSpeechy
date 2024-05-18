@@ -100,9 +100,10 @@ pip install torchmetrics==0.11.4
 
 # Check if the script has root access before using sudo
 echo
-echo -e "${YELLOW}About to install 'espeak-ng' package, which requires sudo privileges${RESET}"
+echo -e "${YELLOW}About to install 'espeak-ng, tmux, and ffmpeg' packages.  This requires sudo privileges${RESET}"
 echo
-sudo apt-get install espeak-ng
+sudo apt-get update
+sudo apt-get install espeak-ng tmux ffmpeg
 
 # If everything went well, print the success message
 cd $TEXTY_PATH
