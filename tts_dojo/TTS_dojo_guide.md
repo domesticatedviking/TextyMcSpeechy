@@ -2,14 +2,31 @@
 
 The TTS Dojo is a simplified workflow for changing the voice of text-to-speech models using [rhasspy/piper](https://github.com/rhasspy/piper).
 
-These scripts are working, but this project is still a work in progress.   Quite a few configuration settings are currently hardcoded in the scripts in `DOJOCONTENTS/scripts`, and there is minimal error handling implemented at this point, so if any step fails there may be unpredictable results.   I will be chipping away at these issues over the next few weeks.
 
-UPDATE MAY 17 2024:  I have finished writing and am currently testing a dataset verification script which is able to identify and fix issues related to file format and sampling rate.  This script is capable of automatically configuring the sampling rate in piper's preprocessing script, as well as setting an appropriate value for `max-workers` (see closed issue #2).  It should be available in the next few days.
+
+## UPDATE MAY 18 2024:
+### Significant upgrade to TTS dojo scripts
+- Automatic sampling rate detection
+- Dataset file format verification 
+- Automatically convert non-wav audio files to .wav
+- Automatic batch resampling
+- Auto-configure MAX_WORKERS (see closed issue 2)
+- Auto-configure sampling rate in training scripts
+- Run tensorboard server concurrently with training via tmux
+- Tidier output
+### Known issues:
+- Packaging of onnx files currently always selects the checkpoint file in lightning_logs/version_0
+   - This will be fixed as part of my plan to give the dojo the ability to preview and compare multiple checkpoints of the same voice.
+
+
+
+
+
 
 
 ## Notes before we begin
 1. Piper must be installed before you can use the dojo.
-1. The scripts assume that your `.venv` directory will be located in `/piper/src/python`. You will need to edit `PIPER_PATH` in `newdojo.sh` to point to the directory where you cloned the piper repo if this is not the case.
+2. The scripts assume that your `.venv` directory will be located in `/piper/src/python`. You will need to edit `PIPER_PATH` in `newdojo.sh` to point to the directory where you cloned the piper repo if this is not the case.
 3. `tts_dojo/DOJO_CONTENTS` is the directory structure that will be cloned for each model you train.  Don't change the contents of this folder unless you know what you're wanting to accomplish.
 4. You will need to make sure your dataset has been converted to a sampling rate appropriate for your pretrained text-to-speech checkpoint file. Use 16000Hz for x-low and low pretrained models, and 22050Hz for medium and high models.
 
