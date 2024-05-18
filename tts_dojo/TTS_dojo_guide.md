@@ -26,7 +26,7 @@ The TTS Dojo is a simplified workflow for changing the voice of text-to-speech m
 
 ## Notes before we begin
 1. Piper must be installed before you can use the dojo. I recommend using `install_piper.sh` to ensure everything ends up in the expected locations.
-2.`tts_dojo/DOJO_CONTENTS` is the directory structure that will be cloned for each model you train.  Don't change the contents of this folder unless you know what you're wanting to accomplish.
+2. `tts_dojo/DOJO_CONTENTS` is the directory structure that will be cloned for each model you train.  Don't change the contents of this folder unless you know what you're wanting to accomplish.
 3. Piper expects datasets that have sampling rates of either 16000Hz or 22050Hz.  Care must be taken to ensure that the sampling rate of the dataset is the same one used by the pretrained text-to-speech `.ckpt` file. Use 16000Hz for x-low and low pretrained piper models, and 22050Hz for medium and high models.
 
 
