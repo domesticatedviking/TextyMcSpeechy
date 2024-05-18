@@ -67,6 +67,7 @@ You will need:
 - add epoch suffix to name and subfolder for final TTS models to allow them to coexist with models trained on earlier checkpoints.
 - add option to automatically speak a test phrase when the model is done training
 - add option to speak a test phrase in every incrementally trained TTS voice in the `finished_tts_voice` folder
+- create a filing system and interactive menu for choosing appropriate pretrained Piper TTS checkpoint files (and possibly download them automatically)
   
 
 
