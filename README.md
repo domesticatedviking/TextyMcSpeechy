@@ -6,10 +6,14 @@
 - Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
 - Rapidly train high quality TTS by using pretrained checkpoint files
 
+## Update May 18 2024
+- Big update to the TTS dojo scripts which simplify the training process even further.  View details [here](tts_dojo/TTS_dojo_guide.md).
+
 ## Shortcut to the TextyMcSpeechy TTS dojo:
 If you:
 - have already installed Piper
-- have a folder full of `wav` samples in your target voice and a `metadata.csv` with the transcriptions
+- have a folder full of 16000Hz or 22050Hz `wav` files in your target voice and a `metadata.csv` with the transcriptions
+- have a `.ckpt` file for a piper TTS voice compatible with the sampling rate of your dataset
   
 #### [proceed directly to the TTS Dojo documentation](tts_dojo/TTS_dojo_guide.md).
 
