@@ -59,12 +59,10 @@ You will need:
 
 
 ## TODO:
-- currently the only way to change training parameters and sampling rates is to edit the the scripts in `your_dojo/scripts`.  You can also edit `DOJOCONTENTS/scripts` to make these changes for all future dojos you create.
-- implement better error handling when one script in the workflow fails
-- implement automatic sampling rate detection
-- clean the dojo after an aborted training attempt
-- tidy up output while training processes are running
-- add epoch suffix to name and subfolder for final TTS models to make incremental comparisons easier
+- Provide menus to load and save user preferences for dataset sanitizer.
+- Improve the dojo's awareness of data from prior training runs.
+- Generate previews of the voice from intermediate checkpoints as the model trains.
+- add epoch suffix to name and subfolder for final TTS models to allow them to coexist with models trained on earlier checkpoints.
 - add option to automatically speak a test phrase when the model is done training
 - add option to speak a test phrase in every incrementally trained TTS voice in the `finished_tts_voice` folder
   
