@@ -52,7 +52,7 @@ If you:
 # Guide
 
 ## Step 1: Installing Piper
-new: this can now also be accomplished by running `install_piper.sh`
+### I strongly recommend using `install_piper.sh` to install Piper.  This will allow you to use the TTS dojo without further configuration.
 
 1. `sudo apt-get install python3.dev`
 2. `git clone https://github.com/rhasspy/piper.git`  
