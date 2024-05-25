@@ -11,13 +11,6 @@
 - Output still needs some polishing but otherwise everything seems to work quite well.
 - My focus over the next few weeks will be less on the development of this project and more on what I can make using this project.
 
-## News May 23 2024
-Major new features for the TTS dojo are quite close to being ready and should be released within the next 2 weeks.
-- The biggest new feature is the ability to listen to your voice model as it is training. This makes it much easier to select the best sounding version of the voice, and also to know when training is done. This is every bit as beneficial as I had hoped it would be and I am excited to publish it.
-- Automatic periodic saving of checkpoint files as the model trains (and safety checks to avoid filling your entire hard drive with them!)
-- Training can be automatically resumed from a previous checkpoint if it is stopped.
-- Added a manual override folder to start training from a specific checkpoint.
-
 ## Update May 18 2024
 - Big update to the TTS dojo scripts which simplify the training process even further.  View details [here](tts_dojo/TTS_dojo_guide.md).
 
