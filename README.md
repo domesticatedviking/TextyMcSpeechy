@@ -100,14 +100,15 @@ If you:
 1. A dataset is a collection of audio clips with matching text transcriptions.  There are many options available in the public domain, or you can record and transcribe your own voice.  A repo with many public domain datasets can be found here:  https://github.com/jim-schwoebel/voice_datasets
 2. For voice cloning, it is best if the person speaking in the dataset has a voice similar in tone and accent to the target voice.  Keep in mind that some datasets include audio from multiple speakers.
 3. Piper requires transcription data to be gathered into a single `metadata.csv` file, with one line per wav file in the following format:
-   - `FILENAME` | `transcript`  is the form for single speaker datasets (I haven't used this format yet but it is likely the one that should be used)
-   - `FILENAME` | `SPEAKER ID` | `transcript` is the form for multiple speaker datasets
+   - `FILENAME` | `transcript`  is the form for single speaker datasets (if you are making your own transcripts, this is the format you should use)
+   - `FILENAME` | `SPEAKER ID` | `transcript` is the form for multiple speaker datasets.  This format will also work for a single speaker dataset if the speaker ids are all the same.
+4. I use a spreadsheet to create my csv file when transcribing my own datasets, but you can also create this file manually in any text editor.
    
-This is what the metadata.csv file I created from the VCTK dataset looks like.   (note: I expect I will be removing the middle column in a future commit, but need to test this first.)
+This is what the metadata.csv file I created from the VCTK dataset looks like.
 ```
-p316_001_mic1_output|0|Please call Stella.
-p316_002_mic1_output|0|Ask her to bring these things with her from the store.
-p316_003_mic1_output|0|Six spoons of fresh snow peas, five thick slabs of blue cheese
+p316_001_mic1_output|Please call Stella.
+p316_002_mic1_output|Ask her to bring these things with her from the store.
+p316_003_mic1_output|Six spoons of fresh snow peas, five thick slabs of blue cheese
 ```
 - see [VCTK_dataset_tools](VCTK_dataset_tools/using_vctk_dataset.md) for some helpful scripts for generating metatata.csv if your model uses individual text files
 
