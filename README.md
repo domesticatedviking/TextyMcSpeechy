@@ -5,6 +5,12 @@
 - Make a custom TTS model out of any existing voice dataset
 - Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
 - Rapidly train high quality TTS by using pretrained checkpoint files
+
+## MAJOR FEATURE UPDATE May 24 2024 
+- The latest commit includes a completely overhauled TTS dojo, with the ability to generate and listen to tts voices while training
+- Output still needs some polishing but otherwise everything seems to work quite well.
+- My focus over the next few weeks will be less on the development of this project and more on what I can make using this project.
+
 ## News May 23 2024
 Major new features for the TTS dojo are quite close to being ready and should be released within the next 2 weeks.
 - The biggest new feature is the ability to listen to your voice model as it is training. This makes it much easier to select the best sounding version of the voice, and also to know when training is done. This is every bit as beneficial as I had hoped it would be and I am excited to publish it.
