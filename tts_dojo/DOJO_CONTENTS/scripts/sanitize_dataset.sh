@@ -11,6 +11,42 @@ else
     exit 1
 fi
 
+# SETTINGS FILE
+SETTINGS_MAKE_DEFAULT="$DOJO_DIR/../DOJO_CONTENTS/scripts/SETTINGS.txt"  # default settings location 
+SETTINGS="$DOJO_DIR/scripts/SETTINGS.txt"
+
+
+# These actions are only used if values not found in settings file.
+DEFAULT_ACTION_UNKNOWN_FORMAT="MOVE_TO_SUBFOLDER"    
+DEFAULT_ACTION_WRONG_FORMAT="BACKUP_FIX_AND_REPLACE"       
+DEFAULT_ACTION_WRONG_RATE="BACKUP_FIX_AND_REPLACE"         
+DEFAULT_ACTION_REQUIRES_CONFIRMATION="YES"
+
+
+# Function to load settings from SETTINGS.txt, getting defaults if needed.
+load_settings() {
+    # Check if settings file exists
+    if [ -f "$SETTINGS" ]; then
+        # Load variables from the file
+        source $SETTINGS
+        action_unknown_format=$SETTINGS_DEFAULT_ACTION_UNKNOWN_FORMAT
+        action_wrong_format=$SETTINGS_DEFAULT_ACTION_WRONG_FORMAT
+        action_wrong_rate=$SETTINGS_DEFAULT_ACTION_WRONG_RATE
+        action_requires_confirmation=$SETTINGS_DEFAULT_ACTION_REQUIRES_CONFIRMATION
+        
+    else
+        echo "settings file not found.  Loading default values"
+        # Set default values if file is not present
+        action_unknown_format=$DEFAULT_ACTION_UNKNOWN_FORMAT
+        action_wrong_format=$DEFAULT_ACTION_WRONG_FORMAT
+        action_wrong_rate=$DEFAULT_ACTION_WRONG_RATE
+        action_requires_confirmation=$DEFAULT_ACTION_REQUIRES_CONFIRMATION
+    fi
+}
+
+load_settings
+
+
 #echo "DOJO_DIR = '$DOJO_DIR'"
 cd $DOJO_DIR/scripts/
 source .colors
@@ -29,9 +65,6 @@ MINIMUM_SAMPLES_HARD=1
 DOJO_BASENAME=$(basename "$DOJO_DIR")
 WAV_DIR="$DOJO_DIR/target_voice_dataset/wav"
 
-# SETTINGS FILE
-SETTINGS_MAKE_DEFAULT="$DOJO_DIR/../DOJO_CONTENTS/scripts/SETTINGS.txt"  # default settings location 
-SETTINGS="$DOJO_DIR/scripts/SETTINGS.txt"
 
 # PATH FOR GENERATED REPAIR SCRIPTS
 REPAIR_SCRIPT="$DOJO_DIR/target_voice_dataset/autorepair.sh"
@@ -70,11 +103,7 @@ FIX_AND_DELETE_ORIGINAL="Replace original file if repair is successful"
 MOVE_TO_SUBFOLDER="Move to subfolder for manual inspection."
 
 
-# IMPORTED FROM SETTINGS
-#DEFAULT_ACTION_UNKNOWN_FORMAT="MOVE_TO_SUBFOLDER"      #[MOVE_TO_SUBFOLDER, NO_CHANGES_LOG_ONLY]
-#DEFAULT_ACTION_WRONG_FORMAT="BACKUP_FIX_AND_REPLACE"       #[BACKUP_FIX_AND_REPLACE, FIX_AND_DELETE_ORIGINAL, FIX_SUBFOLDER_COPY, NO_CHANGES_LOG_ONLY]
-#DEFAULT_ACTION_WRONG_RATE="BACKUP_FIX_AND_REPLACE"         #[BACKUP_AND_REPLACE, REPLACE_ORIGINAL, FIX_SUBFOLDER_COPY, NO_CHANGES_LOG_ONLY]
-#DEFAULT_ACTION_REQUIRES_CONFIRMATION="YES" 
+
 
 # DECLARE AND INIT GLOBAL VARIABLES
 
@@ -189,21 +218,6 @@ action_wrong_rate="$action_wrong_rate"
 EOF
 }
 
-# Function to load variables from the text file, setting defaults if file is not present
-load_settings() {
-    # Check if settings file exists
-    if [ -f "$SETTINGS" ]; then
-        # Load variables from the file
-        source $SETTINGS
-    else
-        echo "settings file not found.  Loading default values"
-        # Set default values if file is not present
-        action_unknown_format=$DEFAULT_ACTION_UNKNOWN_FORMAT
-        action_wrong_format=$DEFAULT_ACTION_WRONG_FORMAT
-        action_wrong_rate=$DEFAULT_ACTION_WRONG_RATE
-        action_requires_confirmation=$DEFAULT_ACTION_REQUIRES_CONFIRMATION
-    fi
-}
 
 
 
@@ -299,7 +313,7 @@ disable_script() {
   local SCRIPTFILE="$1"
   CURRENT_DATETIME=$(date +"%Y-%m-%d %H:%M:%S")
   # Check if the file specified in REPAIR_SCRIPT exists
-  if [[ ! -f "$script" ]]; then
+  if [[ ! -e "$SCRIPTFILE" ]]; then
     echo "Error: File $SCRIPTFILE does not exist."
     return 1
   fi
@@ -468,13 +482,13 @@ process_sampling_rate_issue() {
     local target_rate=$3
 
     case $action_wrong_rate in
-        FIX_SUBFOLDER_COPY)
+        "FIX_SUBFOLDER_COPY")
             handle_fix_subfolder_copy_sampling_rate "$file" "$original_filename" "$target_rate"
             ;;
-        BACKUP_FIX_AND_REPLACE)
+        "BACKUP_FIX_AND_REPLACE")
             handle_backup_fix_and_replace_sampling_rate "$file" "$original_filename" "$target_rate"
             ;;
-        FIX_AND_DELETE_ORIGINAL)
+        "FIX_AND_DELETE_ORIGINAL")
             handle_fix_and_delete_original_sampling_rate "$file" "$original_filename" "$target_rate"
             ;;
     esac
@@ -929,10 +943,10 @@ fi
 
 if [ $most_common_sampling_rate -ne 22050 ] && [ $most_common_sampling_rate -ne 16000 ]; then
     echo -e "   \n\nPiper only supports the following sampling rates:"
-    echo -e "    \n1. 16000Hz for low quality models - (suitable for raspberry pi)" 
+    echo -e "\n      1. 16000Hz for low quality models - (suitable for raspberry pi)" 
     echo -e "      2. 22050Hz for medium and high quality models - (suitable for faster computers)"
     echo -e "   \nWhat would you like to do?"
-    echo -e "     \n\n[1] auto-convert your files to 16000hz"
+    echo -e "\n\n     [1] auto-convert your files to 16000hz"
     echo -e "     [2] auto-convert your files to 22050hz"
     echo -e "     [Q] quit."
     echo -e "  "
