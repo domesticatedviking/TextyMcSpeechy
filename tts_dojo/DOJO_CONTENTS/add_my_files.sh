@@ -1,4 +1,19 @@
 #!/bin/bash
+source scripts/.colors
+this_dir=$(pwd)
+dir_only=$(basename "$this_dir")
+if [ $dir_only = "DOJO_CONTENTS" ]; then
+   echo -e "${RED}The DOJO_CONTENTS folder is used as a template for other dojos."
+   echo -e "You should not run any scripts inside of DOJO_CONTENTS"
+   echo 
+   echo -e "Instead, run 'newdojo.sh' <voice name> to create a new dojo"
+   echo -e "and train your models in that folder." 
+   echo
+   echo -e "Exiting${RESET}"
+   exit 1
+fi
+
+
 
 # Set a default value for SOURCE_FOLDER
 DEFAULT_SOURCE_FOLDER="../MY_FILES"
@@ -41,7 +56,7 @@ if [ -z "$(find "$SOURCE_FOLDER" -maxdepth 1 -type d -iname "wav")" ]; then
 fi
 
 # Check for CSV files (case-insensitive)
-csv_files=$(find "$SOURCE_FOLDER" -iname "*.csv" 2>/dev/null)
+csv_files=$(find "$SOURCE_FOLDER" -maxdepth 1 -iname "*.csv" 2>/dev/null)
 if [ -z "$csv_files" ]; then
     echo
     echo "metadata.csv is missing in '$SOURCE_FOLDER'."
@@ -50,7 +65,7 @@ if [ -z "$csv_files" ]; then
 fi
 
 # Check for CKPT files (case-insensitive)
-ckpt_files=$(find "$SOURCE_FOLDER" -iname "*.ckpt" 2>/dev/null)
+ckpt_files=$(find "$SOURCE_FOLDER" -maxdepth 1 -iname "*.ckpt" 2>/dev/null)
 if [ -z "$ckpt_files" ]; then
     echo
     echo "No .CKPT files  were found in '$SOURCE_FOLDER'."
@@ -69,8 +84,8 @@ fi
 
 # Copy files to their expected locations
 cp -r "$(find "$SOURCE_FOLDER" -maxdepth 1 -type d -iname "wav")" ./target_voice_dataset
-cp $(find "$SOURCE_FOLDER" -iname "*.csv") ./target_voice_dataset
-cp $(find "$SOURCE_FOLDER" -iname "*.ckpt") ./pretrained_tts_checkpoint
+cp $(find "$SOURCE_FOLDER" -maxdepth 1 -iname "*.csv") ./target_voice_dataset
+cp $(find "$SOURCE_FOLDER" -maxdepth 1 -iname "*.ckpt") ./pretrained_tts_checkpoint
 
 echo "Files copied successfully from $SOURCE_FOLDER."
 

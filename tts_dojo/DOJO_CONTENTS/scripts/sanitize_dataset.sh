@@ -1,46 +1,21 @@
 #!/bin/bash 
 
-# 0_pretraining_checks.sh
+# Find file pointing to base dir of this dojo
 
+if [ -e ".DOJO_DIR" ]; then   # running from voicename_dojo
+    DOJO_DIR=$(cat ".DOJO_DIR")
+elif [ -e "../.DOJO_DIR" ]; then
+    DOJO_DIR=$(cat "../.DOJO_DIR") # running from /scripts
+else
+    echo ".DOJO_DIR not found.   Exiting"
+    exit 1
+fi
 
-# Checks your dataset prior to training.
-# 1.  Counts the number of files in your dataset.  done
-# 2.  Determines the number of cores in your computer done
-# 3.  Calculates an appropriate value for max_workers in piper_train.preprocess and stores it in .MAX_WORKERS
-# 4.  Checks dataset to make sure all files are the same sampling rate.
-# 5.  Checks whether files are what the extension claims they are.
-# 6.  Creates a list of files which don't conform.
-# 7.  Infers the dataset's sampling rate and sets it in .SAMPLING_RATE
-# 8.  Prompts user to ensure pretrained voice being used is appropriate for the sampling rate
-
-# Known issues: File extensions are case sensitive.   Files without .wav extension are not picked up by the main loop
-
-
-# Drop into to dojo to store its absolute path
-DOJO_DIR=$(cat .DOJO_DIR)
 #echo "DOJO_DIR = '$DOJO_DIR'"
 cd $DOJO_DIR/scripts/
-
+source .colors
 # CONSTANTS
 
-# ANSI COLORS
-RESET='\033[0m' # Reset text color to default
-BLACK='\033[0;30m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-WHITE='\033[0;37m'
-BOLD_BLACK='\033[1;30m'
-BOLD_RED='\033[1;31m'
-BOLD_GREEN='\033[1;32m'
-BOLD_YELLOW='\033[1;33m'
-BOLD_BLUE='\033[1;34m'
-BOLD_PURPLE='\033[1;35m'
-BOLD_CYAN='\033[1;36m'
-BOLD_WHITE='\033[1;37m'
 
 # SUPPORTED_AUDIO_FORMATS
 SUPPORTED_AUDIO=("wav" "flac" "mp3")
@@ -55,10 +30,10 @@ DOJO_BASENAME=$(basename "$DOJO_DIR")
 WAV_DIR="$DOJO_DIR/target_voice_dataset/wav"
 
 # SETTINGS FILE
-SETTINGS_MAKE_DEFAULT="$DOJO_DIR/../DOJO_CONTENTS/scripts/settings.txt" 
-SETTINGS="$DOJO_DIR/scripts/settings.txt"
+SETTINGS_MAKE_DEFAULT="$DOJO_DIR/../DOJO_CONTENTS/scripts/SETTINGS.txt"  # default settings location 
+SETTINGS="$DOJO_DIR/scripts/SETTINGS.txt"
 
-# PATH FOR GENERATED REPAIR SCRIPT
+# PATH FOR GENERATED REPAIR SCRIPTS
 REPAIR_SCRIPT="$DOJO_DIR/target_voice_dataset/autorepair.sh"
 SAMPLING_RATE_SCRIPT="$DOJO_DIR/target_voice_dataset/fix_sampling_rate.sh"
 
@@ -68,9 +43,8 @@ UNKNOWN_FORMAT_PATH=${WAV_DIR}/$UNKNOWN_FORMAT_DIR_NAME}
 WRONG_AUDIO_DIR_NAME="NOT_WAV"
 WRONG_AUDIO_PATH=${WAV_DIR}/$WRONG_AUDIO_DIR_NAME}
 
-
 # PATHS TO FILES USED TO STORE VARIABLES FOR OTHER SCRIPTS
-VARFILE_PASSED="${DOJO_DIR}/wav/.PASSED"
+VARFILE_PASSED="$WAV_DIR/.PASSED"
 VARFILE_MAX_WORKERS="${DOJO_DIR}/scripts/.MAX_WORKERS"
 VARFILE_SAMPLING_RATE="${DOJO_DIR}/scripts/.SAMPLING_RATE"
 
@@ -88,7 +62,6 @@ WRONG_RATE_FIXED_DIR="$WRONG_RATE_DIR/FIXED"
 
 
 
-
 # FILE BEHAVIOUR STRINGS
 NO_CHANGES_LOG_ONLY="Do not manipulate the dataset or move files.  Log issues only"
 FIX_SUBFOLDER_COPY="Keep original files in dataset, copy to subfolder and fix the copy. "
@@ -96,10 +69,12 @@ BACKUP_FIX_AND_REPLACE="Back up original file to subfolder, attempt to replace o
 FIX_AND_DELETE_ORIGINAL="Replace original file if repair is successful"
 MOVE_TO_SUBFOLDER="Move to subfolder for manual inspection."
 
-DEFAULT_ACTION_UNKNOWN_FORMAT="MOVE_TO_SUBFOLDER"      #[MOVE_TO_SUBFOLDER, NO_CHANGES_LOG_ONLY]
-DEFAULT_ACTION_WRONG_FORMAT="BACKUP_FIX_AND_REPLACE"       #[BACKUP_FIX_AND_REPLACE, FIX_AND_DELETE_ORIGINAL, FIX_SUBFOLDER_COPY, NO_CHANGES_LOG_ONLY]
-DEFAULT_ACTION_WRONG_RATE="BACKUP_FIX_AND_REPLACE"         #[BACKUP_AND_REPLACE, REPLACE_ORIGINAL, FIX_SUBFOLDER_COPY, NO_CHANGES_LOG_ONLY]
-DEFAULT_ACTION_REQUIRES_CONFIRMATION="YES" 
+
+# IMPORTED FROM SETTINGS
+#DEFAULT_ACTION_UNKNOWN_FORMAT="MOVE_TO_SUBFOLDER"      #[MOVE_TO_SUBFOLDER, NO_CHANGES_LOG_ONLY]
+#DEFAULT_ACTION_WRONG_FORMAT="BACKUP_FIX_AND_REPLACE"       #[BACKUP_FIX_AND_REPLACE, FIX_AND_DELETE_ORIGINAL, FIX_SUBFOLDER_COPY, NO_CHANGES_LOG_ONLY]
+#DEFAULT_ACTION_WRONG_RATE="BACKUP_FIX_AND_REPLACE"         #[BACKUP_AND_REPLACE, REPLACE_ORIGINAL, FIX_SUBFOLDER_COPY, NO_CHANGES_LOG_ONLY]
+#DEFAULT_ACTION_REQUIRES_CONFIRMATION="YES" 
 
 # DECLARE AND INIT GLOBAL VARIABLES
 
@@ -280,10 +255,6 @@ queue_convert_to_wav(){
      converted_extension="wav"
  fi
  converted_path="${destination_dir}/$file_no_ext.$converted_extension"
- #echo "queue_convert_to_wav"
- #echo "source_file = $source_file"
- #echo "destination_dir = $destination_dir"
- 
  convert_audio_format="ffmpeg -loglevel error -i \"${source_file}\" \"$converted_path\" "  # > /dev/null 2>&1
  echo "echo Converting \"${source_file}\" to \"${converted_extension}\" in \"${converted_path}\" " >> "$SCRIPTFILE"  
  echo "$convert_audio_format" >> "$SCRIPTFILE"
@@ -372,8 +343,6 @@ init_sampling_rate_script(){
     echo "cd $WAV_DIR" >> $SAMPLING_RATE_SCRIPT
 
 }
-
-
 
 
 # AUDIO FUNCTIONS
@@ -466,22 +435,6 @@ count_wav_files() {
  mkdir -p "$WAV_DIR/$UNKNOWN_FORMAT_DIR" > /dev/null 2>&1
  }
  
- spinner() {
-     last="$1"
-     if [ $last = "|" ]; then
-         $last="/"
-         echo last
-     elif [ $last = "/" ]; then
-         $last="-"
-         echo last
-     elif [ $last = "-" ]; then
-         last = "\\"
-         echo last
-     elif [ $last = "\\" ]; then
-         last = "|"
-     fi
- 
- }
  
 build_resampling_script() {
     local target_rate=$1
@@ -585,9 +538,10 @@ verify_contents_and_determine_sampling_rate() {
             fi
 
             let "file_counter++"
-            echo -ne "Scanning file ${file_counter} of ${wav_count}                               \r"
+            echo -ne "    Scanning file ${file_counter} of ${wav_count}                               \r"
             process_file "$file"
         done
+        clear
     done
 
     queue_message "# ***END OF STEP 1***" "${REPAIR_SCRIPT}"
@@ -768,9 +722,9 @@ handle_fix_and_delete_original() {
 
  check_varfiles() {
     if [ -e "$VARFILE_PASSED" ] && [ -e "$VARFILE_MAX_WORKERS" ] && [ -e "$VARFILE_SAMPLING_RATE" ]; then
-        return 1
+        echo "OK"
     else
-        return 0
+        echo "FAIL"
     fi
 }
 
@@ -791,19 +745,36 @@ handle_fix_and_delete_original() {
     
     if (($wav_count < $MINIMUM_SAMPLES_WARN)); then
         echo
-        echo "         NOTICE: Small dataset detected. ( <$MINIMUM_SAMPLES_WARN )"
+        echo -e "         ${PURPLE}NOTICE: Small dataset detected. ${CYAN}(<$MINIMUM_SAMPLES_WARN files)${RESET}"
         echo 
-        echo " do you wish to: [p]roceed with courage" 
-        echo -n "                 [q]uit "
+        echo -e "         ${YELLOW}Smaller datasets create checkpoint files much faster than large ones."
+        echo -e "         This can cause problems if you try to save every checkpoint."
+        echo -e "         if you find the system can't keep up, you may need to change the following parameters"
+        echo -e "         (in SETTINGS.txt):${RESET}"
+        echo
+        echo -e "         ${CYAN}PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS${RESET}"  
+        echo -e "               ${YELLOW}determines how often piper saves a checkpoint file"
+        echo -e "               setting this number higher can improve training speed by reducing I/O,"
+        echo -e "               this can also reduce wear on your hard drive"${RESET}
+        echo 
+        echo -e "         ${CYAN}SETTINGS_GRABBER_SAVE_EVERY_N_CHECKPOINTS"${RESET}
+        echo -e "               ${YELLOW}determines how often the checkpoint grabber will make a copy of the latest checkpoint file"
+        echo -e "               saved checkpoints are automatically exported as ONNX voice models."
+        echo -e "               If this value is set too low with a small dataset, it can cause a race condition."
+        echo -e "               The settings grabber may automatically adjust this setting if it senses that it is getting"
+        echo -e "               checkpoints faster than it can process them."${RESET}
+
+        echo
+        echo -e "         ${GREEN}do you wish to: [p]roceed with courage${RESET}" 
+        echo -ne "                         ${GREEN}[q]uit${RESET}  "
         read rerun
-    
-        if [ $rerun = "p" ] || [ $rerun = "p" ]; then
-            echo "    Adventure intensifies."
+
+        if [ "$rerun" = "P" ] || [ "$rerun" = "p" ] || [ "$rerun" = "" ]; then
+        echo -e "         \n"
 
         else
             echo 
-            echo "    That probably makes sense."
-            echo "    Exiting"
+            echo -e "\n    Exiting"
             exit 1
         fi
     fi
@@ -827,10 +798,15 @@ handle_fix_and_delete_original() {
  
  }
  
+ write_varfile_passed(){
+    touch $VARFILE_PASSED
+}
+ 
  write_varfiles(){
      local sampling_rate="$1"
   write_varfile_sampling_rate $sampling_rate
   write_varfile_max_workers   #set value in hidden file for preprocessing
+  write_varfile_passed
  }
  
   
@@ -847,7 +823,10 @@ check_ffprobe  #verify that ffprobe is installed
 check_tmux
 
 # if all varfiles are present, dataset has previously been verified..  
-if check_varfiles; then
+dataset_passed=$(check_varfiles)
+
+
+if [ $dataset_passed = "OK" ]; then
     echo -e  "\n  TextyMcSpeechy dataset sanitization script" 
     echo -e  "\n  This datset has previously been verified successfully."
     echo -e  "\n      do you wish to: [s]kip verification" 
@@ -855,17 +834,17 @@ if check_varfiles; then
     read rerun
     
     if [ "$rerun" != "r" ] && [ "$rerun" != "R" ]; then
-        echo "Skipping dataset verification."
+        echo "            Skipping dataset verification."
         exit 0
     fi
 else #Means at least one varfile was missing
-    echo "Beginning verification."
+        echo "Now checking your dataset."
 fi
 # clean up any old files and ensure directories exist
 clean_and_initialize
 report_wav_file_count
 
-echo "Verifying file contents and determining sampling rate of dataset, please wait..."
+        echo "    Verifying file contents and determining sampling rate of dataset, please wait..."
 
 verify_contents_and_determine_sampling_rate $wav_count
 find_most_common_sampling_rate
@@ -873,7 +852,7 @@ find_most_common_sampling_rate
 
 rates_in_dataset="${#sampling_rates_count[@]}" # number of keys in array, should be 1.
 
-echo -e "\n\n\n\nScan complete."
+     echo -e "            \n\n\n\nScan complete.\n\n"
 
 if [ $not_audio_file_count -gt 0 ]; then
     echo -e "\n    ${RED}${not_audio_file_count}${RESET} file(s) in dataset were not identified as audio."
@@ -884,15 +863,15 @@ if [ $wrong_audio_file_count -gt 0 ]; then
 fi
 
 if [ "$issue_count" -eq 0 ]; then
-    echo -e "File contents were all verified succesfully.  No repairs needed."
+    echo -e "        File contents were all verified succesfully.  No repairs needed."
 else
-    echo -e "Scan detected ${issue_count} issue(s) with your dataset."
-    echo -e "  a repair script has been created in $REPAIR_SCRIPT"
-    echo -e "\nWould you like to: "
-    echo -e "    [R]un repair script"
-    echo -e "    [V]iew repair script before deciding whether to run it"
-    echo -e "    [Q]uit"
-    echo -ne "     "
+    echo -e "        Scan detected ${issue_count} issue(s) with your dataset."
+    echo -e "         a repair script has been created in $REPAIR_SCRIPT"
+    echo -e "        \nWould you like to: "
+    echo -e "            [R]un repair script"
+    echo -e "            [V]iew repair script before deciding whether to run it"
+    echo -e "            [Q]uit"
+    echo -ne "             "
     read repairchoice
         if [[ "$repairchoice" = "q" ]] || [[ "$repairchoice" = "Q" ]]; then
             echo "Exiting"
@@ -914,30 +893,31 @@ else
         fi
     bash $REPAIR_SCRIPT
     echo "press enter to continue"
-    read        
+    read
+    disable_script $REPAIR_SCRIPT        
 fi
 
-echo -e "\n   ${CYAN}${rates_in_dataset}${RESET} sampling rate(s) found in dataset:\n"
+echo -e "\n        ${CYAN}${rates_in_dataset}${RESET} sampling rate(s) found in dataset:\n"
 
 for key in "${!sampling_rates_count[@]}"; do
-    printf "     Sampling rate:  %6s  Hz: %5s files / %5s total wav files.\n" "$key" "${sampling_rates_count[$key]}" "${wav_count}"
+    printf "        ${YELLOW}Sampling rate:  ${CYAN}%6s  Hz${YELLOW}: ${CYAN}%5s${YELLOW} files / ${CYAN}%5s${RESET} ${YELLOW}total wav files${RESET}.\n" "$key" "${sampling_rates_count[$key]}" "${wav_count}"
 done
 
 # Multiple rates were found
 if [ $rates_in_dataset -gt "1" ]; then
-    echo -e "\n     WARNING: multiple sampling rates found in dataset."
-    echo -e "     The most common sampling rate was: ${most_common_sampling_rate}"
-    echo -e "     It was found in ${sampling_rates_count[$most_common_sampling_rate]} out of ${wav_count} files.\n"
+    echo -e "         \nWARNING: multiple sampling rates found in dataset."
+    echo -e "         The most common sampling rate was: ${most_common_sampling_rate}"
+    echo -e "         It was found in ${sampling_rates_count[$most_common_sampling_rate]} out of ${wav_count} files.\n"
 fi
 
 
 # One rate was found.
 if [ $rates_in_dataset = 1 ]; then
     one_sampling_rate="${!sampling_rates_count[@]}"
-    echo -e "All files in dataset were the same sampling rate:  ${one_sampling_rate}.\n"
+    echo -e "${GREEN}\n        All files in dataset were the same sampling rate:  ${CYAN}${one_sampling_rate}.${RESET}\n"
     # ensure rate is compatible with piper
     if [ $one_sampling_rate -eq 16000 ] || [ $one_sampling_rate -eq 22050 ]; then
-        echo "Sampling rate automatically set to $one_sampling_rate Hz."
+       echo -e "        ${YELLOW}Sampling rate automatically set to ${PURPLE}$one_sampling_rate${YELLOW} Hz.${RESET}"
         all_rates_ok="yes"
         final_sampling_rate=$one_sampling_rate  
         if [ $issue_count -eq 0 ]; then
@@ -948,13 +928,13 @@ fi
 
 
 if [ $most_common_sampling_rate -ne 22050 ] && [ $most_common_sampling_rate -ne 16000 ]; then
-    echo -e "    \n\nPiper only supports the following sampling rates:"
-    echo -e "\n     1. 16000Hz for low quality models - (suitable for raspberry pi)" 
-    echo -e "     2. 22050Hz for medium and high quality models - (suitable for faster computers)"
-    echo -e "\nWhat would you like to do?"
-    echo -e "\n\n [1] auto-convert your files to 16000hz"
-    echo -e " [2] auto-convert your files to 22050hz"
-    echo -e " [Q] quit."
+    echo -e "   \n\nPiper only supports the following sampling rates:"
+    echo -e "    \n1. 16000Hz for low quality models - (suitable for raspberry pi)" 
+    echo -e "      2. 22050Hz for medium and high quality models - (suitable for faster computers)"
+    echo -e "   \nWhat would you like to do?"
+    echo -e "     \n\n[1] auto-convert your files to 16000hz"
+    echo -e "     [2] auto-convert your files to 22050hz"
+    echo -e "     [Q] quit."
     echo -e "  "
     read convertchoice
 
@@ -982,53 +962,54 @@ add_sampling_rate_to_repair_script $final_sampling_rate
 # all files have same sampling rate
 if [ $all_rates_ok = "yes" ]; then
     write_varfiles "$final_sampling_rate"
-    echo "Dataset fully sanitized.  Press Enter to continue with training" 
+    echo -e "        ${YELLOW}Dataset fully sanitized.  Press ${WHITE}<ENTER>${YELLOW} to continue with training${RESET}" 
     read
     exit 0
             
 #files need sampling rate changed.
 else
-    echo "Building script to convert non-conforming files in your dataset to ${final_sampling_rate}Hz"
-    echo "press enter to continue"
+    echo "    Building script to convert non-conforming files in your dataset to ${final_sampling_rate}Hz"
+    echo "    press enter to continue"
     read
     build_resampling_script ${final_sampling_rate}
 fi
 
-    echo -e "${file_counter} non-conforming files in your dataset will be resampled."
-    echo -e "  a script to fix these files has been created in "$SAMPLING_RATE_SCRIPT""
-    echo -e "\nWould you like to: "
-    echo -e "    [R]un resampling script"
-    echo -e "    [V]iew resampling script before deciding whether to run it"
-    echo -e "    [Q]uit"
+    echo -e "    ${file_counter} non-conforming files in your dataset will be resampled."
+    echo -e "      a script to fix these files has been created in "$SAMPLING_RATE_SCRIPT""
+    echo -e "    \nWould you like to: "
+    echo -e "        [R]un resampling script"
+    echo -e "        [V]iew resampling script before deciding whether to run it"
+    echo -e "        [Q]uit"
     echo -ne "     "
     read repairchoice
         if [[ "$repairchoice" = "q" ]] || [[ "$repairchoice" = "Q" ]]; then
-            echo "Exiting.  Press enter"
+            echo "    Exiting.  Press enter"
             read
             exit 1
         elif [[ "$repairchoice" = "v" ]] || [[ "$repairchoice" = "V" ]];  then
             clear
             cat "$SAMPLING_RATE_SCRIPT"
-            echo -ne "would you like to [R]un the  script or [Q]uit?"
+            echo -ne "    would you like to [R]un the  script or [Q]uit?"
             read lastchance
             if [[ "$lastchance" != "r" ]] && [[ "$lastchance" = "R" ]]; then
-                echo "Exiting.  Press enter"
+                echo "    Exiting.  Press enter"
                 read
                 exit 1
             else
-                echo "Running resampling script"
+                echo "    Running resampling script"
             fi
         elif [[ "$repairchoice" = "r" ]] || [[ "$repairchoice" = "R" ]]; then
-            echo "Running resampling script"
+            echo "    Running resampling script"
 
         fi
     bash ${SAMPLING_RATE_SCRIPT}
     sr_exit_code=$?
     
     if [ $sr_exit_code -eq "0" ]; then
-        echo "Resampling script completed successfully.  Dataset successfully sanitized."
-        write_varfiles "$final_sampling_rate" 
-        echo "press enter to continue"
+        echo "        Resampling script completed successfully.  Dataset successfully sanitized."
+        write_varfiles "$final_sampling_rate"
+        disable_script $SAMPLING_RATE_SCRIPT         
+        echo "        press <enter> to continue"
         read
     fi
 
@@ -1036,11 +1017,5 @@ echo
 
 #If we made it this far, the dataset was good.
   
-  
 write_varfiles "$final_sampling_rate"
-echo "wav_count" $wav_count
-echo "all_count" $all_count
-echo "core_count" $core_count
-echo "max_workers" $max_workers
-read
-echo "wav_sampling_rate ${most_common_sampling_rate}" 
+

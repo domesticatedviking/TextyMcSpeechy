@@ -80,6 +80,8 @@ echo "Creating Python 3.10 virtual environment..."
 python3.10 -m venv .venv
 echo
 
+#
+
 source .venv/bin/activate
 echo "Activated virtual environment."
 
@@ -100,10 +102,10 @@ pip install torchmetrics==0.11.4
 
 # Check if the script has root access before using sudo
 echo
-echo -e "${YELLOW}About to install 'espeak-ng, tmux, and ffmpeg' packages.  This requires sudo privileges${RESET}"
+echo -e "${YELLOW}About to install 'espeak-ng, tmux, ffmpeg, inotify-tools' packages.  This requires sudo privileges${RESET}"
 echo
 sudo apt-get update
-sudo apt-get install espeak-ng tmux ffmpeg
+sudo apt-get install espeak-ng tmux ffmpeg inotify-tools
 
 # If everything went well, print the success message
 cd $TEXTY_PATH
@@ -119,7 +121,9 @@ echo "     from this directory, run: " >> $va
 echo " " >> $va
 echo "              source piper/src/python/.venv/bin/activate" >> $va
 echo
-cat $va
+
+echo "$TEXTY_PATH" > "tts_dojo/.TEXTY_DIR"
+echo "$TEXTY_PATH/piper/src/python/.venv/bin" > "tts_dojo/.BIN_DIR"
 echo -e "${GREEN}Installation of Piper completed successfully.${RESET}"
 echo
 

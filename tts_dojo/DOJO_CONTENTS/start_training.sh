@@ -1,27 +1,42 @@
 #!/bin/bash
 
-RESET='\033[0m' # Reset text color to default
-BLACK='\033[0;30m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-WHITE='\033[0;37m'
-BOLD_BLACK='\033[1;30m'
-BOLD_RED='\033[1;31m'
-BOLD_GREEN='\033[1;32m'
-BOLD_YELLOW='\033[1;33m'
-BOLD_BLUE='\033[1;34m'
-BOLD_PURPLE='\033[1;35m'
-BOLD_CYAN='\033[1;36m'
-BOLD_WHITE='\033[1;37m'
+if [ ! -e ".BIN_DIR" ]; then
+   echo ".BIN_DIR not present"
+   sleep 1
+fi
+
+BIN_DIR=$(cat ".BIN_DIR")
+
+
+if [ ! -e "$BIN_DIR/activate" ]; then
+   echo "Can't find venv in $BIN_DIR."
+   sleep 3
+fi
+
+if [ -e ".DOJO_DIR" ]; then   # running from voicename_dojo
+    DOJO_DIR=$(cat ".DOJO_DIR")
+else
+    echo ".DOJO_DIR not found.   Exiting"
+    exit 1
+fi
+
+
+color_file="./scripts/.colors"
+if [ -e $color_file ]; then
+    source $color_file
+else
+    echo "$0 - color_file not found"
+    echo "     expected location: $settings_file"
+    echo 
+    echo "exiting"
+    exit 1
+fi
+
 
 this_dir=$(pwd)
 dir_only=$(basename "$this_dir")
-echo "This dir =  $this_dir"
-if [ $dir_only = "$DOJO_CONTENTS" ]; then
+
+if [ $dir_only = "DOJO_CONTENTS" ]; then
    echo -e "${RED}The DOJO_CONTENTS folder is used as a template for other dojos."
    echo -e "You should not run any scripts inside of DOJO_CONTENTS"
    echo 
@@ -30,6 +45,20 @@ if [ $dir_only = "$DOJO_CONTENTS" ]; then
    echo
    echo -e "Exiting${RESET}"
    exit 1
+fi
+
+if [[ -n "$VIRTUAL_ENV" ]]; then
+    echo
+    echo "OK    --  Virtual environment is active in  $VIRTUAL_ENV"
+    
+elif [ -e "$BIN_DIR/activate" ]; then
+   echo "Activating virtual environment."
+   source $BIN_DIR/activate
+else
+    echo "ERROR --  No python virtual environment was found."
+    echo
+    echo "Exiting."
+    exit 1
 fi
 
 
@@ -45,84 +74,81 @@ check_exit_status() {
         exit 1
     fi
 }
-clear
-echo -e "      ${BOLD_PURPLE}TextyMcspeechy TTS_Dojo - Training Script${RESET}"
 
-echo -e "      The dataset in target_voice_dataset will be analyzed and cleaned before training."
-echo -e "      it is ${BOLD_YELLOW}highly recommended ${RESET}that you do not put the only copy of your files into this"
-echo -e "      alpha version of a script written by an amateur whom you haven't met."
-echo -e ""
-echo -e "      Use at your own risk, obviously.   That's what I would do."
-echo -e "      Do you want to proceed?"
-read -p "      (y/n): " choice
+
+# Function to calculate the total size of a directory in GB
+bad_dir_size_in_gb() {
+    local dir_path="$1"
+    if [ -d "$dir_path" ]; then
+        local size_in_kb=$(du -sk "$dir_path" | cut -f1)
+        local size_in_gb=$(echo "scale=2; $size_in_kb / 1024 / 1024" | bc)
+        echo "$size_in_gb"
+    else
+        echo "Invalid directory"
+    fi
+}
+
+dir_size_in_gb() {
+    local dir_path="$1"
+    if [ -d "$dir_path" ]; then
+        local size_in_kb=$(du -sk "$dir_path" | cut -f1)
+        local size_in_gb=$(echo "scale=2; $size_in_kb / 1024 / 1024" | bc)
+        printf "%7.2f\n" "$size_in_gb"
+    else
+        echo "Invalid directory"
+    fi
+}
+
+
+clear
+echo -e "      ${BOLD_PURPLE}TextyMcspeechy TTS Dojo${RESET}"
+echo
+echo -e "      The dataset in the ${CYAN}target_voice_dataset${RESET} directory will be analyzed and cleaned before training."
+echo -e "      It is ${BOLD_YELLOW}highly recommended ${RESET}that you keep backup copies all of your files."
+echo -e "      If you choose to use this tool, you do so at your own risk."
+echo 
+echo -ne "      ${YELLOW}Do you want to proceed? (y/n)  ${RESET}"
+read choice
 
 # Check the user's response
-if [[ "$choice" != [Yy]* ]]; then
-    echo "     I understand completely."
+if [[ "$choice" = [Nn]* ]]; then
+    echo "     Exiting."
     exit 1
 fi
 
 
-echo "      Let's get that dataset sanitized and analyzed for you."
-echo "      running .scripts/0_sanitize_dataset.sh"
-sleep 2
+echo -e "\nrunning scripts/sanitize_dataset.sh"
+sleep 1
 clear
 
-bash ./scripts/0_sanitize_dataset.sh
+bash ./scripts/sanitize_dataset.sh
 check_exit_status
 
 clear
-echo "     Well I hope that worked because we are ready to begin pre processing."
-echo "     running ./scripts/1_preprocess.sh"
+
+echo -e "\nrunning scripts/preprocess_dataset.sh"
 echo
 
 # Execute the preprocessing script
-bash ./scripts/1_preprocess.sh
+bash ./scripts/preprocess_dataset.sh
 check_exit_status  # Check if the last command failed
-echo
-echo
-echo "     That didn't take very long compared to this next one."
-echo "     Because you don't want to know how much linear algebra we have to do now."
-echo ""
-echo "     It's weird that we're going to be training an AI, but we are."
-echo "     To do that we're going to do a couple of things at once, "
-echo "     So we're going to split the screen into three panes" 
-echo 
-echo "     Be sure to read the instructions on the bottom pane when it appears"
-echo "     Especially the part where it tells you have to manually quit"
-echo "     ... or you'll be here forever. "
 
-echo
-read -p " Are we doing this?  (y/n): " choice
 
-# Check the user's response
-if [[ "$choice" != [Nn]* ]] || ["$choice" == ""]; then
-    echo "    Awesome.  Now running ./scripts/2_training.sh"
-    bash ./scripts/2_training.sh
-    check_exit_status  # Check if training script failed
-else
-    echo "    You do you.  No hard feelings."
-    exit 3
-fi
+bash ./scripts/train.sh
+check_exit_status  # Check if training script failed
 clear
-echo "      Are you ready to take all of that sweet math and turn it into a voice which"
-echo "      you promise to use for things which are fun, honourable, and legal?"
-read -p "      (y/n): " choice
-
-# Check the user's response
-if [[ "$choice" == [Yy]* ]]; then
-    echo "Alright. Running./scripts/3_finish_voice.sh"
-    bash ./scripts/3_finish_voice.sh
-    check_exit_status  # Check if training script failed
-else
-    echo "Good talking to you.  We should do this again."
-    exit 3
-fi
-
-
-
-echo "start_training.sh: All training scripts completed"
+echo "Thank you for using TextyMcSpeechy."
 echo
+
+echo -e "Reminder: There are currently ${CYAN}$(dir_size_in_gb $DOJO_DIR) GB${RESET} of files in ${GREEN}$(basename $DOJO_DIR)${RESET}:"
+echo -e "${CYAN}$(dir_size_in_gb $DOJO_DIR/voice_checkpoints) GB in ${GREEN}voice_checkpoints${RESET}"
+echo -e "${CYAN}$(dir_size_in_gb $DOJO_DIR/tts_voices) GB in ${GREEN}tts_voices${RESET}"
+echo -e "${CYAN}$(dir_size_in_gb $DOJO_DIR/archived_checkpoints) GB in ${GREEN}archived_checkpoints${RESET}"
+echo -e "${CYAN}$(dir_size_in_gb $DOJO_DIR/archived_tts_voices) GB in ${GREEN}archived_tts_voices${RESET}"
+echo
+echo -e "Please remember to delete any files you don't need."
+
+      
 echo
 exit 0
 

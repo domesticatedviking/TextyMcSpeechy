@@ -1,14 +1,11 @@
 #!/bin/bash
 RESET='\033[0m' # Reset text color to default
-BLACK='\033[0;30m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
-PIPER_PATH="" # /path/to/piper (the place where you cloned the repo)
+
 
 # Check if a parameter is provided
 if [ -z "$1" ]; then
@@ -23,20 +20,23 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-if [[ -n "$VIRTUAL_ENV" ]]; then
-    echo
-    echo "OK    --  Virtual environment is active in  $VIRTUAL_ENV"
-    
-else
-    echo "ERROR --  No python virtual environment is active."
-    echo "  to activate it, use:   source/<PATH/TO/VIRTUAL_ENVIRONMENT>/bin/activate"
-    echo "  then run this script again."
-    echo
-    echo "Exiting."
-    exit 1
+
+if [[ ! -e ".TEXTY_DIR" ]]; then
+    echo "Path to TextyMcSpeechy directory not found in '.TEXTY_DIR'"
+    echo "This is normally created by install_piper.sh" 
+    sleep 1
 fi
 
-BIN_DIR="$VIRTUAL_ENV/bin"
+if [ ! -e ".BIN_DIR" ]; then
+   echo ".BIN_DIR not present."
+   echo "Normally it is created by install_piper.sh." 
+   echo "and would contain /path/to/piper/src/python/.venv/bin"
+   sleep 1
+else
+    BIN_DIR=$(cat ".BIN_DIR")
+fi    
+
+
 PIPER_BIN="$BIN_DIR/piper"
 # Check if the file 'piper' exists
 if [[ -e "${PIPER_BIN}" ]]; then
@@ -45,10 +45,26 @@ if [[ -e "${PIPER_BIN}" ]]; then
     
 else
     echo "ERROR --  Piper binary not found in $BIN_DIR."
-    echo "          Was Piper installed in this virtual environment?"
+    echo "          Did you run install_piper.sh?"
     echo "Exiting."
     exit 1
 fi
+
+
+if [[ -n "$VIRTUAL_ENV" ]]; then
+    echo
+    echo "OK    --  Virtual environment is active in  $VIRTUAL_ENV"
+    
+elif [ -e "$BIN_DIR/activate" ]; then
+   echo "Activating virtual environment."
+   source $BIN_DIR/activate
+else
+    echo "ERROR --  No python virtual environment was found."
+    echo
+    echo "Exiting."
+    exit 1
+fi
+
 
 
 

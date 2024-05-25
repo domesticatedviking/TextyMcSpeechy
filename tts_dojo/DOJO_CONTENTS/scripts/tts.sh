@@ -3,6 +3,15 @@
 # Default output filename
 output_file="output_audio.wav"
 
+echo "SayTTS.sh"
+echo
+echo "params received:"
+echo "$1"
+echo "$2"
+echo "$3"
+
+
+
 # Check for text argument
 if [ "$#" -lt 1 ]; then
   echo "Usage: $0 'text to say' [--filename <filename>] [/path/to/model.onnx]"
