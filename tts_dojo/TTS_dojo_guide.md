@@ -1,11 +1,14 @@
 # TTS Dojo
 
 The TTS Dojo is a simplified workflow for changing the voice of text-to-speech models using [rhasspy/piper](https://github.com/rhasspy/piper).
-
+## MAJOR FEATURE UPDATE MAY 24 2024:
+- Full training environment with both automatic and manual checkpoint saving, voice model generation, and ability to preview and compare voices while training.
+- Ability to stop and resume training from a previous checkpoint
+- Interactive management of dojo files
+- Automatic activation of virtual environment throughout
 
 
 ## UPDATE MAY 18 2024:
-### Significant upgrade to TTS dojo scripts
 - Automatic sampling rate detection
 - Dataset file format verification 
 - Automatically convert non-wav audio files to .wav
