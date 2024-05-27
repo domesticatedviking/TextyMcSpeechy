@@ -104,6 +104,7 @@ If you:
    - `FILENAME` | `transcript`  is the form for single speaker datasets (if you are making your own transcripts, this is the format you should use)
    - `FILENAME` | `SPEAKER ID` | `transcript` is the form for multiple speaker datasets.  This format will also work for a single speaker dataset if the speaker ids are all the same.
 5. I use a spreadsheet to create my csv file when transcribing my own datasets, but you can also create this file manually in any text editor.
+6. It is not necessary to include the path or file extension (eg `.wav`) in the file names listed in in `metadata.csv`.
    
 This is what the metadata.csv file I created from the VCTK dataset looks like.
 ```
