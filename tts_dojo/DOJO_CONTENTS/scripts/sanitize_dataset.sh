@@ -70,11 +70,6 @@ WAV_DIR="$DOJO_DIR/target_voice_dataset/wav"
 REPAIR_SCRIPT="$DOJO_DIR/target_voice_dataset/autorepair.sh"
 SAMPLING_RATE_SCRIPT="$DOJO_DIR/target_voice_dataset/fix_sampling_rate.sh"
 
-# PATHS FOR MOVING BAD AUDIO FILES
-UNKNOWN_FORMAT_DIR_NAME="UNKNOWN_FORMAT"
-UNKNOWN_FORMAT_PATH=${WAV_DIR}/$UNKNOWN_FORMAT_DIR_NAME}
-WRONG_AUDIO_DIR_NAME="NOT_WAV"
-WRONG_AUDIO_PATH=${WAV_DIR}/$WRONG_AUDIO_DIR_NAME}
 
 # PATHS TO FILES USED TO STORE VARIABLES FOR OTHER SCRIPTS
 VARFILE_PASSED="$WAV_DIR/.PASSED"
@@ -84,10 +79,17 @@ VARFILE_SAMPLING_RATE="${DOJO_DIR}/scripts/.SAMPLING_RATE"
 # DATASET_CLEANING_DIRECTORIES
 PROBLEM_FILES_DIR="PROBLEM_FILES"
 UNKNOWN_FORMAT_DIR="$PROBLEM_FILES_DIR/UNKNOWN_FORMAT"
-WRONG_FORMAT_DIR="$PROBLEM_FILES_DIR/MISLABELED"
-WRONG_FORMAT_ORIGINAL_DIR="$WRONG_FORMAT_DIR/ORIGINAL"
-WRONG_FORMAT_FIXED_DIR="$WRONG_FORMAT_DIR/FIXED"
-#FIXED_DIR="$PROBLEM_FILES_DIR/FIXED"  ERROR?
+NOT_WAV_DIR="$PROBLEM_FILES_DIR/NOT_WAV"
+NOT_WAV_ORIGINAL_DIR="$NOT_WAV_DIR/ORIGINAL"
+NOT_WAV_FIXED_DIR="$NOT_WAV_DIR/FIXED"
+
+# PATHS FOR MOVING BAD AUDIO FILES
+UNKNOWN_FORMAT_DIR_NAME="UNKNOWN_FORMAT"
+UNKNOWN_FORMAT_PATH=${PROBLEM_FILES_DIR}/${UNKNOWN_FORMAT_DIR_NAME}
+MISLABELED_AUDIO_DIR_NAME="MISLABELED"
+MISLABELED_AUDIO_PATH=${PROBLEM_FILES_DIR}/${MISLABELED_AUDIO_DIR_NAME}
+MISLABELED_ORIGINAL_DIR="$MISLABELED_AUDIO_PATH/ORIGINAL"
+MISLABELED_FIXED_DIR="$MISLABELED_AUDIO_PATH/FIXED"
 
 WRONG_RATE_DIR="${PROBLEM_FILES_DIR}/WRONG_SAMPLING_RATE"
 WRONG_RATE_ORIGINAL_DIR="$WRONG_RATE_DIR/ORIGINAL"
@@ -122,10 +124,12 @@ fix_bad_sampling_rate_files=0
 most_common_sampling_rate=0  
 declare -A sampling_rates_count 
 not_audio_file_count=0
-wrong_audio_file_count=0
+mislabeled_audio_file_count=0
+not_wav_file_count=0
 issue_count=0
 dataset_sanitized="no"
 all_rates_ok="no"
+total_count=0
 
 
 
@@ -251,6 +255,14 @@ EOF
      echo "$copycommand" >> "$SCRIPTFILE"
 }
 
+ queue_delete_file(){
+     local filename="$1"
+     local SCRIPTFILE="$2"
+     echo "echo \"Deleting '${filename}'\" " >> "$SCRIPTFILE"
+     deletecommand="rm \"${filename}\" "
+     echo "$deletecommand" >> "$SCRIPTFILE"
+}
+
 queue_convert_to_wav(){
  local source_file="$1"
  local destination_dir="$2"
@@ -272,8 +284,8 @@ queue_convert_to_wav(){
  convert_audio_format="ffmpeg -loglevel error -i \"${source_file}\" \"$converted_path\" "  # > /dev/null 2>&1
  echo "echo Converting \"${source_file}\" to \"${converted_extension}\" in \"${converted_path}\" " >> "$SCRIPTFILE"  
  echo "$convert_audio_format" >> "$SCRIPTFILE"
- echo "echo     File converted successfully.  press enter"  >> "$SCRIPTFILE"  
- echo "read" >> "SCRIPTFILE"
+ echo "echo     File converted successfully."  >> "$SCRIPTFILE"  
+ echo " " >> "$SCRIPTFILE"
 }
 
 
@@ -336,6 +348,7 @@ init_repair_script(){
     echo " " >> $REPAIR_SCRIPT # line 8 reserved for deactivation notice
     echo " " >> $REPAIR_SCRIPT # line 9 reserved for exit 0
     echo " " >> $REPAIR_SCRIPT
+    echo "set -e" >> $REPAIR_SCRIPT
     echo "cd $WAV_DIR " >> $REPAIR_SCRIPT
 
 }
@@ -354,6 +367,7 @@ init_sampling_rate_script(){
     echo " " >> $SAMPLING_RATE_SCRIPT # line 8 reserved for deactivation notice
     echo " " >> $SAMPLING_RATE_SCRIPT # line 9 reserved for exit 0
     echo " " >> $SAMPLING_RATE_SCRIPT
+    echo "set -e" >> $SAMPLING_RATE_SCRIPT
     echo "cd $WAV_DIR" >> $SAMPLING_RATE_SCRIPT
 
 }
@@ -372,17 +386,20 @@ check_audio_file_type() {
     fi
 }
 
-count_wav_files() {
+count_audio_files() {
+    local type="$1"
     local directory="$WAV_DIR"
-    local count=$(find "$directory" -maxdepth 1 -type f \( -iname "*.wav" -o -iname "*.WAV" \) | wc -l)
-    echo $count 
+
+    if [[ -z "$directory" ]]; then
+        echo "Error: WAV_DIR is not defined"
+        return 1
+    fi
+
+    local count=$(find "$directory" -maxdepth 1 -type f \( -iname "*.$type" \) | wc -l)
+    echo "$count"
 }
 
- unused_count_all_files() {
-    local directory=$WAV_DIR
-    local count=$(find "$directory" -maxdepth 1 -iname "*.*" | wc -l)
-    echo $count 
-}
+
 
  count_all_files() {
     #counts all audio files in a directory.  Does not include files in subfolders
@@ -435,9 +452,11 @@ count_wav_files() {
     done
  }
  
- ensure_wrong_format_dirs_exist(){
- mkdir -p "$WAV_DIR/$WRONG_FORMAT_FIXED_DIR" > /dev/null 2>&1
- mkdir -p "$WAV_DIR/$WRONG_FORMAT_ORIGINAL_DIR" > /dev/null 2>&1
+ ensure_repair_dirs_exist(){
+ mkdir -p "$WAV_DIR/$NOT_WAV_FIXED_DIR" > /dev/null 2>&1
+ mkdir -p "$WAV_DIR/$NOT_WAV_ORIGINAL_DIR" > /dev/null 2>&1
+ mkdir -p "$WAV_DIR/$MISLABELED_ORIGINAL_DIR" > /dev/null 2>&1
+ mkdir -p "$WAV_DIR/$MISLABELED_FIXED_DIR" > /dev/null 2>&1
  }
 
  ensure_wrong_rate_dirs_exist(){
@@ -515,7 +534,7 @@ handle_backup_fix_and_replace_sampling_rate() {
     queue_message "# WRONG SAMPLING RATE - BACKUP_FIX_AND_REPLACE" "$SAMPLING_RATE_SCRIPT"
     queue_copy_file "$original_filename" "$WRONG_RATE_ORIGINAL_DIR/$original_filename" "$SAMPLING_RATE_SCRIPT"
     queue_change_sampling_rate "$original_filename" "$target_rate" "$WRONG_RATE_FIXED_DIR/$original_filename" "$SAMPLING_RATE_SCRIPT"
-    queue_move_file "$WRONG_RATE_FIXED_DIR/$original_filename" "$WAV_DIR" "$SAMPLING_RATE_SCRIPT"
+    queue_move_file "$WRONG_RATE_FIXED_DIR/$original_filename" "$WAV_DIR" "$SAMPLING_RATE_SCRIPT" 
     queue_message " " "$SAMPLING_RATE_SCRIPT"
 }
 
@@ -529,7 +548,7 @@ handle_fix_and_delete_original_sampling_rate() {
     queue_copy_file "$original_filename" "$WRONG_RATE_ORIGINAL_DIR/$original_filename" "$SAMPLING_RATE_SCRIPT"
     queue_change_sampling_rate "$original_filename" "$target_rate" "$WRONG_RATE_FIXED_DIR/$original_filename" "$SAMPLING_RATE_SCRIPT"
     queue_move_file "$WRONG_RATE_FIXED_DIR/$original_filename" "$WAV_DIR" "$SAMPLING_RATE_SCRIPT"
-    queue_delete_file "${WRONG_RATE_ORIGINAL_DIR}${original_filename}" "$SAMPLING_RATE_SCRIPT"
+    queue_delete_file "${WRONG_RATE_ORIGINAL_DIR}/${original_filename}" "$SAMPLING_RATE_SCRIPT"
     queue_message " " "$SAMPLING_RATE_SCRIPT"
 }
 
@@ -552,7 +571,7 @@ verify_contents_and_determine_sampling_rate() {
             fi
 
             let "file_counter++"
-            echo -ne "    Scanning file ${file_counter} of ${wav_count}                               \r"
+            echo -ne "    Scanning file ${file_counter} of ${total_count}                               \r"
             process_file "$file"
         done
         clear
@@ -574,10 +593,10 @@ process_file() {
 
     if ! is_supported_audio "$actual_type"; then
         handle_unsupported_audio "$file" "$original_filename" "$file_extension_lowercase" "$actual_type"
-    elif [[ "$actual_type" != "$file_extension_lowercase" ]]; then
-        handle_mislabeled_audio "$file" "$original_filename" "$filename_no_extension" "$file_extension_lowercase" "$actual_type"
     elif [ "$file_extension_lowercase" == "flac" ] || [ "$file_extension_lowercase" == "mp3" ]; then
         handle_non_wav_file "$file" "$original_filename" "$filename_no_extension" "$file_extension_lowercase" "$actual_type"
+    elif [[ "$actual_type" != "$file_extension_lowercase" ]]; then
+        handle_mislabeled_audio "$file" "$original_filename" "$filename_no_extension" "$file_extension_lowercase" "$actual_type"
     fi
 
     log_sampling_rate_stats "$file"
@@ -628,20 +647,23 @@ handle_mislabeled_audio() {
     echo -e "               selected action:  ${YELLOW}${action_wrong_format}${RESET}"
 
     queue_message "# $original_filename claimed to be a $file_extension_lowercase but contains $actual_type data." "${REPAIR_SCRIPT}"
-    ((wrong_audio_file_count++))
+    ((mislabeled_audio_file_count++))
 
     case $action_wrong_format in
         FIX_SUBFOLDER_COPY)
-            handle_fix_subfolder_copy "$file" "$original_filename" "$filename_no_extension"
+            handle_fix_subfolder_copy "$file" "$original_filename" "$filename_no_extension"  "$MISLABELED_ORIGINAL_DIR"  "$MISLABELED_FIXED_DIR"
             ;;
         BACKUP_FIX_AND_REPLACE)
-            handle_backup_fix_and_replace "$file" "$original_filename" "$filename_no_extension"
+            handle_backup_fix_and_replace "$file" "$original_filename" "$filename_no_extension" "$MISLABELED_ORIGINAL_DIR"  "$MISLABELED_FIXED_DIR"
             ;;
         FIX_AND_DELETE_ORIGINAL)
-            handle_fix_and_delete_original "$file" "$original_filename" "$filename_no_extension"
+            handle_fix_and_delete_original "$file" "$original_filename" "$filename_no_extension" "$MISLABELED_ORIGINAL_DIR"  "$MISLABELED_FIXED_DIR"
             ;;
     esac
 }
+
+
+
 
 handle_non_wav_file() {
     local file=$1
@@ -651,71 +673,79 @@ handle_non_wav_file() {
     local actual_type=$5
 
     (( issue_count++ ))
-    echo -e "   ${YELLOW}Audio file found which was not a .wav file.${RESET}"
-    echo -e "                      Filename:  ${WHITE}$original_filename${RED}"
-    echo -e "            File extension was:  ${YELLOW}$file_extension_lowercase${RED}"
-    echo -e "   File contents identified as:  ${GREEN}$actual_type${RESET}"
-    echo -e "               selected action:  ${YELLOW}${action_wrong_format}${RESET}"
+    #echo -e "   ${YELLOW}Audio file found which was not a .wav file.${RESET}"
+    #echo -e "                      Filename:  ${WHITE}$original_filename${RED}"
+    #echo -e "            File extension was:  ${YELLOW}$file_extension_lowercase${RED}"
+    #echo -e "   File contents identified as:  ${GREEN}$actual_type${RESET}"
+    #echo -e "               selected action:  ${YELLOW}${action_wrong_format}${RESET}"
 
     queue_message "# $original_filename is not a .wav file.  type is: $actual_type" "${REPAIR_SCRIPT}"
-    ((wrong_audio_file_count++))
+    ((not_wav_file_count++))
 
     case $action_wrong_format in
         FIX_SUBFOLDER_COPY)
-            handle_fix_subfolder_copy "$file" "$original_filename" "$filename_no_extension"
+            handle_fix_subfolder_copy "$file" "$original_filename" "$filename_no_extension" "$NOT_WAV_ORIGINAL_DIR"  "$NOT_WAV_FIXED_DIR"
             ;;
         BACKUP_FIX_AND_REPLACE)
-            handle_backup_fix_and_replace "$file" "$original_filename" "$filename_no_extension"
+            handle_backup_fix_and_replace "$file" "$original_filename" "$filename_no_extension" "$NOT_WAV_ORIGINAL_DIR"  "$NOT_WAV_FIXED_DIR"
             ;;
         FIX_AND_DELETE_ORIGINAL)
-            handle_fix_and_delete_original "$file" "$original_filename" "$filename_no_extension"
+            handle_fix_and_delete_original "$file" "$original_filename" "$filename_no_extension" "$NOT_WAV_ORIGINAL_DIR"  "$NOT_WAV_FIXED_DIR"
             ;;
     esac
 }
 
 handle_fix_subfolder_copy() {
-    local file=$1
-    local original_filename=$2
-    local filename_no_extension=$3
+    local file="$1"
+    local original_filename="$2"
+    local filename_no_extension="$3"
+    local backup_dir="$4"
+    local fixed_dir="$5"
 
-    ensure_wrong_format_dirs_exist
-    echo "   File will be converted to .wav format in $WRONG_FORMAT_FIXED_DIR"
+    ensure_repair_dirs_exist
+    echo "   File will be converted to .wav format in $NOT_WAV_FIXED_DIR"
     queue_message "# FIX_SUBFOLDER_COPY" "${REPAIR_SCRIPT}"
-    queue_copy_file "$original_filename" "$WRONG_FORMAT_ORIGINAL_DIR" "${REPAIR_SCRIPT}"
-    queue_convert_to_wav "$WRONG_FORMAT_ORIGINAL_DIR/$original_filename" "$WRONG_FORMAT_FIXED_DIR" "${REPAIR_SCRIPT}"
+    queue_copy_file "$original_filename" "$backup_dir" "${REPAIR_SCRIPT}"
+    queue_convert_to_wav "$backup_dir/$original_filename" "$fixed_dir" "${REPAIR_SCRIPT}"
     queue_message "echo " "${REPAIR_SCRIPT}"
     queue_message " " "${REPAIR_SCRIPT}"
 }
 
 handle_backup_fix_and_replace() {
-    local file=$1
-    local original_filename=$2
-    local filename_no_extension=$3
+    local file="$1"
+    local original_filename="$2"
+    local filename_no_extension="$3"
+    local backup_dir="$4"
+    local fixed_dir="$5"
 
-    ensure_wrong_format_dirs_exist
-    echo "File in dataset will be converted to .wav format."
-    echo "Original file will be backed up in  $WRONG_FORMAT_ORIGINAL_DIR"
-    echo -e "${RED}WARNING - If your metadata.csv file contains file paths, it will need to be manually updated${RESET}"
+    ensure_repair_dirs_exist
+    #echo "File in dataset will be converted to .wav format."
+    #echo "Original file will be backed up in  $backup_dir"
+    #echo -e "${RED}WARNING - If your metadata.csv file contains file extensions, it will need to be manually updated${RESET}"
     queue_message "# BACKUP_FIX_AND_REPLACE" "${REPAIR_SCRIPT}"
     queue_message "# ***If your metadata.csv includes file extensions you will need to update the entry for this file***" "${REPAIR_SCRIPT}"
-    queue_copy_file "$original_filename" "$WRONG_FORMAT_ORIGINAL_DIR" "${REPAIR_SCRIPT}"
-    queue_convert_to_wav "$WRONG_FORMAT_ORIGINAL_DIR/$original_filename" "$WRONG_FORMAT_FIXED_DIR" "${REPAIR_SCRIPT}"
-    queue_move_file "$WRONG_FORMAT_FIXED_DIR/${filename_no_extension}.wav" $WAV_DIR "${REPAIR_SCRIPT}"
+    queue_copy_file "$original_filename" "$backup_dir" "${REPAIR_SCRIPT}"
+    queue_delete_file "$original_filename" "${REPAIR_SCRIPT}"
+    queue_convert_to_wav "$backup_dir/$original_filename" "$fixed_dir" "${REPAIR_SCRIPT}"
+    queue_move_file "$fixed_dir/${filename_no_extension}.wav" $WAV_DIR "${REPAIR_SCRIPT}"
     queue_message "echo " "${REPAIR_SCRIPT}"
     queue_message " " "${REPAIR_SCRIPT}"
 }
 
 handle_fix_and_delete_original() {
-    local file=$1
-    local original_filename=$2
-    local filename_no_extension=$3
-
-    ensure_wrong_format_dirs_exist
+    local file="$1"
+    local original_filename="$2"
+    local filename_no_extension="$3"
+    local backup_dir="$4"
+    local fixed_dir="$5"
+    
+    ensure_repair_dirs_exist
     queue_message "# FIX_AND_DELETE_ORIGINAL" "${REPAIR_SCRIPT}"
-    queue_copy_file "$original_filename" "$WRONG_FORMAT_ORIGINAL_DIR" "${REPAIR_SCRIPT}"
-    queue_convert_to_wav "$original_filename" "$WRONG_FORMAT_FIXED_DIR" "${REPAIR_SCRIPT}"
-    queue_move_file "$WRONG_FORMAT_FIXED_DIR/${filename_no_extension}.wav" "$WAV_DIR" "${REPAIR_SCRIPT}"
-    queue_delete_file "${WRONG_FORMAT_ORIGINAL_DIR}$original_filename" "${REPAIR_SCRIPT}"
+    queue_copy_file "$original_filename" "$backup_dir" "${REPAIR_SCRIPT}"
+    queue_delete_file "$original_filename" "${REPAIR_SCRIPT}"
+    queue_convert_to_wav "$original_filename" "$fixed_dir" "${REPAIR_SCRIPT}"
+    queue_move_file "$fixed_dir/${filename_no_extension}.wav" "$WAV_DIR" "${REPAIR_SCRIPT}"
+    queue_delete_file "${backup_dir}/${original_filename}" "${REPAIR_SCRIPT}"
     queue_message "echo " "${REPAIR_SCRIPT}"
     queue_message " " "${REPAIR_SCRIPT}"
 }
@@ -744,20 +774,32 @@ handle_fix_and_delete_original() {
 
 
 
- report_wav_file_count(){
+ report_audio_file_count(){
    
+    total_count=0
+    echo
+    for audio_type in "${SUPPORTED_AUDIO[@]}"; do
+        count=$(count_audio_files "$audio_type")
+        total_count=$((total_count + count))
+        if [ $count -gt "0" ]; then
+            echo -e "    ${GREEN}${count}${YELLOW} .${audio_type} files were found in 'target_voice_dataset/wav'${RESET}"
+        fi
+    done
+    echo -ne "\nPress ${GREEN}<ENTER>${RESET} to continue "
+    read
+    #echo -e "    ${GREEN}$wav_count${YELLOW} .wav files were found in 'target_voice_dataset/wav${RESET}'"
     
     echo
-    echo -e "    ${GREEN}$wav_count${YELLOW} .wav files were found in 'target_voice_dataset/wav${RESET}'"
-    echo
     
-    if (($wav_count < $MINIMUM_SAMPLES_HARD)); then
-        echo "        ERROR: No wav files found in $DOJO_DIR/target_voice_dataset/wav"
+    if (($total_count < $MINIMUM_SAMPLES_HARD)); then
+        echo "        ERROR: No audio files found in $DOJO_DIR/target_voice_dataset/wav"
         echo "               Did you remember to run 'add_my_files.sh' ? "
+        echo
+        echo "        Exiting."
         exit 1
     fi
     
-    if (($wav_count < $MINIMUM_SAMPLES_WARN)); then
+    if (($total_count < $MINIMUM_SAMPLES_WARN)); then
         echo
         echo -e "         ${PURPLE}NOTICE: Small dataset detected. ${CYAN}(<$MINIMUM_SAMPLES_WARN files)${RESET}"
         echo 
@@ -793,7 +835,7 @@ handle_fix_and_delete_original() {
         fi
     fi
     
-    all_count=$(count_all_files)
+    #all_count=$(count_all_files)
     core_count=$(nproc)
 
 }
@@ -826,7 +868,8 @@ handle_fix_and_delete_original() {
   
  clean_and_initialize(){
     remove_verification_files
-    wav_count=$(count_wav_files)
+    wav_count=$(count_audio_files "wav")
+    
 }
 
 
@@ -856,11 +899,11 @@ else #Means at least one varfile was missing
 fi
 # clean up any old files and ensure directories exist
 clean_and_initialize
-report_wav_file_count
+report_audio_file_count
 
         echo "    Verifying file contents and determining sampling rate of dataset, please wait..."
 
-verify_contents_and_determine_sampling_rate $wav_count
+verify_contents_and_determine_sampling_rate $total_count
 find_most_common_sampling_rate
 
 
@@ -868,12 +911,16 @@ rates_in_dataset="${#sampling_rates_count[@]}" # number of keys in array, should
 
      echo -e "            \n\n\n\nScan complete.\n\n"
 
-if [ $not_audio_file_count -gt 0 ]; then
+if [ "$not_audio_file_count" -gt "0" ]; then
     echo -e "\n    ${RED}${not_audio_file_count}${RESET} file(s) in dataset were not identified as audio."
-fi
-if [ $wrong_audio_file_count -gt 0 ]; then
+fi    
+if [ "$mislabeled_audio_file_count" -gt "0" ]; then
 
-    echo -e "\n    ${RED}${wrong_audio_file_count}${RESET}  mislabeled file(s) found."
+    echo -e "\n    ${RED}${mislabeled_audio_file_count}${RESET}  mislabeled file(s) found."
+fi
+if [ "$not_wav_file_count" -gt "0" ]; then
+
+    echo -e "\n    ${RED}${not_wav_file_count}${RESET}  non .wav file(s) found."
 fi
 
 if [ "$issue_count" -eq 0 ]; then
