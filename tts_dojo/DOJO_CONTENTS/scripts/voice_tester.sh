@@ -1,11 +1,68 @@
 #!/bin/bash
 
-DOJO_DIR=$(cat .DOJO_DIR)
+if [ ! -e ".BIN_DIR" ]; then
+   echo ".BIN_DIR not present"
+   sleep 1
+fi
+
+BIN_DIR=$(cat ".BIN_DIR")
+
+
+if [ ! -e "$BIN_DIR/activate" ]; then
+   echo "Can't find venv in $BIN_DIR."
+   sleep 3
+fi
+
+if [ -e ".DOJO_DIR" ]; then   # running from voicename_dojo
+    DOJO_DIR=$(cat ".DOJO_DIR")
+else
+    echo ".DOJO_DIR not found.   Exiting"
+    exit 1
+fi
+
+
+
+this_dir=$(pwd)
+dir_only=$(basename "$this_dir")
+
+if [ $dir_only = "DOJO_CONTENTS" ]; then
+   echo -e "${RED}The DOJO_CONTENTS folder is used as a template for other dojos."
+   echo -e "You should not run any scripts inside of DOJO_CONTENTS"
+   echo 
+   echo -e "Instead, run 'newdojo.sh' <voice name> to create a new dojo"
+   echo -e "and train your models in that folder." 
+   echo
+   echo -e "Exiting${RESET}"
+   exit 1
+fi
+
+if [[ -n "$VIRTUAL_ENV" ]]; then
+    echo
+    echo "OK    --  Virtual environment is active in  $VIRTUAL_ENV"
+    
+elif [ -e "$BIN_DIR/activate" ]; then
+   echo "Activating virtual environment."
+   source $BIN_DIR/activate
+else
+    echo "ERROR --  No python virtual environment was found."
+    echo
+    echo "Exiting."
+    exit 1
+fi
+
+
 source_dir=${1:-"$DOJO_DIR/tts_voices"}
 
 TTS_VOICES="tts_voices"
+cleanup(){
+  echo "Exiting"
+  tput sgr0 ;
+  pkill -P $$
+  exit 0
 
-trap "kill 0" SIGINT
+}
+
+
 trap 'resize_term' SIGWINCH
 
 resize_term() {
@@ -146,7 +203,8 @@ say_text() {
   local voice_dir=${directories[$selected]}
   local model_onnx="$(basename "$voice_dir").onnx"
   local onnx_path=$voice_dir/$model_onnx
-  $DOJO_DIR/scripts/tts.sh "$text_to_say" "$onnx_path" >/dev/null 2>&1 
+  $DOJO_DIR/scripts/tts.sh "$text_to_say" "$onnx_path" >/dev/null 2>&1
+  sleep 5
   display_menu 
 }
 
@@ -215,7 +273,7 @@ flip_sort_order() {
 }
 
 get_directories #initial run
-
+trap cleanup SIGINT SIGTERM
 while true; do
   if read -rsn1 -t 3 key; then
   case "$key" in
@@ -255,9 +313,7 @@ while true; do
       flip_sort_order
       ;;
     "q")  # q key
-      tput sgr0
-      clear
-      kill $(jobs -p)
+      cleanup
       exit 0
       ;;
   esac
@@ -266,7 +322,7 @@ while true; do
 display_menu
 done
 
-trap 'tput sgr0; clear; kill $(jobs -p); exit 0' SIGINT
+
 
 tput sgr0
 clear
