@@ -6,13 +6,15 @@
 - Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
 - Rapidly train high quality TTS by using pretrained checkpoint files
 
+## May 27 2024:  New tool - Dataset recorder
+- This is probably the fastest possible way to record a dataset, and is ideal for making a clone of one's own voice.
+- `dataset_recorder.sh` takes any metadata.csv file as input and interactively records voice samples for every phrase it references under the proper file name.
+- a sample `metadata.csv` file is included.   I'm still experimenting to see what kinds of phrases will result in the best voice clones.
+
 ## MAJOR FEATURE UPDATE May 24 2024 
 - The latest commit includes a completely overhauled TTS dojo, with the ability to generate and listen to tts voices while training
 - Output still needs some polishing but otherwise everything seems to work quite well.
 - My focus over the next few weeks will be less on the development of this project and more on what I can make using this project.
-
-## Update May 18 2024
-- Big update to the TTS dojo scripts which simplify the training process even further.  View details [here](tts_dojo/TTS_dojo_guide.md).
 
 ## Shortcut to the TextyMcSpeechy TTS dojo:
 If you:
