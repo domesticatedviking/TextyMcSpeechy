@@ -24,14 +24,15 @@ fi
 if [[ ! -e ".TEXTY_DIR" ]]; then
     echo "Path to TextyMcSpeechy directory not found in '.TEXTY_DIR'"
     echo "This is normally created by install_piper.sh" 
-    sleep 1
-fi
+    exit 1
+else
+    TEXTY_DIR=$(cat ".TEXTY_DIR")
 
 if [ ! -e ".BIN_DIR" ]; then
    echo ".BIN_DIR not present."
    echo "Normally it is created by install_piper.sh." 
    echo "and would contain /path/to/piper/src/python/.venv/bin"
-   sleep 1
+   exit 1
 else
     BIN_DIR=$(cat ".BIN_DIR")
 fi    
@@ -106,9 +107,8 @@ cp .PIPER_PATH ./scripts
 cp .BIN_DIR ./scripts
 cp .DOJO_DIR ./scripts
 cp .VOICE_NAME ./scripts
+cp .TEXTY_DIR /.scripts
 echo
-echo "  PIPER_PATH is set to $PIPER_PATH" 
-echo "  PIPER_PATH can also be hardcoded by editing tts_dojo/newdojo.sh"
 echo  
 echo -e "  Dojo is ready! You will find it here:  ${CYAN}${DOJO_DIR}${RESET}"
 echo
