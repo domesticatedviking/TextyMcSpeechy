@@ -10,7 +10,7 @@
 The following features are currently being tested and will be deployed soon:
 - Saving datasets and pretrained checkpoint files for future use has been a bit cumbersome up to this point.  This update will fix that.
 - Voice datasets will be built in `tts_dojo/DATASETS` by a new dataset builder script.  This will replace the current dataset sanitizer.
-- Datsets will be automatically symlinked rather than copied to the dojo directory.
+- Datasets will be automatically symlinked rather than copied to the dojo directory.
 - Default options for pretrained checkpoint files will be organized in `tts_dojo/PRETRAINED_CHECKPOINTS`.
 - You will be able to store default checkpoints for traditonally male and female voice types for all three quality settings.
 - A downloader script will be provided to populate the pretrained checkpoints directory.  This will initially be set up with links for `en-us` only but will download checkpoints for other languages if links are changed in the script. I would welcome assistance creating downloaders for other languages.
