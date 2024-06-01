@@ -6,6 +6,17 @@
 - Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
 - Rapidly train high quality TTS by using pretrained checkpoint files
 
+## News - June 1 2024:  Improvements coming to the way datasets and pretrained checkpoints are managed.
+The following features are currently being tested and will be deployed soon:
+- Saving datasets and pretrained checkpoint files for future use has been a bit cumbersome up to this point.  This update will fix that.
+- Voice datasets will be built in `tts_dojo/DATASETS` by a new dataset builder script.  This will replace the current dataset sanitizer.
+- Datsets will be automatically symlinked rather than copied to the dojo directory.
+- Default options for pretrained checkpoint files will be organized in `tts_dojo/PRETRAINED_CHECKPOINTS`.
+- You will be able to store default checkpoints for traditonally male and female voice types for all three quality settings.
+- A downloader script will be provided to populate the pretrained checkpoints directory.  This will initially be set up with links for `en-us` only but will download checkpoints for other languages if links are changed in the script. I would welcome assistance creating downloaders for other languages.
+- The `MY_FILES` folder and `add_my_files.sh` will be removed from this version.    `start_training.sh` will ensure the needed files are added to the dojo
+
+
 ## May 27 2024:  New tool - Dataset recorder
 - This is probably the fastest possible way to record a dataset, and is ideal for making a clone of one's own voice.
 - `dataset_recorder.sh` takes any metadata.csv file as input and interactively records voice samples for every phrase it references under the proper file name.
@@ -15,6 +26,9 @@
 - The latest commit includes a completely overhauled TTS dojo, with the ability to generate and listen to tts voices while training
 - Output still needs some polishing but otherwise everything seems to work quite well.
 - My focus over the next few weeks will be less on the development of this project and more on what I can make using this project.
+
+
+
 
 ## Shortcut to the TextyMcSpeechy TTS dojo:
 If you:
