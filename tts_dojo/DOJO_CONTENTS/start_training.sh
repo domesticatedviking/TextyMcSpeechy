@@ -61,8 +61,8 @@ else
     exit 1
 fi
 
-
-
+DATASET_CONF="$DOJO_DIR"/"target_voice_dataset/dataset.conf"
+has_linked_dataset=false
 # Exit immediately if any command returns a nonzero exit code
 set -e
 
@@ -100,33 +100,96 @@ dir_size_in_gb() {
 }
 
 
-clear
-echo -e "      ${BOLD_PURPLE}TextyMcspeechy TTS Dojo${RESET}"
-echo
-echo -e "      The dataset in the ${CYAN}target_voice_dataset${RESET} directory will be analyzed and cleaned before training."
-echo -e "      It is ${BOLD_YELLOW}highly recommended ${RESET}that you keep backup copies all of your files."
-echo -e "      If you choose to use this tool, you do so at your own risk."
-echo 
-echo -ne "      ${YELLOW}Do you want to proceed? (y/n)  ${RESET}"
-read choice
 
-# Check the user's response
-if [[ "$choice" = [Nn]* ]]; then
-    echo "     Exiting."
-    exit 1
+
+
+
+
+check_for_linked_dataset(){
+    has_linked_dataset=false
+    
+    if [ -e "$DATASET_CONF" ]; then
+
+        dataset_path=$(dirname $(readlink -f "$DATASET_CONF"))
+        quality_path="$DOJO_DIR"/"target_voice_dataset/.QUALITY"
+        if [ ! -e "$quality_path" ]; then
+            echo "        Dataset not linked correctly - File missing: $quality_path"
+            echo "        Dataset must be reconfigured."
+            return 1
+        fi
+            
+        quality=$(cat $quality_path)
+        if [ "$quality" = "L" ]; then
+            quality_str="low"
+        elif [ "$quality" = "M" ]; then
+            quality_str="medium"
+        elif [ "$quality" = "H" ]; then
+            quality_str="high"
+        fi
+   
+        source $DATASET_CONF
+        echo "        Found linked dataset."
+        has_linked_dataset=true
+        
+    fi
+     
+
+}
+    
+show_linked_dataset(){
+        echo
+        echo "        This dojo is currently configured to use the following dataset"
+        echo
+        echo "        voice name            : $NAME"
+        echo "        description           : $DESCRIPTION"
+        echo "        voice type            : $DEFAULT_VOICE_TYPE"
+        echo "        dataset location      : $dataset_path"
+        echo 
+        echo "        Dojo-specific settings"
+        echo
+        echo "        quality               : $quality_str"
+        echo "        pretrained checkpoint : "
+
+}
+
+run_link_dataset(){
+    bash "$DOJO_DIR"/"scripts/link_dataset.sh"
+}
+
+confirm_or_change_dataset(){
+    echo
+    echo -ne "        Do you wish to use this dataset with these settings (Y/N):  "
+    read choice
+    choice=${choice^^}
+    if [ "$choice" = "N" ]; then
+        has_linked_dataset="false"
+    fi
+}
+
+
+clear
+echo -e "    ${BOLD_PURPLE}TextyMcspeechy TTS Dojo${RESET}"
+echo
+echo -e "    Checking dojo for linked dataset"
+check_for_linked_dataset
+
+if [ "$has_linked_dataset" = "true" ]; then
+    show_linked_dataset
+    confirm_or_change_dataset
+fi
+
+if [ "$has_linked_dataset" = "false" ]; then
+    echo
+    echo "        Press <Enter> to configure a dataset to use in this dojo."
+    run_link_dataset
 fi
 
 
-echo -e "\nrunning scripts/sanitize_dataset.sh"
-sleep 1
-clear
 
-bash ./scripts/sanitize_dataset.sh
-check_exit_status
 
-clear
-
-echo -e "\nrunning scripts/preprocess_dataset.sh"
+echo -e "\nDataset linked successfully.  Press <Enter> to begin preprocessing."
+read
+echo -e "\n      running scripts/preprocess_dataset.sh"
 echo
 
 # Execute the preprocessing script
@@ -147,8 +210,7 @@ echo -e "${CYAN}$(dir_size_in_gb $DOJO_DIR/archived_checkpoints) GB in ${GREEN}a
 echo -e "${CYAN}$(dir_size_in_gb $DOJO_DIR/archived_tts_voices) GB in ${GREEN}archived_tts_voices${RESET}"
 echo
 echo -e "Please remember to delete any files you don't need."
-
-      
+     
 echo
 exit 0
 

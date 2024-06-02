@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 # Exit immediately if any command returns a non-zero exit code
@@ -13,9 +13,9 @@ error_handler() {
   echo "An error occurred in the script. Exiting."
   exit 1
 }
-
+export -f error_handler
 # Trap errors and call the error_handler function
-trap 'error_handler' ERR
+trap 'error_handler' ERR SIGINT SIGTERM
 
 BIN_DIR=$(cat .BIN_DIR)
 #echo "BIN_DIR = '$BIN_DIR'"

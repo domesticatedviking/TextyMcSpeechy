@@ -27,6 +27,7 @@ if [[ ! -e ".TEXTY_DIR" ]]; then
     exit 1
 else
     TEXTY_DIR=$(cat ".TEXTY_DIR")
+fi
 
 if [ ! -e ".BIN_DIR" ]; then
    echo ".BIN_DIR not present."
@@ -118,3 +119,4 @@ echo -e "  After that, use ${YELLOW}start_training.sh${RESET} to guide you throu
 echo
 echo
 exit 0
+
