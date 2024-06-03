@@ -75,8 +75,9 @@ If you:
 
 # Guide
 
+
 ## Step 1: Installing Piper
-### I strongly recommend using `install_piper.sh` to install Piper.  This will allow you to use the TTS dojo without further configuration.
+### I strongly recommend using `install_piper.sh` to install Piper rather than the steps below.  This will allow you to use the TTS dojo without further configuration.
 
 1. `sudo apt-get install python3.dev`
 2. `git clone https://github.com/rhasspy/piper.git`  
@@ -92,7 +93,6 @@ If you:
 12. `bash ./build_monotonic_align.sh`
 13. `sudo apt-get install espeak-ng`
 14. `pip install torchmetrics==0.11.4`  (this is a downgrade to avoid an error)
-
 
 
 ## Step 2: Installing Applio
@@ -128,6 +128,7 @@ p316_003_mic1_output|Six spoons of fresh snow peas, five thick slabs of blue che
 - Select the Batch tab, choose a voice model, specify the location of your input and output folders, then click "Convert"
 
 ## Step 6: Preparing your dataset for use with Piper
+### note: The [TTS Dojo](tts_dojo/TTS_dojo_guide.md) provides tools that automate this step.
 1. Ensure that your audio files are all in  `wav` format with an appropriate sampling rate (22050 Hz or 16000 Hz) and kept together in a folder named `wav`.
    Batch conversion and resampling of flac files can be done with the following bash script:
 ```
@@ -154,6 +155,7 @@ python3 -m piper_train.preprocess  \
 8. If preprocessing is successful, it will generate `config.json`, `dataset.jsonl`, and audio files in `elvis_training`
 
 ## Step 7: Get an existing text to speech model to fine-tune
+### note: The [TTS Dojo](tts_dojo/TTS_dojo_guide.md) provides tools that automate this step.
 - This model should be similar in tone and accent to the target voice, as well as being in the target language.
 - It must also use the same sampling rate as your training data
 - The file you need will have a name like `epoch=2164-step=135554.ckpt`
@@ -163,6 +165,7 @@ https://huggingface.co/datasets/rhasspy/piper-checkpoints/blob/main/en/en_US/les
 - copy this checkpoint file into your `elvis_training` directory
 
 ## Step 8: Training!
+### note: The [TTS Dojo](tts_dojo/TTS_dojo_guide.md) provides tools that automate this step.
 1. change to `/path/to/piper/src/python` directory and ensure your venv is activated.
 2. Run the following shell script (but change the paths for dataset_dir and resume_from_checkpoint first!)
 ```
@@ -185,6 +188,7 @@ python3 -m piper_train \
 7.  When tensorboard's graph for "loss_disc_all" levels off, you can abort the training process with CTRL-C in the terminal window where training is happening.
 
 ## Step 9 : Converting finetuned checkpoint file to a text-to-speech model
+### note: The [TTS Dojo](tts_dojo/TTS_dojo_guide.md) provides tools that automate this step.
 1. Create a new directory for your text to speech model eg `elvisTTS`
 2. Locate your finetuned checkpoint file for this training session.  It will be found in `/path/to/elvis_training/lightning_logs/version_<N>/checkpoints/` 
 3. This file can be converted into  `.onnx` format as follows:
@@ -200,6 +204,7 @@ cp /path/to/training_dir/config.json \
 ```
    
 ## Step 10: Testing:
+### note: The [TTS Dojo](tts_dojo/TTS_dojo_guide.md) provides tools that automate this step.
 - `echo 'Thank you. Thank you very much!' | piper -m /path/to/elvisTTS/elvis.onnx --output_file testaudio.wav`
 - Play the wav file either by double clicking it in your filesystem or with `aplay testaudio.wav`
 
