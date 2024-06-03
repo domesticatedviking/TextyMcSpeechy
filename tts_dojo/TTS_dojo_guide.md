@@ -20,8 +20,8 @@ You will need:
 3. Default pretrained piper TTS checkpoint files for each voice type `[M/F]` and quality setting `[low, medium, high]` are to be stored in the folders found in `/tts_dojo/PRETRAINED_CHECKPOINTS`.   You will need to add these files yourself, either by manually [downloading](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main) them and copying them into the appropriate folders or by running `download_defaults.sh`, which currently only includes a set of links for `en-us` language checkpoints.  (Warning, running this script will download approximately 5GB of data)
 4. Once your dataset is created, run `./newdojo.sh <VOICE_NAME>` to create the directory structure (inside `<VOICE_NAME>_dojo`)  for the components of your new model.  Note: newdojo.sh stores several paths in hidden files inside the dojo folder.  If you move your dojo folder to another location after creating it, the scripts will not work unless you manually update the paths in `.BIN_DIR`, `.DOJO_DIR`, and `.PIPER_PATH`.
 5. `cd <VOICE_NAME>_dojo` 
-6. Run `./start_training.sh` and choose your dataset from the menu.  This script will preprocess your dataset and then open the training environment.
-7. Training can take a long time (hours).  If you choose to quit training, the next time you run `./start_training.sh` you will be given the option to resume where you left off.
+6. Run `./run_training.sh` and choose your dataset from the menu.  This script will preprocess your dataset and then open the training environment.
+7. Training can take a long time (hours).  If you choose to quit training, the next time you run `./run_training.sh` you will be given the option to resume where you left off.
 8. The training scripts run in a multi-window environment provided by `tmux`.  The tmux session is named `training`.   This session can be shut down from any terminal window with the command `tmux kill-session` if there is a problem and the normal ways of shutting the session down are unavailable.
 
 
