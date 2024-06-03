@@ -6,13 +6,12 @@
 - Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
 - Rapidly train high quality TTS by using pretrained checkpoint files
 
-## June 2 2024:  Feature update: Better management of datasets and pretrained checkpoints.
-- Saving datasets and pretrained checkpoint files for future use has been a bit cumbersome up to this point.  This update fixes that.
+## June 3 2024:  Feature update: Better management of datasets, pretrained checkpoints, improvements to multi-language support.
 - Voice datasets will be built in `tts_dojo/DATASETS` by a new dataset builder script.  This replaces the previous dataset sanitizer.
 - Datasets are now automatically symlinked rather than copied to the dojo directory.
 - Default options for pretrained checkpoint files are now organized in `tts_dojo/PRETRAINED_CHECKPOINTS`.
 - You can store default checkpoints for traditionally male and female voice types for all three quality settings.
-- A downloader script now populates the pretrained checkpoints directory.  This is currently set up with links for `en-us` only but will download checkpoints for other languages if links are changed in the script. I plan to rework this script to make it easier for other languages to be added.
+- Automatically populate the pretrained checkpoints directory with `download_defaults.sh`.   Links are stored in `PRETRAINED_CHECKPOINTS/languages/<language_code>.conf` Currently I only have set up defaults for `en_US`, and would appreciate pull requests for `.conf` files for other languages. 
 - The `MY_FILES` folder and `add_my_files.sh` have been removed .    `start_training.sh` now handles everything.
 
 
@@ -20,12 +19,6 @@
 - This is probably the fastest possible way to record a dataset, and is ideal for making a clone of one's own voice.
 - `dataset_recorder.sh` takes any metadata.csv file as input and interactively records voice samples for every phrase it references under the proper file name.
 - a sample `metadata.csv` file is included.   I'm still experimenting to see what kinds of phrases will result in the best voice clones.
-
-## MAJOR FEATURE UPDATE May 24 2024 
-- The latest commit includes a completely overhauled TTS dojo, with the ability to generate and listen to tts voices while training
-- Output still needs some polishing but otherwise everything seems to work quite well.
-- My focus over the next few weeks will be less on the development of this project and more on what I can make using this project.
-
 
 
 
