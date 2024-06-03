@@ -6,15 +6,14 @@
 - Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
 - Rapidly train high quality TTS by using pretrained checkpoint files
 
-## News - June 1 2024:  Improvements coming to the way datasets and pretrained checkpoints are managed.
-The following features are currently being tested and will be deployed soon:
-- Saving datasets and pretrained checkpoint files for future use has been a bit cumbersome up to this point.  This update will fix that.
-- Voice datasets will be built in `tts_dojo/DATASETS` by a new dataset builder script.  This will replace the current dataset sanitizer.
-- Datasets will be automatically symlinked rather than copied to the dojo directory.
-- Default options for pretrained checkpoint files will be organized in `tts_dojo/PRETRAINED_CHECKPOINTS`.
-- You will be able to store default checkpoints for traditonally male and female voice types for all three quality settings.
-- A downloader script will be provided to populate the pretrained checkpoints directory.  This will initially be set up with links for `en-us` only but will download checkpoints for other languages if links are changed in the script. I would welcome assistance creating downloaders for other languages.
-- The `MY_FILES` folder and `add_my_files.sh` will be removed from this version.    `start_training.sh` will ensure the needed files are added to the dojo
+## June 2 2024:  Feature update: Better management of datasets and pretrained checkpoints.
+- Saving datasets and pretrained checkpoint files for future use has been a bit cumbersome up to this point.  This update fixes that.
+- Voice datasets will be built in `tts_dojo/DATASETS` by a new dataset builder script.  This replaces the previous dataset sanitizer.
+- Datasets are now automatically symlinked rather than copied to the dojo directory.
+- Default options for pretrained checkpoint files are now organized in `tts_dojo/PRETRAINED_CHECKPOINTS`.
+- You can store default checkpoints for traditionally male and female voice types for all three quality settings.
+- A downloader script will is to populate the pretrained checkpoints directory.  This is currently set up with links for `en-us` only but will download checkpoints for other languages if links are changed in the script. I plan to rework this script to make it easier for other languages to be added.
+- The `MY_FILES` folder and `add_my_files.sh` have been removed .    `start_training.sh` now handles everything.
 
 
 ## May 27 2024:  New tool - Dataset recorder
