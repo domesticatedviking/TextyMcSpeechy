@@ -10,6 +10,8 @@ set +e  # terminate on error
 # Directory containing the language files
 LANG_DIR="languages"
 
+PRETRAINED_LANGUAGE_VARFILE="default/.ESPEAK_LANGUAGE"
+
 # Array to store language filenames without extensions
 languages=()
 
@@ -136,5 +138,10 @@ download_urls(){
 download_urls "default/M_voice" "${M_URLS[@]}"
 download_urls "default/F_voice" "${F_URLS[@]}"
 
-echo $requested_language > "default/.PRETRAINED_LANGUAGE"
+if [ ! -z $ESPEAK_LANGUAGE ]; then
+    echo "Configured espeak language: $ESPEAK_LANGUAGE "
+    echo $ESPEAK_LANGUAGE > $PRETRAINED_LANGUAGE_VARFILE 
+else
+    echo "Warning: no value for ESPEAK_LANGUAGE provided by '$requested_language.conf'"
+fi
 

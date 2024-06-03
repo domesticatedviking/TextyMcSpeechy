@@ -141,7 +141,12 @@ get_sampling_rate() {
 resample_convert() {
     local source_folder="$1"
     local output_dir="$DATASET_DIR/$input_dir/"$2""  # Output directory based on argument (wav_16000 or wav_22050)
-    
+    #echo "****************************************************"
+    #echo "RESAMPLE_CONVERT:   Got source_folder $source_folder"
+    #echo "                    Got output_dir    $output_dir"
+    #echo "****************************************************"
+
+    #echo "Highest_rate_folder = $source_folder"
     # Check if output directory exists, create if not
     if [ ! -d "$output_dir" ]; then
         mkdir -p "$output_dir"
@@ -173,9 +178,18 @@ resample_convert() {
                         return 1
                         ;;
                 esac
+                #echo -e "file=$file"
+                #echo -e "   target_rate=$target_rate"
+                #echo -e "   output_file=$output_file\n"
                 # Resample and convert using ffmpeg (adjust as per your tools)
                 ffmpeg -i "$file" -ar "$target_rate" "$output_file" >/dev/null 2>&1
+                # Alternatively, use sox for audio processing:
+                # sox "$file" -r "$target_rate" "$output_file"
 
+                #echo "Converted $filename to $2"
+            else
+                :
+                #echo "$output_file already exists, skipping."
             fi
         fi
     done
@@ -328,6 +342,8 @@ verify_wav_files_against_metadata(){
         fi
     done < "$metadata"
     echo "Checked $(basename $wav_dir) for files in metadata.csv:  $outcome"
+    echo
+    echo
 
 }
 
@@ -355,13 +371,7 @@ echo "HIGH_AUDIO=\"wav_22050\"" >> $cf
 
 # Ensure input_dir is provided
 if [ -z "$input_dir" ]; then
-
-  echo -e "How to create a dataset:"
-  echo -e "\n1. Create a new directory in the DATASETS folder eg. 'my_tts_dataset'"
-    echo -e "2. Copy your audio files and metadata.csv file into my_tts_dataset.  (Keep a backup copy elsewhere!)"
-    echo -e "3. run:    $0 my_tts_dataset "
-  echo
-     
+  echo -e "\n\nUsage: $0 <input_dir>   <input_dir> must contain audio files and a metadata.csv file\n\n"
   exit 1
 fi
 
@@ -452,11 +462,11 @@ check_delimiter "$input_dir/metadata.csv"
 echo -e "\nVerifying that files in metadata.csv exist\n"
 verify_wav_files_against_metadata "$input_dir/metadata.csv" "$input_dir/wav_16000"
 verify_wav_files_against_metadata "$input_dir/metadata.csv" "$input_dir/wav_22050"
+echo -e "Checking metadata.csv for blank lines to prevent 'not enough columns' error in Piper" 
 remove_blank_lines "$input_dir/metadata.csv"
 
 echo -e "\ncreating dataset.conf"
 create_dataset_conf
 
-echo -e "Dataset successfully created."
-echo -e "To use it, run start_training.sh in your dojo directory and select your dataset from the menu."
+echo -e "Dataset successfully created.  Run link_dataset.sh in your dojo directory to use it."
 

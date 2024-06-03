@@ -70,7 +70,7 @@ set -e
 # Function to check the return code of the last executed command
 check_exit_status() {
     if [ $? -ne 0 ]; then
-        echo "${RED}An error occurred. start_training.sh is stopping.${RESET}"
+        echo "${RED}An error occurred. $0 is stopping.${RESET}"
         exit 1
     fi
 }
