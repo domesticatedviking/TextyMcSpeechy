@@ -11,26 +11,24 @@ The TTS Dojo is a simplified workflow for changing the voice of text-to-speech m
 ## Notes before we begin
 1. Piper must be installed before you can use the dojo. I recommend using `install_piper.sh` to ensure everything ends up in the expected locations.
 2. `tts_dojo/DOJO_CONTENTS` is the directory structure that will be cloned for each model you train.  Don't change the contents of this folder unless you know what you're wanting to accomplish.
-3. Piper expects datasets that have sampling rates of either 16000Hz or 22050Hz.  Care must be taken to ensure that the sampling rate of the dataset is the same one used by the pretrained text-to-speech `.ckpt` file. Use 16000Hz for x-low and low pretrained piper models, and 22050Hz for medium and high models.
+3. Piper expects datasets that have sampling rates of either 16000Hz or 22050Hz.  Care must be taken to ensure that the sampling rate of the dataset is the same one used by the pretrained text-to-speech `.ckpt` file. Use 16000Hz for low quality pretrained piper models, and 22050Hz for medium and high quality models.
 
 
 ## Gathering your training files.
 You will need: 
-- a dataset for your target voice consisting of a collection of `wav` files and a `metadata.csv` file containing the transcripts.
-- a checkpoint file `.ckpt` of a [partially trained text-to-speech model](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main).
-- see [README.md](README.md) if you need more detailed instructions.
-- the dataset will be copied into the `target_voice_dataset` directory
-- the `.ckpt file` will be copied into the `pretrained_tts_checkpoint` directory.
-- For simplicity, you can copy `wav`, `*.ckpt`, and `metadata.csv` into `tts_dojo/MY_FILES` and use `add_my_files.sh` to move them into the expected locations once your dojo is created.
+- a dataset for your target voice consisting of a collection of audio files and a `metadata.csv` file containing the transcripts must be created in `tts_dojo/DATASETS`
+- a checkpoint file `.ckpt` of a [partially trained text-to-speech model](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main).   Default checkpoint files should be stored in the folder structure found in `tts_dojo/PRETRAINED_CHECKPOINTS`.
+
 
 ## Usage
 1. `cd tts_dojo`
-2. run `./newdojo.sh <VOICE_NAME>` to create the directory structure (inside `<VOICE_NAME>_dojo`)  for the components of your new model.  Note: newdojo.sh stores several paths in hidden files inside the dojo folder.  If you move your dojo folder to another location after creating it, the scripts will not work unless you manually update the paths in `.BIN_DIR`, `.DOJO_DIR`, and `.PIPER_PATH`.
-3. `cd <VOICE_NAME>_dojo` 
-4. If you copied your training files into `tts_dojo/MY_FILES` you can run `./add_my_files.sh` to move them into the expected folders.  You can also use `./add_my_files.sh /path/to/<somedir>` to populate your dojo from a different directory.
-5. Run `./start_training.sh`.  This script checks your dataset to ensure the files are the correct format and sampling rate, helps you convert them if necessary, automatically configures some settings for piper, preprocesses your training files, starts the training process, and creates the  `yourvoice.onnx` and `yourvoice.onnx.json` text-to-speech files that Piper uses.
-6. Training can take a long time (minutes to hours).  If you choose to quit training, the next time you run `./start_training.sh` you will be given the option to resume where you left off.
-7. The training scripts run in a multi-window environment provided by `tmux`.  The tmux session is named `training`.   This session can be shut down from any terminal window with the command `tmux kill-session` if there is a problem and the normal ways of shutting the session down are unavailable.
+2. your dataset must be scanned and repackaged before it can be used with the dojo.  To do this, create a folder in the `tts_dojo/DATASETS` folder, copy your audio files and metadata.csv file inside, and run `./create_dataset.sh <your_dataset_folder>` Please keep backups of your original files!
+3. Default pretrained piper TTS checkpoint files for each voice type `[M/F]` and quality setting `[low, medium, high]` are to be stored in the folders found in `/tts_dojo/PRETRAINED_CHECKPOINTS`.   You will need to add these files yourself, either by manually [downloading](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main) them and copying them into the appropriate folders or by running `download_defaults.sh`, which currently only includes a set of links for `en-us` language checkpoints.  (Warning, running this script will download approximately 5GB of data)
+4. Once your dataset is created, run `./newdojo.sh <VOICE_NAME>` to create the directory structure (inside `<VOICE_NAME>_dojo`)  for the components of your new model.  Note: newdojo.sh stores several paths in hidden files inside the dojo folder.  If you move your dojo folder to another location after creating it, the scripts will not work unless you manually update the paths in `.BIN_DIR`, `.DOJO_DIR`, and `.PIPER_PATH`.
+5. `cd <VOICE_NAME>_dojo` 
+6. Run `./start_training.sh` and choose your dataset from the menu.  This script will preprocess your dataset and then open the training environment.
+7. Training can take a long time (hours).  If you choose to quit training, the next time you run `./start_training.sh` you will be given the option to resume where you left off.
+8. The training scripts run in a multi-window environment provided by `tmux`.  The tmux session is named `training`.   This session can be shut down from any terminal window with the command `tmux kill-session` if there is a problem and the normal ways of shutting the session down are unavailable.
 
 
 ## What do the different windows in the training dojo do?
@@ -45,9 +43,6 @@ You will need:
 5. `VOICE TESTER` This allows you to hear what the voice associated with a saved checkpoint file sounds like.  After at least one checkpoint has been saved, a list of voice files will appear in this window.   Use the arrow keys to choose the voice you want to hear, then press `s` to have it speak the text in the `"Text to say:"` field.  Any voice that appears in the voice tester pane is ready to be used in your Piper projects.  You will find these files in text to speech voice files in `<VOICE_NAME_dojo>/tts_voices` 
 
 
-## TODO:
-- Provide menus to load and save user preferences for dataset sanitizer.
-- create a filing system and interactive menu for choosing appropriate pretrained Piper TTS checkpoint files (and possibly download them automatically)
-  
+
 
 
