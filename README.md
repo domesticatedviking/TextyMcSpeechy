@@ -12,7 +12,7 @@
 - Default options for pretrained checkpoint files are now organized in `tts_dojo/PRETRAINED_CHECKPOINTS`.
 - You can store default checkpoints for traditionally male and female voice types for all three quality settings.
 - Automatically populate the pretrained checkpoints directory with `download_defaults.sh`.   Links are stored in `PRETRAINED_CHECKPOINTS/languages/<language_code>.conf` Currently I only have set up defaults for `en_US`, and would appreciate pull requests for `.conf` files for other languages. 
-- The `MY_FILES` folder and `add_my_files.sh` have been removed .    `start_training.sh` now handles everything.
+- The `MY_FILES` folder and `add_my_files.sh` have been removed .    `run_training.sh` now handles everything.
 
 
 ## May 27 2024:  New tool - Dataset recorder
