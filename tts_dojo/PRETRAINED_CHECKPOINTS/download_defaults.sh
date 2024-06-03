@@ -136,3 +136,5 @@ download_urls(){
 download_urls "default/M_voice" "${M_URLS[@]}"
 download_urls "default/F_voice" "${F_URLS[@]}"
 
+echo $requested_language > "default/.PRETRAINED_LANGUAGE"
+
