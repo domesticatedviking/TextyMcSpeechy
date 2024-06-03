@@ -12,7 +12,7 @@
 - Datasets are now automatically symlinked rather than copied to the dojo directory.
 - Default options for pretrained checkpoint files are now organized in `tts_dojo/PRETRAINED_CHECKPOINTS`.
 - You can store default checkpoints for traditionally male and female voice types for all three quality settings.
-- A downloader script will is to populate the pretrained checkpoints directory.  This is currently set up with links for `en-us` only but will download checkpoints for other languages if links are changed in the script. I plan to rework this script to make it easier for other languages to be added.
+- A downloader script now populates the pretrained checkpoints directory.  This is currently set up with links for `en-us` only but will download checkpoints for other languages if links are changed in the script. I plan to rework this script to make it easier for other languages to be added.
 - The `MY_FILES` folder and `add_my_files.sh` have been removed .    `start_training.sh` now handles everything.
 
 
