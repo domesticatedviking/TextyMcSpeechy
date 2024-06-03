@@ -11,7 +11,7 @@ The TTS Dojo is a simplified workflow for changing the voice of text-to-speech m
 ## Notes before we begin
 1. Piper must be installed before you can use the dojo. I recommend using `install_piper.sh` to ensure everything ends up in the expected locations.
 2. `tts_dojo/DOJO_CONTENTS` is the directory structure that will be cloned for each model you train.  Don't change the contents of this folder unless you know what you're wanting to accomplish.
-3. Piper expects datasets that have sampling rates of either 16000Hz or 22050Hz.  Care must be taken to ensure that the sampling rate of the dataset is the same one used by the pretrained text-to-speech `.ckpt` file. Use 16000Hz for low quality pretrained piper models, and 22050Hz for medium and high quality models.
+3. Piper expects datasets that have sampling rates of either 16000Hz or 22050Hz.   Low quality pretrained piper models use 16000Hz datasets, and 22050Hz datasets are used by medium and high quality models.  TextyMcSpeechy automatically creates `wav` files at both of these sampling rates when you create your dataset by running `tts_dojo/DATASETS/create_dataset.sh`
 
 
 ## Gathering your training files.
@@ -40,7 +40,7 @@ You will need:
 2. `TTS MODEL EXPORTER` This pane contains piper's output when it converts a checkpoint file into a `.onnx` file.  For the most part this can be ignored as well.
 3. `CHECKPOINT GRABBER` This pane contains a script which allows you to periodically save one of the checkpoint files that piper generates during training and convert it into a text-to-speech model.   Saving these files periodically as the model trains allows you to decide which version of the voice sounds the best.   Please be careful with this tool as leaving it unattended and saving checkpoint files frequently could quite easily fill your entire hard drive -- each checkpoint file is over 800MB.
 4. `CONTROL CONSOLE`  Currently the only control available here is to shut down the training session.   Select this pane and press `q`.
-5. `VOICE TESTER` This allows you to hear what the voice associated with a saved checkpoint file sounds like.  After at least one checkpoint has been saved, a list of voice files will appear in this window.   Use the arrow keys to choose the voice you want to hear, then press `s` to have it speak the text in the `"Text to say:"` field.  Any voice that appears in the voice tester pane is ready to be used in your Piper projects.  You will find these files in text to speech voice files in `<VOICE_NAME_dojo>/tts_voices` 
+5. `VOICE TESTER` This allows you to hear what the voice associated with a saved checkpoint file sounds like.  After at least one checkpoint has been saved, a list of voice files will appear in this window.   Use the arrow keys to choose the voice you want to hear, then press `s` to have it speak the text in the `"Text to say:"` field.  Any voice that appears in the voice tester pane is ready to be used in your Piper projects.  You will find the voices in `<VOICE_NAME_dojo>/tts_voices` 
 
 
 
