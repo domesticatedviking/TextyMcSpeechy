@@ -108,7 +108,7 @@ sudo apt-get update
 sudo apt-get install espeak-ng tmux ffmpeg inotify-tools
 
 # If everything went well, print the success message
-cd $TEXTY_PATH
+cd "$TEXTY_PATH"
 va="activating_venv_README.txt"
 echo
 echo
