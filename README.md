@@ -103,7 +103,7 @@ p316_001_mic1_output|Please call Stella.
 p316_002_mic1_output|Ask her to bring these things with her from the store.
 p316_003_mic1_output|Six spoons of fresh snow peas, five thick slabs of blue cheese
 ```
-- see [VCTK_dataset_tools](VCTK_dataset_tools/using_vctk_dataset.md) for some helpful scripts for generating metatata.csv if your model uses individual text files
+- see [VCTK_dataset_tools](VCTK_dataset_tools/using_vctk_dataset.md) for some helpful scripts for generating metatata.csv if your dataset uses individual text files
 - see the [dataset recorder](dataset_recorder) for a tool that will let you quickly record a dataset using your own voice.
 
 ## Step 5: Convert dataset into the target voice
