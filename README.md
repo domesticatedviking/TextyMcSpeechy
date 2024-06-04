@@ -5,14 +5,7 @@
 - Make a custom TTS model out of any existing voice dataset
 - Make a custom TTS model by converting a generic voice dataset into another voice using an RVC model.
 - Rapidly train high quality TTS by using pretrained checkpoint files
-
-## June 3 2024:  Feature update: Better management of datasets, pretrained checkpoints, improvements to multi-language support.
-- Voice datasets will be built in `tts_dojo/DATASETS` by a new dataset builder script.  This replaces the previous dataset sanitizer.
-- Datasets are now automatically symlinked rather than copied to the dojo directory.
-- Default options for pretrained checkpoint files are now organized in `tts_dojo/PRETRAINED_CHECKPOINTS`.
-- You can store default checkpoints for traditionally male and female voice types for all three quality settings.
-- Automatically populate the pretrained checkpoints directory with `download_defaults.sh`.   Links are stored in `PRETRAINED_CHECKPOINTS/languages/<language_code>.conf` Currently I only have set up defaults for `en_US`, and would appreciate pull requests for `.conf` files for other languages. 
-- The `MY_FILES` folder and `add_my_files.sh` have been removed .    `run_training.sh` now handles everything.
+- Preview your voice model while it is training and choose the best version of your voice.
 
 
 ## May 27 2024:  New tool - Dataset recorder
@@ -20,21 +13,10 @@
 - `dataset_recorder.sh` takes any metadata.csv file as input and interactively records voice samples for every phrase it references under the proper file name.
 - a sample `metadata.csv` file is included.   I'm still experimenting to see what kinds of phrases will result in the best voice clones.
 
+## Installation
+- The [quick-start guide](quick_start_guide.md) explains how to get TextyMcSpeechy set up.
+- Do not use the manual installation steps described in the legacy guide.   Most of them have been automated.
 
-
-## Shortcut to the TextyMcSpeechy TTS dojo:
-If you:
-- have already installed Piper
-- have a folder full of 16000Hz or 22050Hz `wav` files in your target voice and a `metadata.csv` with the transcriptions
-- have a `.ckpt` file for a piper TTS voice compatible with the sampling rate of your dataset
-  
-#### [proceed directly to the TTS Dojo documentation](tts_dojo/TTS_dojo_guide.md).
-
-## Tools required
-1. Piper: [https://github.com/rhasspy/piper](https://github.com/rhasspy/piper)
-2. A checkpoint `ckpt` file of any existing pretrained text-to-speech model.  (available [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main))
-3. A voice dataset with audio files and text transcriptions.  These can either be samples of the target voice, or a generic dataset that will be converted into another voice with Applio.
-4. Applio: https://github.com/IAHispano/Applio Used to batch-convert a generic voice dataset into the target voice using an RVC model.
 
 ## Recommended hardware and notes about performance
 1. A PC running Linux which has a NVIDIA GPU is highly recommended / required for training.
@@ -44,9 +26,7 @@ If you:
 5. Performance improves dramatically when rendering speech on more powerful hardware. When running both STT transcription and Piper TTS on the CPU of my desktop computer (Core i7-13700), the delay between command and spoken response fell to less than 3 seconds, which was comparable to what I get with Google Assistant on my Nest Mini.  Whisperlive and Piper both include HTTP servers, which makes it easy to move STT and TTS processes to a network computer or self-managed cloud server.  I'm planning to use this approach in my smart speaker project, which will now be based on a Raspberry Pi Zero 2W.
 
 
-# Overview of the process
-## Note 1: regardless of which workflow you use to get your dataset, the [TTS Dojo](tts_dojo/TTS_dojo_guide.md) will make it significantly easier to train and package your model.
-## Note 2: need an easy-to-use English dataset?  Be sure to check out the scripts [here](VCTK_dataset_tools/using_vctk_dataset.md).
+# Description of the training process.
 
 ### Option A: convert a generic dataset into the target voice using an RVC model, then train TTS.
 1. Install Piper
@@ -73,12 +53,14 @@ If you:
 10. Test the new text-to-speech model.
 
 
-# Guide
+# Legacy Guide: How to train a TTS model with Piper without the TTS Dojo.
+#### Note: This guide was written before the TTS dojo existed.  It's still useful for understanding the steps involved, but the TTS Dojo automates many of these steps.
+#### Follow the [quick-start guide](quick_start_guide.md) to install and configure the TTS dojo when you have a dataset and are ready to start training.
 
 
 ## Step 1: Installing Piper
-### I strongly recommend using `install_piper.sh` to install Piper rather than the steps below.  This will allow you to use the TTS dojo without further configuration.
 
+#### The TTS Dojo won't work if you install piper this way.  Use `install_piper.sh` instead.
 1. `sudo apt-get install python3.dev`
 2. `git clone https://github.com/rhasspy/piper.git`  
 3. `cd piper/src/python`  (You will have an easier time if you put your venv in this directory)
@@ -121,6 +103,7 @@ p316_002_mic1_output|Ask her to bring these things with her from the store.
 p316_003_mic1_output|Six spoons of fresh snow peas, five thick slabs of blue cheese
 ```
 - see [VCTK_dataset_tools](VCTK_dataset_tools/using_vctk_dataset.md) for some helpful scripts for generating metatata.csv if your model uses individual text files
+- see the [dataset recorder](dataset_recorder) for a tool that will let you quickly record a dataset using your own voice.
 
 ## Step 5: Convert dataset into the target voice
 - Convert all of the audio files in the dataset into the target voice using Applio.
