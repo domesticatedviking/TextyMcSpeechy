@@ -462,11 +462,10 @@ check_delimiter "$input_dir/metadata.csv"
 echo -e "\nVerifying that files in metadata.csv exist\n"
 verify_wav_files_against_metadata "$input_dir/metadata.csv" "$input_dir/wav_16000"
 verify_wav_files_against_metadata "$input_dir/metadata.csv" "$input_dir/wav_22050"
-echo -e "Checking metadata.csv for blank lines to prevent 'not enough columns' error in Piper" 
 remove_blank_lines "$input_dir/metadata.csv"
 
 echo -e "\ncreating dataset.conf"
 create_dataset_conf
 
-echo -e "Dataset successfully created.  Run link_dataset.sh in your dojo directory to use it."
+echo -e "Dataset successfully created."
 
