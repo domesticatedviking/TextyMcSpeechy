@@ -17,7 +17,7 @@ You will need:
 
 ## Usage
 1. `cd tts_dojo`
-2. your dataset must be scanned and repackaged before it can be used with the dojo.  To do this, create a new folder in the `tts_dojo/DATASETS` folder, copy your audio files and metadata.csv file inside, and run `./create_dataset.sh <your_dataset_folder>` Please keep backups of your original files!
+2. your dataset must be scanned and repackaged before it can be used with the dojo.  To do this, create a new folder in the `tts_dojo/DATASETS` folder, copy your audio files and metadata.csv file inside (WARNING: keep backups of your original files because this step will change them), and run `./create_dataset.sh <your_dataset_folder>`
 3. Default pretrained piper TTS checkpoint files for each voice type `[M/F]` and quality setting `[low, medium, high]` are to be stored in the folders found in `/tts_dojo/PRETRAINED_CHECKPOINTS`.   You will need to add these files yourself, either by manually [downloading](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main) them and copying them into the appropriate folders or by running `download_defaults.sh`, which currently only includes a set of links for `en-us` language checkpoints.  (Warning, running this script will download approximately 5GB of data)
 4. Once your dataset is created, run `./newdojo.sh <VOICE_NAME>` to create the directory structure (inside `<VOICE_NAME>_dojo`)  for the components of your new model.  Note: newdojo.sh stores several paths in hidden files inside the dojo folder.  If you move your dojo folder to another location after creating it, the scripts will not work unless you manually update the paths in `.BIN_DIR`, `.DOJO_DIR`, `.PIPER_PATH`, and `.TEXTY_DIR`.
 5. `cd <VOICE_NAME>_dojo` 
