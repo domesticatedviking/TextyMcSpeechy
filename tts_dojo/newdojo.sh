@@ -113,9 +113,7 @@ echo
 echo  
 echo -e "  Dojo is ready! You will find it here:  ${CYAN}${DOJO_DIR}${RESET}"
 echo
-echo "  To use it, copy your dataset and pretrained .ckpt files to MY_FILES"
-echo -e "  then run ${YELLOW}add_my_files.sh${RESET} from inside the new dojo directory."
-echo -e "  After that, use ${YELLOW}start_training.sh${RESET} to guide you through the training process"
+echo -e "  use ${YELLOW}run_training.sh${RESET} inside your new dojo to guide you through the training process"
 echo
 echo
 exit 0
