@@ -74,7 +74,6 @@ check_language "$requested_language"
 source "./languages/""$requested_language.conf"
 
 
-
 # Code below downloads the links above into the appropriate folders.
 
 M_URLS=( "$DEFAULT_M_LOW_URL" "$DEFAULT_M_MED_URL" "$DEFAULT_M_HIGH_URL")
@@ -130,7 +129,7 @@ download_urls(){
             echo -e "\n$subfolder/$quality/$filename already exists.  Not downloading."
         else
             echo -e "\nDownloading $filename to $subfolder/$quality."
-            #wget -P "$PRETRAINED_TTS_DIR/$subfolder/$quality/"  $url
+            wget -P "$PRETRAINED_TTS_DIR/$subfolder/$quality/"  $url
         fi
     done
 }
