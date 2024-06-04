@@ -56,6 +56,7 @@
 # Legacy Guide: How to train a TTS model with Piper without the TTS Dojo.
 #### Note: This guide was written before the TTS dojo existed.  It's still useful for understanding the steps involved, but the TTS Dojo automates many of these steps.
 #### Follow the [quick-start guide](quick_start_guide.md) to install and configure the TTS dojo when you have a dataset and are ready to start training.
+#### I will be taking this guide out of the main docs when I have time to write a replacement guide just for creating datasets.
 
 
 ## Step 1: Installing Piper
