@@ -5,7 +5,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
 
-
+initial_dir=$(pwd)
 
 # Check if a parameter is provided
 if [ -z "$1" ]; then
@@ -108,7 +108,7 @@ cp .PIPER_PATH ./scripts
 cp .BIN_DIR ./scripts
 cp .DOJO_DIR ./scripts
 cp .VOICE_NAME ./scripts
-cp .TEXTY_DIR /.scripts
+cp "$initial_dir/.TEXTY_DIR" ./scripts/
 echo
 echo  
 echo -e "  Dojo is ready! You will find it here:  ${CYAN}${DOJO_DIR}${RESET}"
