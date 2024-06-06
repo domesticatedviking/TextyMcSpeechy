@@ -75,7 +75,7 @@ echo
 pretrained_language=$(check_pretrained_language)
 pretrained_absent=$?
 
-SETTINGS_LANGUAGE=$PIPER_TTS_LANGUAGE #eg, en-us
+SETTINGS_LANGUAGE=$SETTINGS_ESPEAK_LANGUAGE #eg, en-us
 
 if [ "$pretrained_language" = "" ] && [ "$SETTINGS_LANGUAGE" != "" ]; then
     echo "Warning: No language was configured in PRETRAINED_CHECKPOINTS/DEFAULT/.ESPEAK_LANGUAGE"
