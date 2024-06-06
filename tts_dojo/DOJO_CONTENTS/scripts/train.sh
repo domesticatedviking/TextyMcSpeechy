@@ -26,8 +26,8 @@ if [ ! -e "$BIN_DIR/activate" ]; then
 fi
 
 if [[ -n "$VIRTUAL_ENV" ]]; then
-    echo
-    echo "OK    --  Virtual environment is active in  $VIRTUAL_ENV"
+    :
+    #echo "OK    --  Virtual environment is active in  $VIRTUAL_ENV"
     
 elif [ -e "$BIN_DIR/activate" ]; then
    echo "Activating virtual environment."
@@ -620,6 +620,7 @@ start_tmux_processes(){
     # start the training script in pane 0.0
     
     tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "source $VENV_ACTIVATE" Enter
+    tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/erik/code/testmultilang/TextyMcSpeechy/piper/src/python/.venv/lib64/python3.10/site-packages/nvidia/cublas/lib:/home/erik/code/testmultilang/TextyMcSpeechy/piper/src/python/.venv/lib64/python3.10/site-packages/nvidia/cudnn/lib" Enter
     tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "utils/piper_training.sh $trainer_starting_checkpoint" Enter
 
     tmux send-keys -t "${TMUX_TENSORBOARD_PANE:-0.1}" "source $VENV_ACTIVATE" Enter
