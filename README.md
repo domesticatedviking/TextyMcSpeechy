@@ -77,6 +77,8 @@
 13. `sudo apt-get install espeak-ng`
 14. `pip install torchmetrics==0.11.4`  (this is a downgrade to avoid an error)
 
+- Note: Installing the correct version of CUDA can be a hassle.   The easiest way to get an environment that works for Piper is to activate the .venv and run: `python3 -m pip install tensorflow[and-cuda]` (enter this command exactly as it appears here including the square brackets). It's also possible to install tensorflow without GPU support by running `python3 -m pip install tensorflow`.  I haven't tried training on CPU but would be interested to hear from anyone who has tried it.
+
 
 ## Step 2: Installing Applio
 - Follow instructions here: [https://github.com/IAHispano/Applio](https://github.com/IAHispano/Applio)
