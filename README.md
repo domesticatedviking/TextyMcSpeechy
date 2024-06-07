@@ -142,6 +142,7 @@ python3 -m piper_train.preprocess  \
 --sample-rate 22050 \
 ```
 8. If preprocessing is successful, it will generate `config.json`, `dataset.jsonl`, and audio files in `elvis_training`
+- Note: If preprocessing fails with a "not enough columns" error, this is usually because your `.csv` file has blank lines at the end. 
 
 ## Step 7: Get an existing text to speech model to fine-tune
 ### note: The [TTS Dojo](tts_dojo/TTS_dojo_guide.md) provides tools that automate this step.
