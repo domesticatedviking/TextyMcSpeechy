@@ -11,7 +11,7 @@
 ## May 27 2024:  New tool - Dataset recorder
 - This is probably the fastest possible way to record a dataset, and is ideal for making a clone of one's own voice.
 - `dataset_recorder.sh` takes any metadata.csv file as input and interactively records voice samples for every phrase it references under the proper file name.
-- a sample `metadata.csv` file is included.   I'm still experimenting to see what kinds of phrases will result in the best voice clones.
+- an ai generated sample `metadata.csv` file is included, but you will get better results using a `metadata.csv` file from a public domain academic dataset.  Phrases should be phonetically diverse, with a mix of short and longer phrases (ideally the phrase length should follow a normal distribution), and should include a mix of tonal pattterns (eg. statements, questions, exclamations).  If there are expressions or names you want to use in your target application, including variations of those phrases in the dataset multiple times is very beneficial to making your model sound as natural as possible.
 
 ## Installation
 - The [quick-start guide](quick_start_guide.md) explains how to get TextyMcSpeechy set up.
