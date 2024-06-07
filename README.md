@@ -29,6 +29,7 @@
 # Description of the training process.
 
 ### Option A: convert a generic dataset into the target voice using an RVC model, then train TTS.
+
 1. Install Piper
 2. Install Applio
 3. Experiment with Applio until you find the voice you wish to turn into a text-to-speech model
@@ -39,6 +40,7 @@
 8. Use Piper to fine-tune the existing text-to-speech model using the converted dataset.
 9. Convert the fine-tuned `.ckpt` file to a `.onnx` file that can be used by Piper directly to generate speech from text.
 10. Test the new text-to-speech model.
+- Note:  The main advantage of this method is that it is less work, provided you have a decent RVC model for your target voice. Most of the intonation will come from the voice in the original dataset, which means that this method isn't great for making characters with a dramatic intonation.   If you don't have access to samples of the target voice, you will get much more natural intonation by recording a base dataset that does your best impression of the target voice prior to applying the RVC model.
 
 
 ### Option B: train TTS using your own dataset (audio files in target voice and text transcript)
@@ -51,6 +53,7 @@
 8. Use Piper to fine-tune the existing text-to-speech model using the converted dataset.
 9. Convert the fine-tuned `.ckpt` file to a `.onnx` file that can be used by Piper directly to generate speech from text.
 10. Test the new text-to-speech model.
+- Note:  The disadvantage of this method is that building a dataset can be a lot of work, but the quality of the resulting voices makes this work worthwhile.    I have built usable voice models with as few as 50 samples of the target voice.   This is the best method for building voices for characters that have very distinctive intonation. If catchphrases and distinctive expressions are part of the training dataset, when those phrases are used in the TTS engine they will sound almost exactly like the original voice.   If building a model out of your own voice, make sure to include the names of people and places that are significant to you in your dataset, as well as any phrases you are likely to use in your application.
 
 
 # Legacy Guide: How to train a TTS model with Piper without the TTS Dojo.
