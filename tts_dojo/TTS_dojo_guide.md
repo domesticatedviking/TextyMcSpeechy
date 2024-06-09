@@ -31,7 +31,7 @@ You will need:
    - You may see `rank_zero_warn (` appear for several minutes as training is initializing.  This is normal.
    - You may see a warning about a low number of workers being a bottleneck.  Currently the only way to resolve this is to modify piper's source code.
    - If you see an error related to `zip` files here, this usually means your starting checkpoint file is corrupted.   Either restart training or delete the highest epoch checkpoint in the `voice_checkpoints` directory.
-   - If training doesn't start because of a missing `libcudnn_cnn_infer.so.8` and `libcuda.so` file, you can solve this by installing tensorflow.  With your .venv activated, run `python3 -m pip install tensorflow[and-cuda]` 
+   - If training doesn't start because of a missing `libcudnn_cnn_infer.so.8` and `libcuda.so` file, you can solve this by installing tensorflow.  With your .venv activated, run `python3 -m pip install tensorflow[and-cuda]` (Enter this command exactly as it appears here, including the square brackets)
 
 1. `TENSORBOARD SERVER`  This pane is where the web server that lets you view graphs related to training progress runs.  Open http://localhost:6006 in your web browser if you want to see them.  When the graph for "loss_disc_all" levels off, your model is probably almost ready.
 2. `TTS MODEL EXPORTER` This pane contains piper's output when it converts a checkpoint file into a `.onnx` file.  For the most part this can be ignored as well.
