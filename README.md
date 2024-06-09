@@ -7,6 +7,9 @@
 - Rapidly train high quality TTS by using pretrained checkpoint files
 - Preview your voice model while it is training and choose the best version of your voice.
 
+## This hobby project has gotten real press!  How cool is that!?
+- https://www.tomshardware.com/raspberry-pi/add-any-voice-to-your-raspberry-pi-project-with-textymcspeechy
+- https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
 ## May 27 2024:  New tool - Dataset recorder
 - This is probably the fastest possible way to record a dataset, and is ideal for making a clone of one's own voice.
