@@ -11,6 +11,11 @@
 - https://www.tomshardware.com/raspberry-pi/add-any-voice-to-your-raspberry-pi-project-with-textymcspeechy
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
+## December 23 2024: And we're back
+- Doing a bit of maintenance on this project over the holidays
+- It appears that `install_piper.sh` script is currently broken due to pytorch-lightning having very specific python and pip version requirements
+- A fix should be available in a few days.
+
 ## May 27 2024:  New tool - Dataset recorder
 - This is probably the fastest possible way to record a dataset, and is ideal for making a clone of one's own voice.
 - `dataset_recorder.sh` takes any metadata.csv file as input and interactively records voice samples for every phrase it references under the proper file name.
