@@ -80,8 +80,6 @@ echo "Creating Python 3.10 virtual environment..."
 python3.10 -m venv .venv
 echo
 
-#
-
 source .venv/bin/activate
 echo "Activated virtual environment."
 
@@ -89,12 +87,18 @@ echo "Activated virtual environment."
 pip install --upgrade pip wheel setuptools
 echo "Updated pip, wheel, setuptools."
 
+echo "Downgrading pip in venv to pip 24.0 to avoid error installing pytorch-lightning"
+pip install --upgrade pip==24.0
+
 pip install piper-tts
 pip install build
 python -m build
 
 pip install -e .
 pip install -r requirements.txt
+
+echo "Downgrading numpy to 1.23.5 (Piper currently needs numpy<2)"
+pip install --upgrade numpy==1.23.5
 
 bash ./build_monotonic_align.sh
 pip install torchmetrics==0.11.4
