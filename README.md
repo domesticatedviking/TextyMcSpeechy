@@ -12,7 +12,7 @@
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
 ## December 23 2024: Maintenance updates
-- Fixed pip and numpy version issions that were causing  `install_piper.sh` to fail.  (pytorch-lightning requres pip<=24.0, piper can't preprocess datasets unless numpy<2.0.0)
+- Fixed pip and numpy version issues that were causing  `install_piper.sh` to fail.  (pytorch-lightning requres pip<=24.0, piper can't preprocess datasets unless numpy<2.0.0)
 
 
 ## May 27 2024:  New tool - Dataset recorder
