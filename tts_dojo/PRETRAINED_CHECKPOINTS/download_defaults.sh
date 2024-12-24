@@ -129,7 +129,7 @@ download_urls(){
             echo -e "\n$subfolder/$quality/$filename already exists.  Not downloading."
         else
             echo -e "\nDownloading $filename to $subfolder/$quality."
-            wget -P "$PRETRAINED_TTS_DIR/$subfolder/$quality/"  $url
+            wget -O "$PRETRAINED_TTS_DIR/$subfolder/$quality/$filename"  $url
         fi
     done
 }
