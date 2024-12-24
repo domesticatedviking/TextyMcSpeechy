@@ -13,6 +13,7 @@
 
 ## December 23 2024: Maintenance updates
 - Fixed pip and numpy version issues that were causing  `install_piper.sh` to fail.  (pytorch-lightning requres pip<=24.0, piper can't preprocess datasets unless numpy<2.0.0)
+- Fixed bug in `download_defaults.sh` that was causing downloads of pretrained checkpoint files to be named incorrectly
 
 
 ## May 27 2024:  New tool - Dataset recorder
