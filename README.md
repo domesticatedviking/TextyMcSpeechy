@@ -11,10 +11,9 @@
 - https://www.tomshardware.com/raspberry-pi/add-any-voice-to-your-raspberry-pi-project-with-textymcspeechy
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
-## December 23 2024: And we're back
-- Doing a bit of maintenance on this project over the holidays
-- It appears that `install_piper.sh` script is currently broken due to pytorch-lightning having very specific python and pip version requirements
-- A fix should be available in a few days.
+## December 23 2024: Maintenance updates
+- Fixed pip and numpy version issions that were causing  `install_piper.sh` to fail.  (pytorch-lightning requres pip<=24.0, piper can't preprocess datasets unless numpy<2.0.0)
+
 
 ## May 27 2024:  New tool - Dataset recorder
 - This is probably the fastest possible way to record a dataset, and is ideal for making a clone of one's own voice.
@@ -78,15 +77,17 @@
 3. `cd piper/src/python`  (You will have an easier time if you put your venv in this directory)
 4. `python3.10 -m venv .venv`  note - Torch needs python 3.10 and won't work on 3.11 without extra steps. 
 5. `source ./.venv/bin/activate`
-6. `pip install pip wheel setuptools -U`  
-7. `pip install piper-tts`
-8. `pip install build` 
-9. `python -m build` 
-10. `pip install -e .`
-11. `pip3 install -r requirements.txt`
-12. `bash ./build_monotonic_align.sh`
-13. `sudo apt-get install espeak-ng`
-14. `pip install torchmetrics==0.11.4`  (this is a downgrade to avoid an error)
+6. `pip install pip wheel setuptools -U`
+7. `pip install --upgrade pip==24.0` (pytorch-lightning installation will fail without this downgrade to pip)
+8. `pip install piper-tts`
+9. `pip install build` 
+10. `python -m build` 
+11. `pip install -e .`
+12. `pip3 install -r requirements.txt`
+13. `pip install --upgrade numpy==1.23.5` (downgrade numpy to meet piper requirements)
+14. `bash ./build_monotonic_align.sh`
+15. `sudo apt-get install espeak-ng`
+16. `pip install torchmetrics==0.11.4`  (this is a downgrade to avoid an error)
 
 - Note: Installing the correct version of CUDA can be a hassle.   The easiest way to get an environment that works for Piper is to activate the .venv and run: `python3 -m pip install tensorflow[and-cuda]` (enter this command exactly as it appears here including the square brackets). It's also possible to install tensorflow without GPU support by running `python3 -m pip install tensorflow`.  I haven't tried training on CPU but would be interested to hear from anyone who has tried it.
 
