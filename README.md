@@ -11,6 +11,10 @@
 - https://www.tomshardware.com/raspberry-pi/add-any-voice-to-your-raspberry-pi-project-with-textymcspeechy
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
+## December 29 2024: Batch noise reduction script
+- Added a script to the dataset recorder `remove_roomtone.sh` that automates the removal of background noise (roomtone) from dataset files.
+- Requires `sox` to be installed and a short `.wav` sample of silence from the environment where the dataset was recorded.
+
 ## December 23 2024: Maintenance updates
 - Fixed pip and numpy version issues that were causing  `install_piper.sh` to fail.  (pytorch-lightning requres pip<=24.0, piper can't preprocess datasets unless numpy<2.0.0)
 - Fixed bug in `download_defaults.sh` that was causing downloads of pretrained checkpoint files to be named incorrectly
