@@ -202,4 +202,8 @@ aplay "./output.wav"
 ```
 - make this script executable:  `chmod +x tts-sherpa.sh`
 - To test, run `./tts-sherpa.sh "The sherpa model is now working"`
-- Your piper model is now ready to use with `sherpa-onnx`. To use it with your android device it will first need to be packaged as a `.apk` file.  Once I figure that process out I will document it as well.
+- Your piper model is now ready to use with `sherpa-onnx`.
+
+## Packaging converted Sherpa ONNX model as an .APK for use as android system TTS voice
+
+- This process is documented [here](https://k2-fsa.github.io/sherpa/onnx/android/build-sherpa-onnx.html)
