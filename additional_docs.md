@@ -144,4 +144,62 @@ if __name__ == "__main__":
   `python sherpaconvert.py <yourmodelname>.onnx`
 
 - Note:  `sherpa-onnx` voices consist of a `.onnx` file and `tokens.txt`.  Your `.onnx.json` file is no longer needed.
+- To test your model, first download espeak-ng data:
+```
+wget https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/espeak-ng-data.tar.bz2
+tar xf espeak-ng-data.tar.bz2
+```
+- Save the following script as `tts-sherpa.sh`.
+```
+#!/bin/bash
+# tts-sherpa.sh: A simple test script for sherpa-onnx model in the current directory.
+# 
+
+# Path to espeak-ng data directory
+VITS_DATA_DIR="./espeak-ng-data"
+
+# Check if the VITS data directory exists
+if [[ ! -d "$VITS_DATA_DIR" ]]; then
+  echo "Error: Directory specified in VITS_DATA_DIR constant ( $VITS_DATA_DIR ) does not exist."
+  echo  "If espeak-ng-data is not installed, you can install it manually as follows:"
+  echo
+  echo  "$   wget https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/espeak-ng-data.tar.bz2"
+  echo  "$   tar xf espeak-ng-data.tar.bz2"
+  echo
+  exit 1
+fi
+
+# Check if the necessary files are present in the current directory
+ONNX_FILE=$(ls ./*.onnx 2>/dev/null)
+TOKENS_FILE="./tokens.txt"
+
+if [[ -z "$ONNX_FILE" ]]; then
+  echo "Error: .onnx file not found in the current directory."
+  exit 1
+fi
+
+if [[ ! -f "$TOKENS_FILE" ]]; then
+  echo "Error: tokens.txt file not found in the current directory."
+  exit 1
+fi
+
+# Ensure that a text argument was passed to the script
+if [[ -z "$1" ]]; then
+  echo "Error: No text provided to say."
+  exit 1
+fi
+
+# Run the TTS command
+sherpa-onnx-offline-tts \
+  --vits-model="$ONNX_FILE" \
+  --vits-tokens="$TOKENS_FILE" \
+  --vits-data-dir="$VITS_DATA_DIR" \
+  --output-filename="./output.wav" \
+  "$1"
+
+aplay "./output.wav"
+
+```
+- make this script executable:  `chmod +x tts-sherpa.sh`
+- To test, run `./tts-sherpa.sh "The sherpa model is now working"`
 - Your piper model is now ready to use with `sherpa-onnx`. To use it with your android device it will first need to be packaged as a `.apk` file.  Once I figure that process out I will document it as well.
