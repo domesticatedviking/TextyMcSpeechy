@@ -19,7 +19,10 @@ Noella  no'El:V O
 - to test the new pronunciation:  `espeak-ng "your text here" --ipa`
 
 ## Using Piper voices on Android devices
-- Note: this section is a work in progress
+- Note: this section is a work in progress.
+- I was able to convert piper `onnx` voices to `sherpa-onnx` format and verify that they work.
+- I was able to create and install an `.APK` file
+- However, this `.APK` crashes immediately whenever I launch it.  I am not familiar at all with developing for Android so this may be a knowledge issue for me.
 
 There is a project called [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) that can be used to package piper voice models for use with android devices.
 The docs describing the steps of the conversion process are [here](https://k2-fsa.github.io/sherpa/onnx/tts/piper.html).
