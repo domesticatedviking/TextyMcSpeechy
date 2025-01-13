@@ -7,7 +7,7 @@ source consulted: https://web.archive.org/web/20160312220739/http://www.kirshenb
 IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.org/ipa-sounds/ipa-chart-with-sounds/
 
 
-###  Warning:  This chart was assembled by AI.  It may be incomplete or contain errors.  Corrections are appreciated.
+###  Warning:  This chart was assembled by AI.  It is incomplete and likely contains errors.  Corrections are appreciated.
 
 
 
