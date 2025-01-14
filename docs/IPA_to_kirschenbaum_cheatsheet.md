@@ -7,7 +7,7 @@ source consulted: https://web.archive.org/web/20160312220739/http://www.kirshenb
 IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.org/ipa-sounds/ipa-chart-with-sounds/
 
 
-###  Warning:  This chart was assembled by AI.  It is incomplete and may contain errors.  Corrections are appreciated.
+####  Warning:  This chart may contain errors.  Corrections are appreciated.
 The IPA symbols that are missing were not specified in the [source](https://web.archive.org/web/20160312220739/http://www.kirshenbaum.net/IPA/faq.html).
 
 | Unicode IPA Symbol               | ASCII-IPA                         | Place of Articulation                            |
@@ -122,6 +122,35 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | ɔ                                | O                                 | Lower-mid Back Rounded Vowel                     |
 | ɑ                                | A                                 | Low Back Unrounded Vowel                         |
 | ɑ                                | A.                                | Low Back Rounded Vowel                           |
+
+
+## Diacritic symbols
+| Unicode IPA Symbol               | ASCII-IPA                         | Modifier                                         |
+|----------------------------------|-----------------------------------|--------------------------------------------------|
+| ◌̃                                | ~                                 | Vowels: Nasalized                                |
+| ◌̴                                | ~                                 | Consonants: Velarized                            |
+| ː                                | :                                 | Long (duration)                                  |
+|                                  | -                                 | Vowels: Unrounded                                |
+| ◌̩                                | -                                 | Consonants: Syllabic                             |
+|                                  | !                                 | Click                                            |
+|                                  | .                                 | Vowels: Round                                    |
+| ◌̢  (or ◌̣)                        | .                                 | Consonants: Retroflex                            |
+| ʼ                                | `                                 | Voiceless: Ejective                              |
+|                                  | `                                 | Voiced: Implosive                                |
+| ◌̪                                | [                                 | Dental                                           |
+| ʲ (or ◌̡)                         | ;                                 | Palatalized                                      |
+|                                  | "                                 | Vowels: Center                                   |
+|                                  | "                                 | Consonants: Uvular                               |
+|                                  | ^                                 | Palatal                                          |
+|                                  | + (or =)                          | Ad Hoc diacritic                                 |
+| ◌̴                                | H                                 | Pharyngealized                                   |
+| ʰ                                | h                                 | Aspirated                                        |
+| ˚                                | o                                 | Unexploded                                       |
+| ◌̥                                | o                                 | Voiceless                                        |
+| ʳ                                | r                                 | Rhoticized                                       |
+| ʷ (or ◌̫)                         | w                                 | Labialized                                       |
+| ʱ (or ◌̤)                         | ?                                 | Murmured                                         |
+| ʱ                                | ?                                 | Murmured                                         |
 
 
 
