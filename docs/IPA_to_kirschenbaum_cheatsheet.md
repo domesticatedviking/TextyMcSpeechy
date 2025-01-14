@@ -111,7 +111,6 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | ɜ                                | V"                                | Lower-mid Central Unrounded Vowel                |
 | ɞ                                | O"                                | Lower-mid Central Rounded Vowel                  |
 | a                                | a                                 | Low Central Unrounded Vowel                      |
-| a                                | a                                 | Low Central Unrounded Vowel                      |
 | ʊ                                | u-                                | High Back Unrounded Vowel                        |
 | u                                | u                                 | High Back Rounded Vowel                          |
 | ʊ                                | U                                 | Semi-high Back Rounded Vowel                     |
