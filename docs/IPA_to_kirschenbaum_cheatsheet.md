@@ -14,10 +14,13 @@ IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.
 
 ## Consonants
 
-| Unicode IPA | ASCII Equivalent | Description                              |
+| Unicode IPA | IPA-ASCII        | Description                              |
 |-------------|------------------|------------------------------------------|
 | ʔ           | ?                | Glottal stop                             |
 | b           | b                | Voiced bilabial plosive                  |
+| ʙ           | b\<trl\>         | Bilabial trill                           |
+| ɓ           | b\`              | Bilabial implosive                       | 
+| ʘ           | p!               | Bilabial click                           |
 | β           | B                | Voiced bilabial fricative                |
 | t͡s          | c                | Voiceless alveolar affricate             |
 | d͡z          | C                | Voiced alveolar affricate                |
