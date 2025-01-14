@@ -16,7 +16,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | p                                | p                                 | Voiceless Bilabial Stop                          |
 | b                                | b                                 | Voiced Bilabial Stop                             |
 |                                  | P                                 | Voiceless Bilabial Fricative                     |
-|                                  | B                                 | Voiced Bilabial Fricative                        |
+| β                                | B                                 | Voiced Bilabial Fricative                        |
 | ʙ                                | b\<trl\>                          | Bilabial Trill                                   |
 | ɓ                                | b`                                | Bilabial Implosive                               |
 |                                  | p`                                | Bilabial Ejective                                |
@@ -29,7 +29,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 |                                  | t[                                | Voiceless Dental Stop                            |
 |                                  | d[                                | Voiced Dental Stop                               |
 |                                  | T                                 | Voiceless Dental Fricative                       |
-|                                  | D                                 | Voiced Dental Fricative                          |
+| ð                                | D                                 | Voiced Dental Fricative                          |
 |                                  | r[                                | Dental Approximant                               |
 |                                  | l[                                | Dental Lateral                                   |
 | ɗ                                | d`                                | Dental Implosive                                 |
@@ -62,7 +62,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 |                                  | n^                                | Palatal Nasal                                    |
 | c                                | c                                 | Voiceless Palatal Stop                           |
 |                                  | J                                 | Voiced Palatal Stop                              |
-|                                  | C                                 | Voiceless Palatal Fricative                      |
+| ç                                | C                                 | Voiceless Palatal Fricative                      |
 | ɟ                                | C\<vcd\>                          | Voiced Palatal Fricative                         |
 | j                                | j                                 | Palatal Approximant                              |
 | ʝ                                | j\<rnd\>                          | Rounded Palatal Approximant                      |
@@ -117,7 +117,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | o                                | o                                 | Upper-mid Back Rounded Vowel                     |
 |                                  | V                                 | Lower-mid Back Unrounded Vowel                   |
 |                                  | O                                 | Lower-mid Back Rounded Vowel                     |
-|                                  | A                                 | Low Back Unrounded Vowel                         |
+| ɑ                                | A                                 | Low Back Unrounded Vowel                         |
 | ɑ                                | A.                                | Low Back Rounded Vowel                           |
 
 
