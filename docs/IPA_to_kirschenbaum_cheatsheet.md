@@ -72,6 +72,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 |                                  | N                                 | Velar Nasal                                      |
 | k                                | k                                 | Voiceless Velar Stop                             |
 | q                                | q                                 | Voiceless Uvular Stop                            |
+| ɢ                                | G                                 | Voiced Uvular Stop                               |
 | g                                | g                                 | Voiced Velar Stop                                |
 | x                                | x                                 | Voiceless Velar Fricative                        |
 | w                                | w                                 | Labiovelar Approximant / Voiced Labiovelar Fricative|
@@ -94,7 +95,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | ʏ                                | I.                                | Semi-high Front Rounded Vowel                    |
 | e                                | e                                 | Upper-mid Front Unrounded Vowel                  |
 |                                  | Y                                 | Upper-mid Front Rounded Vowel                    |
-|                                  | E                                 | Lower-mid Front Unrounded Vowel                  |
+| ɛ                                | E                                 | Lower-mid Front Unrounded Vowel                  |
 |                                  | W                                 | Lower-mid Front Rounded Vowel                    |
 |                                  | &                                 | Low Front Unrounded Vowel                        |
 | ɶ                                | &.                                | Low Front Rounded Vowel                          |
