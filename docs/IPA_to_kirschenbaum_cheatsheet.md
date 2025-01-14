@@ -13,7 +13,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | Unicode IPA Symbol               | ASCII-IPA                         | Place of Articulation                            |
 |----------------------------------|-----------------------------------|--------------------------------------------------|
 | m                                | m                                 | Bilabial Nasal                                   |
-|                                  | p                                 | Voiceless Bilabial Stop                          |
+| p                                | p                                 | Voiceless Bilabial Stop                          |
 | b                                | b                                 | Voiced Bilabial Stop                             |
 |                                  | P                                 | Voiceless Bilabial Fricative                     |
 |                                  | B                                 | Voiced Bilabial Fricative                        |
@@ -23,7 +23,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | ʘ                                | p!                                | Bilabial Click                                   |
 |                                  | M                                 | Labio-dental Nasal                               |
 | f                                | f                                 | Voiceless Labio-dental Fricative                 |
-|                                  | v                                 | Voiced Labio-dental Fricative                    |
+| v                                | v                                 | Voiced Labio-dental Fricative                    |
 | ʋ                                | r\<lbd\>                          | Labio-dental Approximant                         |
 |                                  | n[                                | Dental Nasal                                     |
 |                                  | t[                                | Voiceless Dental Stop                            |
@@ -36,11 +36,11 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 |                                  | t[`                               | Dental Ejective                                  |
 | ʇ                                | t!                                | Dental Click                                     |
 | n                                | n                                 | Alveolar Nasal                                   |
-|                                  | t                                 | Voiceless Alveolar Stop                          |
+| t                                | t                                 | Voiceless Alveolar Stop                          |
 | d                                | d                                 | Voiced Alveolar Stop                             |
-|                                  | s                                 | Voiceless Alveolar Fricative                     |
-|                                  | z                                 | Voiced Alveolar Fricative                        |
-|                                  | r                                 | Alveolar Approximant                             |
+| s                                | s                                 | Voiceless Alveolar Fricative                     |
+| z                                | z                                 | Voiced Alveolar Fricative                        |
+| ɹ                                | r                                 | Alveolar Approximant                             |
 | l                                | l                                 | Voiced Alveolar Lateral                          |
 | r                                | r\<trl\>                          | Alveolar Trill                                   |
 |                                  | *                                 | Alveolar Flap                                    |
@@ -71,8 +71,10 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | ǂ                                | c!                                | Palatal Click                                    |
 |                                  | N                                 | Velar Nasal                                      |
 | k                                | k                                 | Voiceless Velar Stop                             |
+| q                                | q                                 | Voiceless Uvular Stop                            |
 | g                                | g                                 | Voiced Velar Stop                                |
-|                                  | x                                 | Voiceless Velar Fricative                        |
+| x                                | x                                 | Voiceless Velar Fricative                        |
+| w                                | w                                 | Labiovelar Approximant / Voiced Labiovelar Fricative|
 |                                  | Q                                 | Voiced Velar Fricative                           |
 | ɰ                                | j\<vel\>                          | Velar Approximant                                |
 |                                  | L                                 | Velar Lateral                                    |
@@ -87,7 +89,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | ɺ                                | *\<lat\>                          | Voiced Lateral Flap                              |
 | ʖ                                | l!                                | Lateral Click                                    |
 | i                                | i                                 | High Front Unrounded Vowel                       |
-|                                  | y                                 | High Front Rounded Vowel                         |
+| y                                | y                                 | High Front Rounded Vowel                         |
 |                                  | I                                 | Semi-high Front Unrounded Vowel                  |
 | ʏ                                | I.                                | Semi-high Front Rounded Vowel                    |
 | e                                | e                                 | Upper-mid Front Unrounded Vowel                  |
@@ -108,7 +110,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | a                                | a                                 | Low Central Unrounded Vowel                      |
 | a                                | a                                 | Low Central Unrounded Vowel                      |
 | ʊ                                | u-                                | High Back Unrounded Vowel                        |
-|                                  | u                                 | High Back Rounded Vowel                          |
+| u                                | u                                 | High Back Rounded Vowel                          |
 | ʊ                                | U                                 | Semi-high Back Rounded Vowel                     |
 | ʷ                                | U                                 | Semi-high Back Rounded Vowel                     |
 | ɤ                                | o-                                | Upper-mid Back Unrounded Vowel                   |
