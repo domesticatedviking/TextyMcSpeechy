@@ -17,6 +17,10 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | b                                | b                                 | Voiced Bilabial Stop                             |
 | Φ                                | P                                 | Voiceless Bilabial Fricative                     |
 | β                                | B                                 | Voiced Bilabial Fricative                        |
+| t͡s                               | c                                 | Voiceless Alveolar Affricate                     |
+| t͡ʃ                               | tS                                | Voiceless Postalveolar Affricate                 |
+| d͡z                               | C                                 | Voiced Alveolar Affricate                        |
+| d͡ʒ                               | dZ                                | Voiced Postalveolar affricate                    |
 | ʙ                                | b\<trl\>                          | Bilabial Trill                                   |
 | ɓ                                | b`                                | Bilabial Implosive                               |
 |                                  | p`                                | Bilabial Ejective                                |
