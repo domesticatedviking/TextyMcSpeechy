@@ -150,7 +150,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | ʳ                                | r                                 | Rhoticized                                       |
 | ʷ (or ◌̫)                         | w                                 | Labialized                                       |
 | ʱ (or ◌̤)                         | ?                                 | Murmured                                         |
-| ʱ                                | ?                                 | Murmured                                         |
+
 
 
 
