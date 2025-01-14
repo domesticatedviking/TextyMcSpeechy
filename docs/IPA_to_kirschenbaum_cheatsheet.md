@@ -16,7 +16,11 @@ IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.
 
 | Unicode IPA | IPA-ASCII        | Description                              |
 |-------------|------------------|------------------------------------------|
-| ʔ           | ?                | Glottal stop                             |
+| ʔ           | ?                | Glottal stop                             | 
+| ʈ           | t.               | Voiceless retroflex stop                 | 
+| ɖ           | d.               | Voiced retroflex stop                    | 
+| ʂ           | s.               | Voiceless retroflex fricative            | 
+| ʐ           | z.               | Voiced retroflex fricative               |
 | b           | b                | Voiced bilabial plosive                  |
 | ʙ           | b\<trl\>         | Bilabial trill                           |
 | ɓ           | b\`              | Bilabial implosive                       | 
@@ -44,7 +48,8 @@ IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.
 | m           | m                | Bilabial nasal                           |
 | n           | n                | Alveolar nasal                           |
 | ɲ           | J                | Palatal nasal                            |
-| ŋ           | N                | Velar nasal                              |
+| ŋ           | N                | Velar nasal                              | 
+| ɳ           | n.               | Retroflex nasal                          |
 | p           | p                | Voiceless bilabial plosive               |
 | ɸ           | p\               | Voiceless bilabial fricative             |
 | r           | r                | Alveolar trill                           |
