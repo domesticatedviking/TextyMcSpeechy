@@ -7,88 +7,116 @@ source consulted: https://web.archive.org/web/20160312220739/http://www.kirshenb
 IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.org/ipa-sounds/ipa-chart-with-sounds/
 
 
-###  Warning:  This chart was assembled by AI.  It is incomplete and likely contains errors.  Corrections are appreciated.
+###  Warning:  This chart was assembled by AI.  It is incomplete and may contain errors.  Corrections are appreciated.
+The IPA symbols that are missing were not specified in the [source](https://web.archive.org/web/20160312220739/http://www.kirshenbaum.net/IPA/faq.html).
+
+| Unicode IPA Symbol               | ASCII-IPA                         | Place of Articulation                            |
+|----------------------------------|-----------------------------------|--------------------------------------------------|
+|                                  | m                                 | Bilabial Nasal                                   |
+|                                  | p                                 | Voiceless Bilabial Stop                          |
+|                                  | b                                 | Voiced Bilabial Stop                             |
+|                                  | P                                 | Voiceless Bilabial Fricative                     |
+|                                  | B                                 | Voiced Bilabial Fricative                        |
+| ʙ                                | b\<trl\>                          | Bilabial Trill                                   |
+| ɓ                                | b`                                | Bilabial Implosive                               |
+|                                  | p`                                | Bilabial Ejective                                |
+| ʘ                                | p!                                | Bilabial Click                                   |
+|                                  | M                                 | Labio-dental Nasal                               |
+|                                  | f                                 | Voiceless Labio-dental Fricative                 |
+|                                  | v                                 | Voiced Labio-dental Fricative                    |
+| ʋ                                | r\<lbd\>                          | Labio-dental Approximant                         |
+|                                  | n[                                | Dental Nasal                                     |
+|                                  | t[                                | Voiceless Dental Stop                            |
+|                                  | d[                                | Voiced Dental Stop                               |
+|                                  | T                                 | Voiceless Dental Fricative                       |
+|                                  | D                                 | Voiced Dental Fricative                          |
+|                                  | r[                                | Dental Approximant                               |
+|                                  | l[                                | Dental Lateral                                   |
+| ɗ                                | d`                                | Dental Implosive                                 |
+|                                  | t[`                               | Dental Ejective                                  |
+| ʇ                                | t!                                | Dental Click                                     |
+|                                  | n                                 | Alveolar Nasal                                   |
+|                                  | t                                 | Voiceless Alveolar Stop                          |
+|                                  | d                                 | Voiced Alveolar Stop                             |
+|                                  | s                                 | Voiceless Alveolar Fricative                     |
+|                                  | z                                 | Voiced Alveolar Fricative                        |
+|                                  | r                                 | Alveolar Approximant                             |
+|                                  | l                                 | Alveolar Lateral                                 |
+| r                                | r\<trl\>                          | Alveolar Trill                                   |
+|                                  | *                                 | Alveolar Flap                                    |
+| ɬ                                | s\<lat\>                          | Voiceless Alveolar Lateral Fricative             |
+| ɮ                                | z\<lat\>                          | Voiced Alveolar Lateral Fricative                |
+| ɖ                                | d`                                | Alveolar Implosive                               |
+|                                  | t`                                | Alveolar Ejective                                |
+| ǃ                                | c!                                | Palato-alveolar Click                            |
+| ɳ                                | n.                                | Retroflex Nasal                                  |
+| ʈ                                | t.                                | Voiceless Retroflex Stop                         |
+| ɖ                                | d.                                | Voiced Retroflex Stop                            |
+| ʂ                                | s.                                | Voiceless Retroflex Fricative                    |
+| ʐ                                | z.                                | Voiced Retroflex Fricative                       |
+| ɻ                                | r.                                | Retroflex Approximant                            |
+| ɭ                                | l.                                | Retroflex Lateral                                |
+| ɽ                                | *.                                | Retroflex Flap                                   |
+|                                  | S                                 | Voiceless Palato-alveolar Fricative              |
+|                                  | Z                                 | Voiced Palato-alveolar Fricative                 |
+|                                  | n^                                | Palatal Nasal                                    |
+|                                  | c                                 | Voiceless Palatal Stop                           |
+|                                  | J                                 | Voiced Palatal Stop                              |
+|                                  | C                                 | Voiceless Palatal Fricative                      |
+| ɟ                                | C\<vcd\>                          | Voiced Palatal Fricative                         |
+|                                  | j                                 | Palatal Approximant                              |
+| ʝ                                | j\<rnd\>                          | Rounded Palatal Approximant                      |
+| ʎ                                | l^                                | Palatal Lateral                                  |
+| ʄ                                | J`                                | Palatal Implosive                                |
+| ǂ                                | c!                                | Palatal Click                                    |
+|                                  | N                                 | Velar Nasal                                      |
+|                                  | k                                 | Voiceless Velar Stop                             |
+|                                  | g                                 | Voiced Velar Stop                                |
+|                                  | x                                 | Voiceless Velar Fricative                        |
+|                                  | Q                                 | Voiced Velar Fricative                           |
+| ɰ                                | j\<vel\>                          | Velar Approximant                                |
+|                                  | L                                 | Velar Lateral                                    |
+| ɠ                                | g`                                | Velar Implosive                                  |
+|                                  | k'                                | Velar Ejective                                   |
+| ʞ                                | k!                                | Velar Click                                      |
+|                                  | H                                 | Voiceless Pharyngeal Fricative                   |
+| ʕ                                | H\<vcd\>                          | Voiced Pharyngeal Fricative                      |
+|                                  | ?                                 | Glottal Stop                                     |
+|                                  | h                                 | Glottal Approximant                              |
+| ɦ                                | h\<?>                             | Murmured Glottal Fricative                       |
+| ɺ                                | *\<lat\>                          | Voiced Lateral Flap                              |
+| ʖ                                | l!                                | Lateral Click                                    |
+|                                  | i                                 | High Front Unrounded Vowel                       |
+|                                  | y                                 | High Front Rounded Vowel                         |
+|                                  | I                                 | Semi-high Front Unrounded Vowel                  |
+| ʏ                                | I.                                | Semi-high Front Rounded Vowel                    |
+|                                  | e                                 | Upper-mid Front Unrounded Vowel                  |
+|                                  | Y                                 | Upper-mid Front Rounded Vowel                    |
+|                                  | E                                 | Lower-mid Front Unrounded Vowel                  |
+|                                  | W                                 | Lower-mid Front Rounded Vowel                    |
+|                                  | &                                 | Low Front Unrounded Vowel                        |
+| ɶ                                | &.                                | Low Front Rounded Vowel                          |
+| ɨ                                | i"                                | High Central Unrounded Vowel                     |
+| ʉ                                | u"                                | High Central Rounded Vowel                       |
+| ɘ                                | @\<umd\>                          | Upper-mid Central Unrounded Vowel                |
+| ɝ                                | R\<umd\>                          | Upper-mid Central Unrounded Rhoticized Vowel     |
+|                                  | @                                 | Mid Central Unrounded Vowel                      |
+|                                  | R                                 | Mid Central Unrounded Rhoticized Vowel           |
+| ɵ                                | @.                                | Mid Central Rounded Vowel                        |
+| ɜ                                | V"                                | Lower-mid Central Unrounded Vowel                |
+| ɞ                                | O"                                | Lower-mid Central Rounded Vowel                  |
+|                                  | a                                 | Low Central Unrounded Vowel                      |
+| a                                | a                                 | Low Central Unrounded Vowel                      |
+| ʊ                                | u-                                | High Back Unrounded Vowel                        |
+|                                  | u                                 | High Back Rounded Vowel                          |
+| ʊ                                | U                                 | Semi-high Back Rounded Vowel                     |
+| ʷ                                | U                                 | Semi-high Back Rounded Vowel                     |
+| ɤ                                | o-                                | Upper-mid Back Unrounded Vowel                   |
+|                                  | o                                 | Upper-mid Back Rounded Vowel                     |
+|                                  | V                                 | Lower-mid Back Unrounded Vowel                   |
+|                                  | O                                 | Lower-mid Back Rounded Vowel                     |
+|                                  | A                                 | Low Back Unrounded Vowel                         |
+| ɑ                                | A.                                | Low Back Rounded Vowel                           |
 
 
 
-
-## Consonants
-
-| Unicode IPA | IPA-ASCII        | Description                              |
-|-------------|------------------|------------------------------------------|
-| ʔ           | ?                | Glottal stop                             | 
-| ʈ           | t.               | Voiceless retroflex stop                 | 
-| ɖ           | d.               | Voiced retroflex stop                    | 
-| ʂ           | s.               | Voiceless retroflex fricative            | 
-| ʐ           | z.               | Voiced retroflex fricative               |
-| b           | b                | Voiced bilabial plosive                  |
-| ʙ           | b\<trl\>         | Bilabial trill                           |
-| ɓ           | b\`              | Bilabial implosive                       | 
-| ʘ           | p!               | Bilabial click                           | 
-| β           | B                | Voiced bilabial fricative                |
-| t͡s          | c                | Voiceless alveolar affricate             |
-| d͡z          | C                | Voiced alveolar affricate                |
-| d͡ʒ          | dZ               | Voiced postalveolar affricate            |
-| ð           | D                | Voiced dental fricative                  |
-| d           | d                | Voiced alveolar plosive                  | 
-| ɗ           | d\`              | alveolar implosive                       |
-| f           | f                | Voiceless labiodental fricative          | 
-| ʋ           | r\<lbd\>         | labiodental approximant                  | 
-| g           | g                | Voiced velar plosive                     |
-| ɣ           | G                | Voiced velar fricative                   |
-| h           | h                | Voiceless glottal fricative              |
-| ɦ           | h\               | Voiced glottal fricative                 |
-| j           | j                | Palatal approximant                      |
-| k           | k                | Voiceless velar plosive                  |
-| l           | l                | Alveolar lateral approximant             | 
-| r           | r\<trl\>         | Alveolar trill                           |
-| ʎ           | L                | Palatal lateral approximant              |
-| ɭ           | l`               | Retroflex lateral approximant            |
-| ɺ           | l\               | Alveolar lateral flap                    |
-| m           | m                | Bilabial nasal                           |
-| n           | n                | Alveolar nasal                           |
-| ɲ           | J                | Palatal nasal                            |
-| ŋ           | N                | Velar nasal                              | 
-| ɳ           | n.               | Retroflex nasal                          |
-| p           | p                | Voiceless bilabial plosive               |
-| ɸ           | p\               | Voiceless bilabial fricative             |
-| r           | r                | Alveolar trill                           |
-| ɹ           | r\               | Alveolar approximant                     |
-| ɾ           | r`               | Alveolar tap                             |
-| ʀ           | R                | Uvular trill                             |
-| s           | s                | Voiceless alveolar fricative             | 
-| ɬ           | s\<lat\>         | Voiceless alveolar lateral fricative     |
-| ɮ           | z\<lat\>         | Voiced alveolar lateral fricative     |
-| ʃ           | S                | Voiceless postalveolar fricative         |
-| t           | t                | Voiceless alveolar plosive               |
-| t͡ʃ          | tS               | Voiceless postalveolar affricate         |
-| θ           | T                | Voiceless dental fricative               |
-| v           | v                | Voiced labiodental fricative             |
-| w           | w                | Labial-velar approximant                 |
-| ʍ           | w\               | Voiceless labial-velar approximant       |
-| x           | x                | Voiceless velar fricative                |
-| ɧ           | x\               | Voiceless palatal-velar fricative        |
-| z           | z                | Voiced alveolar fricative                |
-| ʒ           | Z                | Voiced postalveolar fricative            |
-| ʑ           | z\               | Voiced alveolo-palatal fricative         |
-
-## Vowels
-
-| Unicode IPA | ASCII Equivalent | Description                              |
-|-------------|------------------|------------------------------------------|
-| i           | i                | Close front unrounded vowel              |
-| ɪ           | I                | Near-close near-front unrounded vowel    |
-| e           | e                | Close-mid front unrounded vowel          |
-| ɛ           | E                | Open-mid front unrounded vowel           |
-| æ           | &                | Near-open front unrounded vowel          |
-| a           | a                | Open front unrounded vowel               |
-| ə           | @                | Mid-central vowel (schwa)                |
-| ɨ           | i.               | Close central unrounded vowel            |
-| ʉ           | u.               | Close central rounded vowel              |
-| ɐ           | 6                | Near-open central vowel                  |
-| u           | u                | Close back rounded vowel                 |
-| ʊ           | U                | Near-close near-back rounded vowel       |
-| o           | o                | Close-mid back rounded vowel             |
-| ɔ           | O                | Open-mid back rounded vowel              |
-| ɑ           | A                | Open back unrounded vowel                |
-| ɒ           | A.               | Open back rounded vowel                  |
