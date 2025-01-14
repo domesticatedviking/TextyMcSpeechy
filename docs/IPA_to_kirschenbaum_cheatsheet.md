@@ -20,21 +20,24 @@ IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.
 | b           | b                | Voiced bilabial plosive                  |
 | ʙ           | b\<trl\>         | Bilabial trill                           |
 | ɓ           | b\`              | Bilabial implosive                       | 
-| ʘ           | p!               | Bilabial click                           |
+| ʘ           | p!               | Bilabial click                           | 
 | β           | B                | Voiced bilabial fricative                |
 | t͡s          | c                | Voiceless alveolar affricate             |
 | d͡z          | C                | Voiced alveolar affricate                |
 | d͡ʒ          | dZ               | Voiced postalveolar affricate            |
 | ð           | D                | Voiced dental fricative                  |
-| d           | d                | Voiced alveolar plosive                  |
-| f           | f                | Voiceless labiodental fricative          |
+| d           | d                | Voiced alveolar plosive                  | 
+| ɗ           | d\`              | alveolar implosive                       |
+| f           | f                | Voiceless labiodental fricative          | 
+| ʋ           | r\<lbd\>         | labiodental approximant                  | 
 | g           | g                | Voiced velar plosive                     |
 | ɣ           | G                | Voiced velar fricative                   |
 | h           | h                | Voiceless glottal fricative              |
 | ɦ           | h\               | Voiced glottal fricative                 |
 | j           | j                | Palatal approximant                      |
 | k           | k                | Voiceless velar plosive                  |
-| l           | l                | Alveolar lateral approximant             |
+| l           | l                | Alveolar lateral approximant             | 
+| r           | r\<trl\>         | Alveolar trill                           |
 | ʎ           | L                | Palatal lateral approximant              |
 | ɭ           | l`               | Retroflex lateral approximant            |
 | ɺ           | l\               | Alveolar lateral flap                    |
@@ -48,7 +51,9 @@ IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.
 | ɹ           | r\               | Alveolar approximant                     |
 | ɾ           | r`               | Alveolar tap                             |
 | ʀ           | R                | Uvular trill                             |
-| s           | s                | Voiceless alveolar fricative             |
+| s           | s                | Voiceless alveolar fricative             | 
+| ɬ           | s\<lat\>         | Voiceless alveolar lateral fricative     |
+| ɮ           | z\<lat\>         | Voiced alveolar lateral fricative     |
 | ʃ           | S                | Voiceless postalveolar fricative         |
 | t           | t                | Voiceless alveolar plosive               |
 | t͡ʃ          | tS               | Voiceless postalveolar affricate         |
