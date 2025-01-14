@@ -28,7 +28,7 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 |                                  | n[                                | Dental Nasal                                     |
 |                                  | t[                                | Voiceless Dental Stop                            |
 |                                  | d[                                | Voiced Dental Stop                               |
-|                                  | T                                 | Voiceless Dental Fricative                       |
+| θ                                | T                                 | Voiceless Dental Fricative                       |
 | ð                                | D                                 | Voiced Dental Fricative                          |
 |                                  | r[                                | Dental Approximant                               |
 |                                  | l[                                | Dental Lateral                                   |
@@ -114,10 +114,10 @@ The IPA symbols that are missing were not specified in the [source](https://web.
 | ʊ                                | u-                                | High Back Unrounded Vowel                        |
 | u                                | u                                 | High Back Rounded Vowel                          |
 | ʊ                                | U                                 | Semi-high Back Rounded Vowel                     |
-| ʷ                                | U                                 | Semi-high Back Rounded Vowel                     |
+| ʷ (or ɷ)                         | U                                 | Semi-high Back Rounded Vowel                     |
 | ɤ                                | o-                                | Upper-mid Back Unrounded Vowel                   |
 | o                                | o                                 | Upper-mid Back Rounded Vowel                     |
-|                                  | V                                 | Lower-mid Back Unrounded Vowel                   |
+| ʌ                                | V                                 | Lower-mid Back Unrounded Vowel                   |
 | ɔ                                | O                                 | Lower-mid Back Rounded Vowel                     |
 | ɑ                                | A                                 | Low Back Unrounded Vowel                         |
 | ɑ                                | A.                                | Low Back Rounded Vowel                           |
