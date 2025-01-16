@@ -1,11 +1,8 @@
 ## Converting between the international phonetic alphabet (IPA) and Kirschenbaum format (ASCII-IPA)
 
-(this is helpful for correcting the pronunciation of espeak-ng)
-
-source consulted: https://web.archive.org/web/20160312220739/http://www.kirshenbaum.net/IPA/faq.html
-
-IPA chart with audio pronunciations:  https://www.internationalphoneticalphabet.org/ipa-sounds/ipa-chart-with-sounds/
-
+- This is helpful for correcting the pronunciation of espeak-ng, which uses Kirschenbaum format (AKA ASCII-IPA) internally.
+- If you don't know IPA, [this site](https://www.internationalphoneticalphabet.org/ipa-sounds/ipa-chart-with-sounds/) is a great reference.  You can click on each symbol to hear how it sounds, which will help you choose the symbols that represent the sounds of your target word.   [This site](https://ipa-reader.com/) is useful for testing your IPA transcriptions.
+- If you know how to write your word using IPA symbols, you can use the chart below to convert each symbol to the ASCII-IPA format that espeak-ng uses.
 
 ####  Warning:  This chart may contain errors.  Corrections are appreciated.
 The IPA symbols that are missing were not specified in the [source](https://web.archive.org/web/20160312220739/http://www.kirshenbaum.net/IPA/faq.html).
