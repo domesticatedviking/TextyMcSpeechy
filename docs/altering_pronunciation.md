@@ -15,4 +15,5 @@ Noella  no'El:V O
 ```
 - Compile the new pronunciation rule to make it active.  `sudo espeak-ng --compile=en`
 - Test the new pronunciation, eg  `espeak-ng "Testing the corrected pronunciation of Noella" --ipa`
+- Changes to espeak-ng's pronunciation rules are applied system-wide.
 - I have created an [IPA to kirschenbaum cheatsheet](/docs/IPA_to_kirschenbaum_cheatsheet.md) which may be a useful starting point for people who know the international phonetic alphabet.
