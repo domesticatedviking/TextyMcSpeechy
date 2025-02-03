@@ -11,7 +11,7 @@ I put together this guide because I couldn't find an adequate explanation of how
 ## Prepare your custom voice models for upload
 1. Important: Per the Piper docs, your voices must be renamed according to the following scheme: `<language>_<REGION>-<name>-<quality>`, eg: `en_US-bob-medium`
   - `<language>_<REGION>` is the IETF BCP 47 format language code (eg `en_US`)
-  - `name` is the name of the person or character to whom the voice belongs
+  - `name` is the name of the person or character to whom the voice belongs (eg. `bob`)
   -  `quality` is the model quality. Valid values are `x_low`, `low`, `medium`, and `high`
   - rename both your `.onnx` and `.onnx.json` files, eg: `en_US-bob-medium.onnx`,`en_US-bob-medium.onnx.json` Make sure the names match EXACTLY.
   - If you don't name your model in this format, Home Assistant may not recognize it.
