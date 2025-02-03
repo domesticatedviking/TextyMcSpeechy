@@ -73,7 +73,7 @@ target:
 
 ```
 
-2. To call the `say_as_bob` script to make Piper say things in Bob's voice , use the format of the `introduce_bob` example below (this `yaml` also can be used  from developer tools > actions)
+2. To call the `say_as_bob` service script above to make Piper say things in Bob's voice , use the format of the `introduce_bob` example below (this `yaml` also can be used  from developer tools > actions)
 
 ```
 action: script.say_as_bob
@@ -81,7 +81,3 @@ data_template:
   message: "Pleased to meet you, I'm bob"
 
 ```
-
-
-
-
