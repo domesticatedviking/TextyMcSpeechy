@@ -1,4 +1,4 @@
-## How to install and use a custom voice model on Home Assistant OS
+## How to install and use a custom Piper voice model in Home Assistant OS
 I put together this guide because I couldn't find an adequate explanation of how to do this anywhere else.  Please read carefully as there are currently some issues arising from the way Piper is implemented in Home Assistant that make this process more confusing than it should be.
 
 ## Install Piper add-on and Wyoming protocol integration
