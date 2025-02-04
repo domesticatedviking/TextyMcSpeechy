@@ -11,8 +11,9 @@
 - https://www.tomshardware.com/raspberry-pi/add-any-voice-to-your-raspberry-pi-project-with-textymcspeechy
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
-## February 3 2025: Added guide for using custom piper voices within Home Assistant OS.
+## February 3 2025: Tutorial added for using custom voices within Home Assistant OS.
 - I couldn't find a guide for using Piper voices in Home Assistant OS, so [I wrote my own](docs/using_custom_voices_in_home_assistant_os.md).
+- There is now also a tutorial for creating a lovelace GUI for testing your custom voices.
 
 ## December 29 2024: Batch noise reduction script
 - Added a script to the dataset recorder `remove_roomtone.sh` that automates the removal of background noise (roomtone) from dataset files.
