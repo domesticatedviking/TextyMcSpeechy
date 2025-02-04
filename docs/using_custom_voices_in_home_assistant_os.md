@@ -60,6 +60,8 @@ Once you have a model that you know works, here's how you can make use of it in 
 
 1. Create a script for your custom voice which accepts a template value as an input. The script below is called `say_as_bob`  (note that you need to use your own `media_player_entity_id` and `voice` ).  
 ```
+# "say_as_bob" tts service script  <-- (don't include this line in your script!)
+
 action: tts.speak
 metadata: {}
 data:
@@ -76,6 +78,8 @@ target:
 2. To call the `say_as_bob` service script above to make Piper say things in Bob's voice, use the format of the `introduce_bob` script example below (this `yaml`  also can be used  from Developer Tools > Actions for test purposes)
 
 ```
+# "introduce_bob" example usage script  <-- (don't include this line in your script!)
+
 action: script.say_as_bob
 data_template:
   message: "Pleased to meet you, I'm bob"
