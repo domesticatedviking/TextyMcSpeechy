@@ -58,7 +58,7 @@ Once your `.onnx` and `.onnx.json` files are in the `/share/piper` folder, resta
 
 Once you have a model that you know works, here's how you can make use of it in your own scripts just as easily as any other TTS service.
 
-1. Create a script for your custom voice which accepts a template value as an input. The script below is called `say_as_bob`  (note that you need to use your own `media_player_entity_id` and `voice` ).  
+1. Create a script for your custom voice which accepts a template value as an input. The script below is called `say_as_bob`  (note that you need to use your own `media_player_entity_id` and `voice` ).  If you need output to go to multiple speakers, you can use a comma separated list (eg:  `media_player_entity_id: media_player.speaker1, media_player.speaker2`)
 ```
 # "say_as_bob" tts service script  <-- (don't include this line in your script!)
 
