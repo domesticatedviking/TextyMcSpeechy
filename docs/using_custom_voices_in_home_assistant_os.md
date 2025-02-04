@@ -93,19 +93,19 @@ data_template:
     - In the `name` field, enter `tts_voices` (this tutorial will assume that the dropdown's entity name will be `input_select.tts_voices`)
     - in the `options` field, add the name of the first voice you want to be able to choose from, prefaced by `script.`, eg. `script.say_as_bob`
     - add the rest of the voices and save the dropdown list.  You can add more voices to this list later.
-    - *important*: immediately after your dropdown is created, there might not be any voice selected, and this would cause the script to fail.  Click the input select entity and in the popup window, chose one of the voices from the dropdown list.
+    - *important*: immediately after your dropdown is created, there might not be any voice selected, and this would cause the script to fail.  Click the tts_voices entity you just created and in the popup window, choose one of your voices from the dropdown list.
 
-2. Create a text input box to hold the text you want the TTS engine to say.
+2. Create a text input box to hold the demo text you want the TTS engine to say.
     - In Settings > Devices & Services > Helpers tab, click CREATE HELPER button and choose `Text`
     - In the `name` field, enter `text_to_say` (this tutorial will assume that the text entity's name will be `input_text.text_to_say`)
     - click on the newly created entity and in the popup window, enter a test phrase in the text input box and save it.
 
-3. Create a button to say your test phrase in the selected voice
+3. Create a button to say your test phrase in the selected voice. This will be configured later.
     - In Settings > Devices & Services > Helpers tab, click CREATE HELPER button and choose `Button`
     - In the `name` field, enter `say_it` (this tutorial will assume that the button entity's name will be `input_button.say_it`)
     - Click `Create`
 
-4. Create a script that will say the text in your text box using the voice selected in the dropdown list.
+4. Create a script that will say the text in your text box using the voice service selected in the dropdown list.
    - In Settings > Automations and Scenes > Scripts tab, click the CREATE SCRIPT button, choose Create new script.
    - From the kebab menu (three vertical dots in the top right corner), choose `Edit in YAML`
    - Delete the line that says `sequence: []`
@@ -119,7 +119,26 @@ alias: Test TTS
 description: Say text in the input box
 ```
   - Click the SAVE SCRIPT button.  Name this script `test_tts` (this tutorial will assume that this script entity's name will be `scripts.test_tts`)
-  - Once your `test_tts` script has been created, you should be able to test it.   Click the kebab menu (three vertical dots) on the line associated with the test_tts script, and choose `Run`.  If you have done everything right you should hear your test phrase spoken in the voice you have chosen.
+  - Once your `test_tts` script has been created, you should be able to test it.   Click the kebab menu (three vertical dots) on the line associated with the `test_tts` script, and choose `Run`.  If you have done everything right you should hear your test phrase spoken in the voice you have chosen.
+
+5. Create entities in your lovelace dashboard and configure the button
+![image](https://github.com/user-attachments/assets/c3722a12-49a5-4123-aca6-d29cb4dbe9ed)
+- In the example above, an `Entities` card was created by putting the dashboard into edit mode, clicking the `+` button, and choosing the `Entities` card from the `BY CARD` tab.
+- in the popup window, under `Entities (required)`, delete the example entities, then:
+  - Set the first entity to `input_select.tts_voices`
+  - Set the second entity to `input_text.text_to_say`
+  - Click `Save`
+- To add the button, click the `+` button below the dropdown and text box you just added and in the `BY CARD` tab, search for the `Button` card and click it.
+- To configure the button, first replace anything in the `Entity` field with the button entity you created earlier (`input_button.say_it`)
+- Optionally give your button a name and/or icon.
+- In the `Tap behavior` field, choose `Perform action`
+- A new `Action` field will appear.  Enter `script.test_tts` here to cause this button to trigger the script you created earlier.
+- Change any additional layout options as you wish.  The example above has `Full width card` turned on in the `Layout` tab
+- click `SAVE` to save your button.
+- click the `DONE` button to stop editing your dashboard.
+- You now can say anything in any voice via your home assistant dashboard.   Enjoy!
+
+
 
 
 
