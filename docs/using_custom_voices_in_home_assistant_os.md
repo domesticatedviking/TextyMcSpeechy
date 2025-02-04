@@ -49,7 +49,7 @@ If your model name is `en_US-bob-medium`, your  `en_US-bob-medium.onnx.json` fil
 ## How do I use my custom models?
 Once your `.onnx` and `.onnx.json` files are in the `/share/piper` folder, restart the Piper add-on and reload the Wyoming Protocol integration, otherwise they won't know about your models.
 - If you have done everything correctly so far, your voice will technically be ready to use, but there are some implementation issues you need to know about.
-- *Important*: Due to the way the Piper add-on currently gets its voice lists, if you go to `Settings > Add-ons > Piper > Configuration` and look for your custom voice in the dropdown window, you won't find your custom voices there. I have opened an [issue](https://github.com/home-assistant/addons/issues/3914) for this on github. 
+- *Important*: Due to the way the Piper add-on currently gets its voice lists, if you go to `Settings > Add-ons > Piper > Configuration` and look for your custom voice in the dropdown menu, you won't find your custom voices there. I have opened an [issue](https://github.com/home-assistant/addons/issues/3914) for this on github. 
 - The only place you are currently able to see your custom voice in the webui is in Settings > Voice Assistants, after creating or modifying a voice assistant entity using Piper as the text to speech engine.
 - There is a "Try Voice" button you can use to verify that your custom voice is working properly.  I recommend doing this  before proceeding further.
 - If your custom model shows up with the wrong name, you probably need to change some fields in your `.onnx.json` file and restart Piper/Wyoming protocol.
