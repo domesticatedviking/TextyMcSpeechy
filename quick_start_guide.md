@@ -1,4 +1,28 @@
-# A quick start guide for using TextyMcSpeechy once you have a dataset.
+# A quick start guide for using TextyMcSpeechy 
+
+## What is a training dataset?
+- A training dataset consists of audio recordings of speech, along with a `metadata.csv` file that contains a text transcript of the words spoken in each recording.
+- The `metadata.csv` file is a plain text file that should look something like this
+```
+roomtone|Please record twenty seconds of silence to remove roomtone
+file0001|The rain in Spain falls mainly on the plain.
+file0002|Ask her to bring these things with her from the store.
+file0003|Six thick slabs of mozzerella cheese.
+```
+- Each line in the dataset begins with the name of an audio file. Do not include the file extension (eg `.wav`). 
+- After the `|` character, there is a text transcription of the exact words spoken in the audio file in the first column.
+- It doesn't matter what you name your files as long as the transcriptions match the words recorded in the filename in the first column.
+- The more phrases you use the more accurate your voice will be, but it will also take much longer to train.
+- A sweet spot for dataset size is from 50-200 phrases, with recordings ranging in length from ~1-15 seconds each.
+
+## Where do I get a dataset?
+To make a custom text to speech voice requires a custom dataset.   Building a custom dataset requires a bit of work.
+- The fastest way to get a dataset is to use the scripts provided in the `dataset_recorder` directory to record a dataset using your own voice. I highly recommend everyone tries this option at least once.
+- You can also create a dataset from any collection of short audio clips that you manually transcribe into a `metadata.csv` file.
+- It is also possible to download a [public domain training dataset](https://github.com/jim-schwoebel/voice_datasets) and batch-convert the provided audio files to sound like a different voice with an existing RVC voice changer model using [Applio](https://github.com/IAHispano/Applio).  This is quicker because you don't have to transcribe the dataset - you use the `metadata.csv` file that came with the original dataset for training.
+
+
+## I have my dataset, what do I do next?
 
 1. clone the repository `git clone https://github.com/domesticatedviking/TextyMcSpeechy.git`
 2. from the repository directory, run `./install_piper.sh`
