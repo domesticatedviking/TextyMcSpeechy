@@ -85,3 +85,41 @@ data_template:
   message: "Pleased to meet you, I'm bob"
 
 ```
+
+## A simple TTS voice tester GUI for Home Assistant lovelace dashboards
+
+1. Create a dropdown list to contain the names of all your custom voice services
+    - In Settings > Devices & Services > Helpers tab, click CREATE HELPER button and choose `Dropdown`
+    - In the `name` field, enter `tts_voices` (this tutorial will assume that the dropdown's entity name will be `input_select.tts_voices`)
+    - in the `options` field, add the name of the first voice you want to be able to choose from, prefaced by `script.`, eg. `script.say_as_bob`
+    - add the rest of the voices and save the dropdown list.  You can add more voices to this list later.
+    - *important*: immediately after your dropdown is created, there might not be any voice selected, and this would cause the script to fail.  Click the input select entity and in the popup window, chose one of the voices from the dropdown list.
+
+2. Create a text input box to hold the text you want the TTS engine to say.
+    - In Settings > Devices & Services > Helpers tab, click CREATE HELPER button and choose `Text`
+    - In the `name` field, enter `text_to_say` (this tutorial will assume that the text entity's name will be `input_text.text_to_say`)
+    - click on the newly created entity and in the popup window, enter a test phrase in the text input box and save it.
+
+3. Create a button to say your test phrase in the selected voice
+    - In Settings > Devices & Services > Helpers tab, click CREATE HELPER button and choose `Button`
+    - In the `name` field, enter `say_it` (this tutorial will assume that the button entity's name will be `input_button.say_it`)
+    - Click `Create`
+
+4. Create a script that will say the text in your text box using the voice selected in the dropdown list.
+   - In Settings > Automations and Scenes > Scripts tab, click the CREATE SCRIPT button, choose Create new script.
+   - From the kebab menu (three vertical dots in the top right corner), choose `Edit in YAML`
+   - Delete the line that says `sequence: []`
+   - Paste in the following script:
+```
+sequence:
+  - data_template:
+      message: "{{ states('input_text.text_to_say') }}"
+    action: "{{ states('input_select.tts_voices') }}"
+alias: Test TTS
+description: Say text in the input box
+```
+  - Click the SAVE SCRIPT button.  Name this script `test_tts` (this tutorial will assume that this script entity's name will be `scripts.test_tts`)
+  - Once your `test_tts` script has been created, you should be able to test it.   Click the kebab menu (three vertical dots) on the line associated with the test_tts script, and choose `Run`.  If you have done everything right you should hear your test phrase spoken in the voice you have chosen.
+
+
+
