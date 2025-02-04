@@ -37,9 +37,8 @@
 ## Recommended hardware and notes about performance
 1. A PC running Linux which has a NVIDIA GPU is highly recommended / required for training.
 2. Once TTS models are trained, they will run on much less powerful hardware, but Piper uses a neural network to generate speech.  This is a computationally expensive process which benefits from fast hardware.
-3. A Raspberry Pi 5 should be considered the absolute minimum for realtime applications like smart speakers or voice assistants.  
-4. My Raspberry Pi 5 (8GB) based offline smart speaker project had a delay of about 8 seconds between saying a voice command (transcribed locally on the pi with faster-whisper) and a spoken response beginning from a low-quality piper-TTS voice. At least 3/4 of the delay was waiting for Piper to finish generating speech.  If real-time responses with minimal lag are needed, I would strongly recommend planning to run Piper on something faster than a Pi 5. If you use use low-quality Piper models, keep spoken phrases short, or cache commonly used phrases as pre-rendered audio files, a Pi 5 (or even a Pi 4) may be adequate for your needs.  Personally I'll be waiting for the Pi 6 or Pi 7 before I try to do this again.
-5. Performance improves dramatically when rendering speech on more powerful hardware. When running both STT transcription and Piper TTS on the CPU of my desktop computer (Core i7-13700), the delay between command and spoken response fell to less than 3 seconds, which was comparable to what I get with Google Assistant on my Nest Mini.  Whisperlive and Piper both include HTTP servers, which makes it easy to move STT and TTS processes to a network computer or self-managed cloud server.  I'm planning to use this approach in my smart speaker project, which will now be based on a Raspberry Pi Zero 2W.
+3. A Raspberry Pi 5 should be considered the absolute minimum for rendering text-to-speech notifications in real time, however Home Assistant caches commonly used phrases which speeds things up significantly.   Conversational AI applications with long utterances will have unacceptable amounts of latency (eg 5-20 seconds) unless run on more powerful hardware.
+
 
 
 # Description of the training process.
