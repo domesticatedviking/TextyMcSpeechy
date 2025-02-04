@@ -138,6 +138,9 @@ description: Say text in the input box
 - click the `DONE` button to stop editing your dashboard.
 - You now can say anything in any voice via your home assistant dashboard.   Enjoy!
 
+### Known issues:
+- Since I wrote this I have noticed that while the preview gui works well on the initial use of a voice, when sending successive phrases to the same voice service, the cached audio for the first phrase is always sent to the speakers.  I will update this guide when I determine a fix.   In the meantime I would recommend switching voices every time you change the contents of the text box.
+
 
 
 
