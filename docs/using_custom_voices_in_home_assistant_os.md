@@ -139,7 +139,7 @@ description: Say text in the input box
 - You now can say anything in any voice via your home assistant dashboard.   Enjoy!
 
 ### Known issues:
-- Sometimes the preview button will play the previous message that had been stored in the text box rather than the one you have just typed.  This is because the text box doesn't pass its new value to the rest of the system until it loses focus.  Until I find a way to resolve this, you can click or tap anywhere outside the box after entering a new message before you click the "say" button.
+- Sometimes the `Say it` button will play the previous message that had been stored in the text box rather than the one you have just typed.  This is because the text box doesn't pass its new value to the rest of the system until it loses focus.  Until I find a way to resolve this, you can click or tap anywhere outside the box after entering a new message before you click the "say" button.
 
 
 
