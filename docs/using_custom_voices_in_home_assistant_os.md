@@ -93,7 +93,7 @@ data_template:
     - In the `name` field, enter `tts_voices` (this tutorial will assume that the dropdown's entity name will be `input_select.tts_voices`)
     - in the `options` field, add the name of the first voice you want to be able to choose from, prefaced by `script.`, eg. `script.say_as_bob`
     - add the rest of the voices and save the dropdown list.  You can add more voices to this list later.
-    - *important*: immediately after your dropdown is created, there might not be any voice selected, and this would cause the script to fail.  Click the tts_voices entity you just created and in the popup window, choose one of your voices from the dropdown list.
+    - *important*: immediately after your dropdown is created, there might not be any voice selected, and this would cause the script to fail.  Click the `tts_voices` entity you just created and in the popup window, choose one of your voices from the dropdown list.
 
 2. Create a text input box to hold the demo text you want the TTS engine to say.
     - In Settings > Devices & Services > Helpers tab, click CREATE HELPER button and choose `Text`
