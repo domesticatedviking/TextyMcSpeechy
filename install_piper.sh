@@ -97,6 +97,10 @@ python -m build
 pip install -e .
 pip install -r requirements.txt
 
+#thanks to diablo581 for suggesting this numba downgrade to avoid errors on WSL Ubuntu and PopOS
+echo "Downgrading numba to 0.60.0"  
+pip install --upgrade numba==0.60.0
+
 echo "Downgrading numpy to 1.23.5 (Piper currently needs numpy<2)"
 pip install --upgrade numpy==1.23.5
 
