@@ -98,6 +98,7 @@ pip install -e .
 pip install -r requirements.txt
 
 echo "Downgrading numpy to 1.23.5 (Piper currently needs numpy<2)"
+pip install --upgrade numba==0.60.0
 pip install --upgrade numpy==1.23.5
 
 bash ./build_monotonic_align.sh

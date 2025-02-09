@@ -24,7 +24,7 @@ To make a custom text to speech voice requires a custom dataset.   Building a cu
 
 ## I have my dataset, how do I use it to train my text to speech model?
 
-1. clone the TextyMcspeechy repository if you haven't already done so. `git clone https://github.com/domesticatedviking/TextyMcSpeechy.git`
+1. clone the TextyMcspeechy repository if you haven't already done so. `git clone https://github.com/domesticatedviking/TextyMcSpeechy.git` (If on Ubuntu/PopOS you have to install python3.10-env and python3.10-dev, sudo apt-get install python3.10-dev python3.10-env)
 2. from the repository directory, run `./install_piper.sh`
 3. `cd tts_dojo/PRETRAINED_CHECKPOINTS`
 4. To download a complete set of pretrained checkpoint files, from `tts_dojo/PRETRAINED_CHECKPOINTS` run `download_defaults.sh en-us` (currently `en-us` is the only preconfigured language option)
