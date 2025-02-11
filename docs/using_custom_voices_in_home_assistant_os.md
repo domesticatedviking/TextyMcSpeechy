@@ -1,6 +1,12 @@
 ## How to install and use a custom Piper voice model in Home Assistant OS
 I put together this guide because I couldn't find an adequate explanation of how to do this anywhere else.  Please read carefully as there are currently some issues arising from the way Piper is implemented in Home Assistant that make this process more confusing than it should be.
 
+#### Note: this guide assumes you will run your voices on the same physical device (eg. Raspberry pi) as Home Assistant.  
+- This option is best for people who plan to render short phrases or phrases that will be used repeatedly.
+- For people wanting to use AI-generated responses, it is generally better to render phrases on more powerful hardware
+- A guide for setting up a GPU-accelerated Piper docker container on another device on the network will be coming soon.
+
+
 ## Install Piper add-on and Wyoming protocol integration
  1. Install the Piper Add-on (Settings > Addons > click ADD-ON STORE button > search for Piper.)
  2. Install the Wyoming protocol integration (Settings > Devices & Services > Integrations > Click ADD INTEGRATION BUTTON > search for Wyoming Protocol).
