@@ -35,35 +35,8 @@ Once your `.onnx` and `.onnx.json` files are in the `/share/piper` folder, resta
 
 ## How do I use my custom voices in my own scripts?
 
-Once you have a model that you know works, here's how you can make use of it in your own scripts just as easily as any other TTS service.
+[This guide](home_assistant_custom_voice_scripts.md) explains how to create and call a service script that will render text using your custom voices. You should create one for each of the voices you intend to use.
 
-1. Create a script for your custom voice which accepts a template value as an input. The script below is called `say_as_bob`  (note that you need to use your own `media_player_entity_id` and `voice` ).  If you need output to go to multiple speakers, you can use a comma separated list (eg:  `media_player_entity_id: media_player.speaker1, media_player.speaker2`)
-```
-# "say_as_bob" tts service script  <-- (don't include this line in your script!)
-
-action: tts.speak
-metadata: {}
-data:
-  cache: true
-  message: "{{ message }}"
-  media_player_entity_id: media_player.myspeakername
-  options:
-    voice: en_US-bob-medium
-target:
-  entity_id: tts.piper
-
-```
-
-2. To call the `say_as_bob` service script above to make Piper say things in Bob's voice, use the format of the `introduce_bob` script example below (this `yaml`  also can be used  from Developer Tools > Actions for test purposes)
-
-```
-# "introduce_bob" example usage script  <-- (don't include this line in your script!)
-
-action: script.say_as_bob
-data_template:
-  message: "Pleased to meet you, I'm bob"
-
-```
 
 ## A simple TTS voice tester GUI for Home Assistant lovelace dashboards
 
