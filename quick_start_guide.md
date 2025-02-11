@@ -28,7 +28,7 @@ To make a custom text to speech voice requires a custom dataset.   Building a cu
 2. Due to some dependencies being picky about the version of python used, you will need to have Python 3.10 installed.`sudo apt-get install python3.10-dev python3.10-venv`  (thank you to diablo581)
 3. from the repository directory, run `./install_piper.sh`
 4. `cd tts_dojo/PRETRAINED_CHECKPOINTS`
-5. To download a complete set of pretrained checkpoint files, from `tts_dojo/PRETRAINED_CHECKPOINTS` run `download_defaults.sh en-us` (currently `en-us` is the only preconfigured language option)
+5. To download a complete set of pretrained checkpoint files, from `tts_dojo/PRETRAINED_CHECKPOINTS` run `./download_defaults.sh en-us` (currently `en-us` is the only preconfigured language option)
 6. You can use `PRETRAINED_CHECKPOINTS/languages/en-us.conf` as a template for making `.conf` files to download piper checkpoints for other languages.  Pull requests are welcome.
 7. Copy your audio files and `metadata.csv` file to a new directory inside of `tts_dojo/DATASETS`.  Keep backups of your original files!  
 8. from `tts_dojo/DATASETS`, run `./create_dataset.sh <your_dataset_dir>` to set up your dataset.  This will sort your files by file format and sampling rate, and automatically create 22050hz and 16000hz `.wav` versions of your files if they do not exist. It will also ensure that files mentioned in `metadata.csv` are present.
