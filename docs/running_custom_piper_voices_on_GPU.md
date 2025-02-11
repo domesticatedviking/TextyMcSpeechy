@@ -4,7 +4,7 @@ For conversational AI apps, a Raspberry pi just isn't fast enough to render long
 
 
 ## Part 1: Setting up a docker container with Piper and Wyoming Protocol
-1. Install Docker
+1. Install Docker on a computer with a GPU or faster CPU than your home assistant server.
 2. Give thanks to the creators of this repo [https://github.com/linuxserver/docker-piper] 
 3. Prepare your custom voice files [as required by Piper](renaming_and_preparing_custom_piper_voices.md). 
 4. Make sure your host machine has a local IP address that won't change.  (Set up a DHCP reservation in your router's admin menu or use a static IP).  You will need this ip address later, so make a note of it.
@@ -72,7 +72,7 @@ docker container ps
 ## Part 3: Using custom voices on your GPU-accelerated piper docker container
 
 1. Use [this guide](home_assistant_custom_voice_scripts.md) to create service scripts for any of the custom voices that exist in `/path/to/piper_gpu/custom_voices/`  
-    - Filenames are case-sensitive and must match exactly.  Omit the `.onnx` extension when referring to piper voices in scripts)
+    - Filenames are case-sensitive and must match exactly.  Omit the `.onnx` extension when referring to piper voices in scripts.
     - Take care to use the correct entity (eg `tts.piper_gpu`) for the `entity_id`.
 2. Provided your docker container is running properly, you can use your custom voices just like you would if they were running on the same machine as Home Assistant. The only real difference is the name of the service script you use to call them, and the fact that the output will be ready much, much faster.
     
