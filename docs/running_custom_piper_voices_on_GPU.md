@@ -8,7 +8,7 @@ For conversational AI apps, a Raspberry pi just isn't fast enough to render long
 2. Give thanks to the creators of this repo [https://github.com/linuxserver/docker-piper] 
 3. Prepare your custom voice files [as required by Piper](renaming_and_preparing_custom_piper_voices.md). 
 4. Make sure your host machine has a local IP address that won't change.  (Set up a DHCP reservation in your router's admin menu or use a static IP).  You will need this ip address later, so make a note of it.
-5. Create a folder for to hold the files that will be used to create the docker container and store the custom voice files: `/path/to/piper_gpu`. 
+5. Create a folder to hold the files that will be used to create the docker container and store the custom voice files: `/path/to/piper_gpu`. 
 6. Create a folder inside `/path/to/piper_gpu` called `custom_voices`
 7. Copy your [properly renamed](renaming_and_preparing_custom_piper_voices.md) `.onnx` and `.onnx.json` files to `/path/to/piper_gpu/custom_voices/`
 8. Create the `docker-compose.yml` file below in your favorite text editor.  Edit the path in the `volumes:` section so that it points to your `custom_voices` folder.  It is important that this line ends with `:/config`
