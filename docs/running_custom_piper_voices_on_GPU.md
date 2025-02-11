@@ -4,7 +4,7 @@ For conversational AI apps, a Raspberry pi just isn't fast enough to render long
 
 
 ## Part 1: Setting up a docker container with Piper and Wyoming Protocol
-1. Install Docker on a computer with a GPU or faster CPU than your home assistant server.
+1. Install Docker on a computer with a Nvidia GPU or faster CPU than your home assistant server.
 2. Give thanks to the creators of this repo [https://github.com/linuxserver/docker-piper] 
 3. Prepare your custom voice files [as required by Piper](renaming_and_preparing_custom_piper_voices.md). 
 4. Make sure your host machine has a local IP address that won't change.  (Set up a DHCP reservation in your router's admin menu or use a static IP).  You will need this ip address later, so make a note of it.
