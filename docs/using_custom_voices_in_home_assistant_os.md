@@ -3,8 +3,8 @@ I put together this guide because I couldn't find an adequate explanation of how
 
 #### Note: this guide assumes you will run your voices on the same physical device (eg. Raspberry pi) as Home Assistant.  
 - This option is best for people who plan to render short phrases or phrases that will be used repeatedly.
-- For people wanting to use AI-generated responses, it is generally better to render phrases on more powerful hardware
-- A guide for setting up a GPU-accelerated Piper docker container on another device on the network will be coming soon.
+- To learn how to run a (GPU accelerated) piper docker container on another machine on your network, use [this guide](running_custom_piper_voices_on_GPU.md) instead.
+
 
 
 ## Install Piper add-on and Wyoming protocol integration
