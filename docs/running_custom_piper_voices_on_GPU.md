@@ -66,7 +66,7 @@ docker container ps
       -  In the `Host` field, use the IP address of the computer running your docker container. (eg 192.168.1.xxx).
       -  In the `Port` field, use `10200` (or change to a custom port as needed)
 3. In the Wyoming protocol integration menu, optionally change the entity name to `piper_gpu` by clicking the `1 entity` link, then click the piper entity on the following screen, in the dialog box that appears, click the gear icon, then change the `Entity id` to `tts.piper_gpu` and click `update`.
-4. Test the service with the following script:
+4. Test the service with the following script.
 ```
 action: tts.speak
 metadata: {}
