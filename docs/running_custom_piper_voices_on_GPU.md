@@ -1,5 +1,5 @@
 # A guide for running a GPU accelerated docker container to speed up responses in Home Assistant.
-## NOTE: WORK IN PROGRESS
+## NOTE: WORK IN PROGRESS, it should work as written but more detail is coming.
 
 Steps:
 ## Part 1: Setting up a docker container with Piper and Wyoming Protocol
