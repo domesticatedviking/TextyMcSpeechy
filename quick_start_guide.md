@@ -25,14 +25,13 @@ To make a custom text to speech voice requires a custom dataset.   Building a cu
 ## I have my dataset, how do I use it to train my text to speech model?
 
 1. clone the TextyMcspeechy repository if you haven't already done so. `git clone https://github.com/domesticatedviking/TextyMcSpeechy.git`
-2. Due to some dependencies being picky about the version of python used, you will need to have Python 3.10 installed.`sudo apt-get install python3.10-dev python3.10-venv`  (thank you to diablo581)
-3. from the repository directory, run `./install_piper.sh`
-4. `cd tts_dojo/PRETRAINED_CHECKPOINTS`
-5. To download a complete set of pretrained checkpoint files, from `tts_dojo/PRETRAINED_CHECKPOINTS` run `download_defaults.sh en-us` (currently `en-us` is the only preconfigured language option)
-6. You can use `PRETRAINED_CHECKPOINTS/languages/en-us.conf` as a template for making `.conf` files to download piper checkpoints for other languages.  Pull requests are welcome.
-7. Copy your audio files and `metadata.csv` file to a new directory inside of `tts_dojo/DATASETS`.  Keep backups of your original files!  
-8. from `tts_dojo/DATASETS`, run `./create_dataset.sh <your_dataset_dir>` to set up your dataset.  This will sort your files by file format and sampling rate, and automatically create 22050hz and 16000hz `.wav` versions of your files if they do not exist. It will also ensure that files mentioned in `metadata.csv` are present.
-9. run `tts_dojo/newdojo.sh <voice_name>` to create a dojo for the voice you are about to build.
-10. inside of `<voice_name>_dojo`, run `./run_training.sh`
-11. You will be prompted to choose a dataset, the dataset will be pre-processed, and training will begin.
-12. TextyMcspeechy works by starting a Piper training session, periodically grabbing the `.ckpt` files that Piper creates, and converting them into usable Piper voice models, which are stored in `tts_dojo/yourvoice_dojo/tts_voices`. The amount of time it takes to train a voice is highly dependent the size of your dataset, and it is not unusual for it to take 20 minutes or more for the first voice model to be generated.    Because each individual checkpoint file is over 800MB, TextyMcSpeechy doesn't save all of the checkpoints that Piper generates.   You can adjust how often checkpoints are saved or manually save the current checkpoint at any point in the training process from the Checkpoint Grabber window.  Whenever the checkpoint grabber saves a checkpoint, it also immediately converts it into a usable Piper voice and saves it in `tts_dojo/yourvoice_dojo/tts_voices`.
+2. from the repository directory, run `./setup.sh` to get the `textymcspeechy-piper` docker image you will need to train voices.
+3. `cd tts_dojo/PRETRAINED_CHECKPOINTS`
+4. To download a complete set of pretrained checkpoint files, from `tts_dojo/PRETRAINED_CHECKPOINTS` run `download_defaults.sh en-us` (currently `en-us` is the only preconfigured language option)
+5. You can use `PRETRAINED_CHECKPOINTS/languages/en-us.conf` as a template for making `.conf` files to download piper checkpoints for other languages.  Pull requests are welcome.
+6. Copy your audio files and `metadata.csv` file to a new directory inside of `tts_dojo/DATASETS`.  Keep backups of your original files!  
+7. from `tts_dojo/DATASETS`, run `./create_dataset.sh <your_dataset_dir>` to set up your dataset.  This will sort your files by file format and sampling rate, and automatically create 22050hz and 16000hz `.wav` versions of your files if they do not exist. It will also ensure that files mentioned in `metadata.csv` are present.
+8. run `tts_dojo/newdojo.sh <voice_name>` to create a dojo for the voice you are about to build.
+9. inside of `<voice_name>_dojo`, run `./run_training.sh`
+10. You will be prompted to choose a dataset, the dataset will be pre-processed, and training will begin.
+11. TextyMcspeechy works by starting a Piper training session, periodically grabbing the `.ckpt` files that Piper creates, and converting them into usable Piper voice models, which are stored in `tts_dojo/yourvoice_dojo/tts_voices`. The amount of time it takes to train a voice is highly dependent the size of your dataset, and it is not unusual for it to take 20 minutes or more for the first voice model to be generated.    Because each individual checkpoint file is over 800MB, TextyMcSpeechy doesn't save all of the checkpoints that Piper generates.   You can adjust how often checkpoints are saved or manually save the current checkpoint at any point in the training process from the Checkpoint Grabber window.  Whenever the checkpoint grabber saves a checkpoint, it also immediately converts it into a usable Piper voice and saves it in `tts_dojo/yourvoice_dojo/tts_voices`.
