@@ -7,7 +7,7 @@ services:
       - ./tts_dojo:/app/tts_dojo
     runtime: nvidia  # Enable GPU acceleration
     environment:
-      - PUID=${TMS_USER_ID:-1000}   
+      - PUID=${TMS_USER_ID:-1000}   #TMS_USER_ID is set by run_training.sh to avoid permissions issues
       - PGID=${TMS_GROUP_ID:-1000}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
