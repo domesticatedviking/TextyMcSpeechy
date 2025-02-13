@@ -1,0 +1,18 @@
+services:
+  piper:
+    build: .
+    container_name: textymcspeechy-piper
+    hostname: textymcspeechy-piper
+    volumes:
+      - ./tts_dojo:/app/tts_dojo
+    runtime: nvidia  # Enable GPU acceleration
+    environment:
+      - PUID=${TMS_USER_ID:-1000}   
+      - PGID=${TMS_GROUP_ID:-1000}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    user: "${TMS_USER_ID:-1000}:${TMS_GROUP_ID:-1000}"
+    tty: true
+   
+
+
