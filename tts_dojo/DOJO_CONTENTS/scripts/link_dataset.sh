@@ -1,56 +1,48 @@
 #!/bin/bash
+# scripts/link_dataset.sh  - Configures a voice_dojo to use an existing dataset
 
-# Find file pointing to base dir of this dojo
-
-if [ -e ".DOJO_DIR" ]; then   # running from voicename_dojo
-    DOJO_DIR=$(cat ".DOJO_DIR")
-elif [ -e "../.DOJO_DIR" ]; then
-    DOJO_DIR=$(cat "../.DOJO_DIR") # running from /scripts
-else
-    echo ".DOJO_DIR not found.   Exiting"
-    exit 1
-fi
-
-#relative paths require this script to run from $DOJO_DIR/scripts for docker install
-cd $DOJO_DIR/scripts
-
-
-TTS_DOJO_DIR=$(dirname $DOJO_DIR)
-echo "TTS_DOJO_DIR= $TTS_DOJO_DIR"
-
-
-
-dataset_dir="$TTS_DOJO_DIR"/"DATASETS"
-
-declare -a menu_items
-declare -a dataset_dirs
-selected_dataset_dir=""
-quality=""
-menu_length=0
-sampling_rate=0
-conf_file_path=""
-VARFILE_SAMPLING_RATE="${DOJO_DIR}/scripts/.SAMPLING_RATE"
-VARFILE_MAX_WORKERS="${DOJO_DIR}/scripts/.MAX_WORKERS"
-VARFILE_QUALITY="${DOJO_DIR}/target_voice_dataset/.QUALITY"
+# path constants
+DOJO_DIR="."       # path to <voice>_dojo 
+TTS_DOJO_DIR=".."  # path to TextyMcSpeechy/tts_dojo
+VARFILE_SAMPLING_RATE=".SAMPLING_RATE"
+VARFILE_MAX_WORKERS=".MAX_WORKERS"
+VARFILE_QUALITY=".QUALITY"
 AUDIO_DIR_SYMLINK="../target_voice_dataset/wav"
 DATASET_CONFIG_SYMLINK="../target_voice_dataset/dataset.conf" 
 METADATA_PATH_SYMLINK="../target_voice_dataset/metadata.csv"
 DEFAULT_CHECKPOINT_DIR_SYMLINK="../pretrained_tts_checkpoint/"
+DATASET_DIR="../DATASETS"
+
+# infer name of dojo and voice from directory name
+DOJO_NAME=$(awk -F'/' '{print $(NF)}' <<< "$PWD")
+VOICE_NAME=$(awk -F'/' '{print $(NF)}' <<< "$PWD" | sed 's/_dojo$//')
+
+# initialize global vars
+declare -a menu_items  
+declare -a dataset_dirs
+selected_dataset_dir=""
+quality=""
+qualitydir=""
+menu_length=0
+sampling_rate=0
+conf_file_path=""
+
 
 count_wav_files() {
+# counts number of wav files in specified directory    
     local directory="$1"
-
     if [[ -z "$directory" ]]; then
         echo "Error: directory does not exist"
         return 1
     fi
-
     local count=$(find -L "$directory" -maxdepth 1 -type f \( -iname "*.wav" \) | wc -l)
     echo "$count"
 }
 
 
 get_max_workers() {
+# calculates the max_workers parameter for piper preprocessing
+# prevents Piper errors when preprocessing small datasets on high core count CPUs (closed issue #2)  
     local wav_count=$(count_wav_files $audio_dir)
     local core_count=$(nproc)
     if [ "$wav_count" -ge $((2 * $core_count)) ]; then
@@ -64,130 +56,124 @@ get_max_workers() {
 
 
 write_varfile_max_workers(){
-    #calculate and write max_workers
+# writes parameter needed by Piper preprocessing to file 
     max_workers=$(get_max_workers)
     echo ${max_workers} > ${VARFILE_MAX_WORKERS}
   }
 
+
 write_varfile_sampling_rate(){
+# writes sampling rate needed by Piper training to file
     echo ${sampling_rate} > ${VARFILE_SAMPLING_RATE}
  }
- 
+
+
 write_varfile_quality(){
+# writes voice quality setting needed by Piper training to file
     echo ${quality} > ${VARFILE_QUALITY}
  }
 
 
-
-
-# Function to read NAME and DESCRIPTION from default.conf
 get_conf_values() {
+# retrieves NAME and DESCRIPTION from voice dataset configuration file
     local conf_file=$1
     source "$conf_file"
     echo "$NAME|$DESCRIPTION"
 }
 
-# Populate menu_items and dataset_dirs arrays
+
 populate_menu(){
-index=1
-while IFS= read -r -d '' conf_file; do
-    conf_values=$(get_conf_values "$conf_file")
-    location=$(basename $(dirname $conf_file))
-    IFS='|' read -r name description <<< "$conf_values"   # unpack multiple values from get_conf_values
-    menu_items+=("$index)           Name: $name   \n      Description: $description   \n         location: DATASETS/$location \n")
-    dataset_dirs+=("$(dirname "$conf_file")")
-    ((index++))
-    ((menu_length++))
-done < <(find "$dataset_dir" -type f -name "dataset.conf" -print0)
-
+# Loop to populate menu_items and dataset_dirs arrays
+    index=1
+    while IFS= read -r -d '' conf_file; do
+        conf_values=$(get_conf_values "$conf_file")
+        location=$(basename $(dirname $conf_file))
+        IFS='|' read -r name description <<< "$conf_values"   # unpack multiple values from get_conf_values
+        menu_items+=("$index)           Name: $name   \n      Description: $description   \n         location: DATASETS/$location \n")
+        dataset_dirs+=("$(dirname "$conf_file")")
+        ((index++))
+        ((menu_length++))
+    done < <(find "$DATASET_DIR" -type f -name "dataset.conf" -print0)
 }
 
-# Display the menu
+
 display_menu(){
-clear
-echo -e "Select a dataset to use for this dojo:\n"
+# Show menu with list of datasets to choose from
+    clear
+    echo -e "Select a dataset to use for this dojo:\n"
 
-for item in "${menu_items[@]}"; do
-    echo -e "$item"
-done
-
+    for item in "${menu_items[@]}"; do
+        echo -e "$item"
+    done
 }
 
-# Read user selection
+
 get_dataset_choice(){
-read -p "Enter the number of your choice: " choice
+# Prompts user to choose a voice dataset
+    read -p "Enter the number of your choice: " choice
 
-# Validate choice and set selected_dataset_dir
-if [[ "$choice" -gt 0 && "$choice" -le "${#dataset_dirs[@]}" ]]; then
-    selected_dataset_dir="${dataset_dirs[$((choice-1))]}"
-    echo "You selected: $selected_dataset_dir"
-else
-    echo "Invalid selection. Exiting."
-    exit 1
-fi
+    # Validate choice and set selected_dataset_dir
+    if [[ "$choice" -gt 0 && "$choice" -le "${#dataset_dirs[@]}" ]]; then
+        selected_dataset_dir="${dataset_dirs[$((choice-1))]}"
+        echo "You selected: $selected_dataset_dir"
+    else
+        echo "Invalid selection. Exiting."
+        exit 1
+    fi
 }
+
 
 get_quality_choice(){
-clear
-answer=""
-
-echo -e  "Please select a quality level for the model that will be built in this dojo:\n"
-echo -e  "    [L]ow     - (use if generating speech on raspberry pi or other slower device)"
-echo -e  "    [M]edium"
-echo -e  "    [H]igh"
-echo
-echo -ne "     "
-while [ "$answer" = "" ]; do
-    read quality
-    quality="${quality^^}"
-    if [ "$quality" == "L" ] || [ "$quality" == "M" ] || [ "$quality" == "H" ]; then
-        answer="true"
-    else
-        echo -ne "    [L,M,H]? " 
-    fi
-    
-    
-done
-
-#echo "Selected quality level was:  $quality"
-
-}
-
-import_dataset_conf(){
-conf_file_path="$selected_dataset_dir"/dataset.conf
-echo "conf_file_path = $conf_file_path"
-source $conf_file_path
+# Prompts user to choose a voice quality
+    clear
+    answer=""
+    echo -e  "Please select a quality level for the model that will be built in this dojo:\n"
+    echo -e  "    [L]ow     - (use if generating speech on raspberry pi or other slower device)"
+    echo -e  "    [M]edium"
+    echo -e  "    [H]igh"
+    echo
+    echo -ne "     "
+    while [ "$answer" = "" ]; do
+        read quality
+        quality="${quality^^}"
+        if [ "$quality" == "L" ] || [ "$quality" == "M" ] || [ "$quality" == "H" ]; then
+            answer="true"
+        else
+            echo -ne "    [L,M,H]? " 
+        fi    
+    done
 }
 
 
-# Create relative reference to dataset configuration.
 relative_import_dataset_conf(){
-conf_file_path="../../DATASETS/$(basename $selected_dataset_dir)/dataset.conf"
-echo "conf_file_path = $conf_file_path"
-source $conf_file_path
+# Builds relative path to conf file that will work in docker container, loads it on host
+    conf_file_path="../../DATASETS/$(basename $selected_dataset_dir)/dataset.conf"
+    cd scripts    # temporarily change dir so path above works in this script.
+    source $conf_file_path
+    cd ..  
 }
+
 
 find_default_checkpoint_dir(){
-#echo "Checking whether PRETRAINED_CHECKPOINTS contains any appropriate defaults."
-qualitydir=""
-if [ "$quality" = "L" ]; then
-    qualitydir="low"
-elif [ "$quality" = "M" ]; then
-    qualitydir="medium"
-elif [ "$quality" = "H" ]; then
-    qualitydir="high" 
-else 
-    echo "Error - invalid value for quality:  $quality"
-    exit 1
-fi     
-default_checkpoint_dir="$TTS_DOJO_DIR/PRETRAINED_CHECKPOINTS/default/${DEFAULT_VOICE_TYPE}_voice/$qualitydir"
-
-
-#echo "location for pretrained checkpoint:  $default_checkpoint_dir"
+# expands stored quality setting and stores path to selected pretrained checkpoint
+    if [ "$quality" = "L" ]; then
+        qualitydir="low"
+    elif [ "$quality" = "M" ]; then
+        qualitydir="medium"
+    elif [ "$quality" = "H" ]; then
+        qualitydir="high" 
+    else 
+        echo "Error - invalid value for quality:  $quality"
+        exit 1
+    fi     
+    default_checkpoint_dir="$TTS_DOJO_DIR/PRETRAINED_CHECKPOINTS/default/${DEFAULT_VOICE_TYPE}_voice/$qualitydir"
 }
 
 
 function find_default_checkpoint_file(){
+# verifies that pretrained checkpoint file exists in PRETRAINED_CHECKPOINTS
+# considered defaults because they can be overridden by files in <voice>_dojo/starting_checkpoint_override 
+
     echo -e "\n\nLooking for default checkpoint file in tts_dojo/PRETRAINED_CHECKPOINTS"
     echo -e "     quality [low, medium, high]  : $qualitydir"
     echo -e "     voice type [M,F]             : $DEFAULT_VOICE_TYPE\n"
@@ -197,14 +183,15 @@ function find_default_checkpoint_file(){
         echo "Error: default_checkpoint_dir is not set."
         return 1
     fi
-
+    echo -e "  default_checkpoint_dir          : $default_checkpoint_dir"
+    
     # Ensure the directory exists
     if [ ! -d "$default_checkpoint_dir" ]; then
         echo "Error: Directory $default_checkpoint_dir does not exist."
         return 1
     fi
 
-    # Find .ckpt files in the directory
+    # Find all .ckpt files in the directory (there might be more than one)
     ckpt_files=("$default_checkpoint_dir"/*.ckpt)
 
     # Check the number of .ckpt files found
@@ -231,36 +218,35 @@ function find_default_checkpoint_file(){
 
 # 
 get_relative_path_of_pretrained_checkpoint() {
+# converts absolute path to a pretrained checkpoint to a relative path that will work in both docker container and host
     local full_path="$1"
     local relative_path="../..$(echo "$full_path" | sed -E 's|^.*(/PRETRAINED_CHECKPOINTS/)|\1|')"
     echo "$relative_path"
 }
 
 relative_find_default_checkpoint_file(){
-    find_default_checkpoint_file
+# attempts to locate a default pretrained checkpoint file and stores it as relative path.
+    find_default_checkpoint_file  
     relative_default_checkpoint_path="$(get_relative_path_of_pretrained_checkpoint "$default_checkpoint_path")"
-    echo "relative_default_checkpoint_path = $relative_default_checkpoint_path"
     default_checkpoint_path=$relative_default_checkpoint_path
 }
 
-
-
 remove_varfiles(){
+# purges dojo of variable files created in prior runs
    rm $VARFILE_MAX_WORKERS >/dev/null 2>&1
    rm $VARFILE_SAMPLING_RATE >/dev/null 2>&1
    rm $VARFILE_QUALITY >/dev/null 2>&1
 }
 
-
 write_varfiles(){
+# stores all values needed by other scripts in hidden files
    write_varfile_max_workers
    write_varfile_sampling_rate
    write_varfile_quality
 }
 
-
-
 remove_existing_symlink(){
+# deletes symlinks but leaves real files and directories alone
     local link="$1"
     local type_text="file"
     
@@ -276,14 +262,14 @@ remove_existing_symlink(){
             echo "    Error removing symbolic link.  Item found was not a symbolic link, but contains real data."
             echo "    location:  $link"
             echo "    Cannot proceed unless $type_text is deleted or manually moved out of the dojo."
-            echo 
-            
+            echo            
        fi
    fi
 }
                 
-            
+                
 remove_previous_checkpoint(){
+# Checks a specified directory for existence of any checkpoint file and asks for permission to delete it
     local directory="$1"
     checkpoint=""
     
@@ -308,164 +294,83 @@ remove_previous_checkpoint(){
     else
         echo "Exiting."
         exit 1
-    fi
-    
-    
+    fi    
 }          
             
-         
-
-
-
-
-
-
-
-link_files(){  
-#This function uses absolute paths for symlinks, which don't work inside a mounted docker volume. 
-
-
-audio_dir=""
-
-if [ "$quality" = "L" ]; then
-    audio_dir="$selected_dataset_dir"/"$LOW_AUDIO"
-    sampling_rate=16000
-elif [ "$quality" = "M" ]; then
-    audio_dir="$selected_dataset_dir"/"$MEDIUM_AUDIO"
-    sampling_rate=22050
-elif [ "$quality" = "H" ]; then
-    audio_dir="$selected_dataset_dir"/"$HIGH_AUDIO"
-    sampling_rate=22050
-fi
-
-metadata_path="$selected_dataset_dir"/"metadata.csv"
-
-echo
-echo "Source audio directory         : $audio_dir"
-echo "metadata.csv location          : $metadata_path"
-echo "pretrained checkpoint location : $default_checkpoint_path"
-echo
-echo "Creating symbolic links in your dojo."
-
-
-
-
-
-
-if [ -d "$audio_dir" ]; then
-  $(remove_existing_symlink "$AUDIO_DIR_SYMLINK")
-  ln -s "$audio_dir" "$AUDIO_DIR_SYMLINK"
-else
-  echo "Error: Directory $audio_dir does not exist."
-fi
-
-if [ -f "$metadata_path" ]; then
-  $(remove_existing_symlink "$METADATA_PATH_SYMLINK")
-  ln -s "$metadata_path" "$METADATA_PATH_SYMLINK" 
-else
-  echo "Error: File $metadata_path does not exist."
-fi
-
-
-if [ -f "$conf_file_path" ]; then
-  $(remove_existing_symlink "$DATASET_CONFIG_SYMLINK")
-  ln -s "$conf_file_path" "$DATASET_CONFIG_SYMLINK" 
-else
-  echo "Error: File $conf_file_path does not exist."
-fi
-
-
-# Symlinking the checkpoint file requires an extra step because its name isn't always the same.
-checkpoint_filename=$(basename $default_checkpoint_path)
-checkpoint_symlink="${DEFAULT_CHECKPOINT_DIR_SYMLINK}""${checkpoint_filename}"
-  remove_previous_checkpoint $DEFAULT_CHECKPOINT_DIR_SYMLINK  #don't know its name so need function to find it.
-  $(remove_existing_symlink "$checkpoint_symlink")
-#echo "Checkpoint symlink is:  $checkpoint_symlink"
-
-
-if [ -f "$default_checkpoint_path" ]; then
-  ln -s "$default_checkpoint_path" "$checkpoint_symlink"
-else
-  echo "Error: File $default_checkpoint_path does not exist."
-fi
-
-echo "Symbolic links created successfully."
-}
-
-
 
 relative_link_files(){ 
-# To ensure that symlinks will map correctly regardless of whether used inside or outside the docker container,
-# relative paths that can locate the tts_dojo folder from  <voicename>_dojo/target_voice_dataset and <voicename>_dojo/pretrained_tts_checkpoint.
-# Since <voicename>_dojo/scripts is located at the same directory depth scripts in that folder will also use these symlinks correctly. 
+# Symlinks must function correctly in both the host and docker container.
+#   1. in the docker container, TextyMcSpeechy/tts_dojo is mounted at /apps/tts_dojo 
+#   2. on the host machine, it is mounted at /path/to/TextyMcSpeechy/tts_dojo
+#   All paths used by both host and container code must be relative to <voice>_dojo/scripts
+ 
+    dataset_path_relative="../../DATASETS/$(basename $selected_dataset_dir)"
+    
+    # configure dataset paths and sampling rates relevant to chosen quality setting
+    audio_dir=""
+    if [ "$quality" = "L" ]; then
+        audio_dir="$dataset_path_relative"/"$LOW_AUDIO"
+        sampling_rate=16000
+    elif [ "$quality" = "M" ]; then
+        audio_dir="$dataset_path_relative"/"$MEDIUM_AUDIO"
+        sampling_rate=22050
+    elif [ "$quality" = "H" ]; then
+        audio_dir="$dataset_path_relative"/"$HIGH_AUDIO"
+        sampling_rate=22050
+    fi
 
-dataset_path_relative_to_target_voice_dataset="../../DATASETS/$(basename $selected_dataset_dir)"
-echo "path in DATASETS relative to target_voice_dataset folder is: $dataset_path_relative_to_target_voice_dataset"
+    # build path to dataset's metadata.csv file
+    metadata_path="$dataset_path_relative/metadata.csv"
 
+    echo
+    echo "Source audio directory         : $audio_dir"
+    echo "metadata.csv location          : $metadata_path"
+    echo "pretrained checkpoint location : $default_checkpoint_path"
+    echo "dataset.conf path              : $conf_file_path"
+    echo
+    echo "Creating relative symbolic links in your dojo."
+    echo
+     
+    cd scripts # paths stored by this script are relative to <voice>_dojo/scripts so this is necessary here   
+    
+    # Create symlink for relevant audio directory of dataset inside dojo  
+    if [ -d "$audio_dir" ]; then
+        $(remove_existing_symlink "$AUDIO_DIR_SYMLINK")
+        ln -s "$audio_dir" "$AUDIO_DIR_SYMLINK"
+    else
+        echo "Error: audio directory $audio_dir does not exist."
+    fi
 
-audio_dir=""
-if [ "$quality" = "L" ]; then
-    audio_dir="$dataset_path_relative_to_target_voice_dataset"/"$LOW_AUDIO"
-    sampling_rate=16000
-elif [ "$quality" = "M" ]; then
-    audio_dir="$dataset_path_relative_to_target_voice_dataset"/"$MEDIUM_AUDIO"
-    sampling_rate=22050
-elif [ "$quality" = "H" ]; then
-    audio_dir="$dataset_path_relative_to_target_voice_dataset"/"$HIGH_AUDIO"
-    sampling_rate=22050
-fi
+    # Create symlink for dataset's metadata.csv inside dojo
+    if [ -f "$metadata_path" ]; then
+        $(remove_existing_symlink "$METADATA_PATH_SYMLINK")
+        ln -s "$metadata_path" "$METADATA_PATH_SYMLINK" 
+    else
+        echo "Error: metadata file  $metadata_path does not exist."
+    fi
+    
+    # Create symlink for dataset's configuration file inside dojo
+    if [ -f "$conf_file_path" ]; then
+        $(remove_existing_symlink "$DATASET_CONFIG_SYMLINK")
+        ln -s "$conf_file_path" "$DATASET_CONFIG_SYMLINK" 
+    else
+        echo "WARNING: dataset configuration file $conf_file_path does not exist."
+    fi
 
-metadata_path="$dataset_path_relative_to_target_voice_dataset/metadata.csv"
-echo "metadata_path relative to dojo is: $metadata_path"
-
-echo
-echo "Source audio directory         : $audio_dir"
-echo "metadata.csv location          : $metadata_path"
-echo "pretrained checkpoint location : $default_checkpoint_path"
-echo "dataset.conf path              : $conf_file_path"
-echo
-echo "Creating relative symbolic links in your dojo."
-
-if [ -d "$audio_dir" ]; then
-  $(remove_existing_symlink "$AUDIO_DIR_SYMLINK")
-  ln -s "$audio_dir" "$AUDIO_DIR_SYMLINK"
-else
-  echo "Error: Directory $audio_dir does not exist."
-fi
-
-if [ -f "$metadata_path" ]; then
-  $(remove_existing_symlink "$METADATA_PATH_SYMLINK")
-  ln -s "$metadata_path" "$METADATA_PATH_SYMLINK" 
-else
-  echo "Error: File $metadata_path does not exist."
-fi
-
-if [ -f "$conf_file_path" ]; then
-  $(remove_existing_symlink "$DATASET_CONFIG_SYMLINK")
-  ln -s "$conf_file_path" "$DATASET_CONFIG_SYMLINK" 
-else
-  echo "Error: File $conf_file_path does not exist."
-fi
-
-# Symlinking the checkpoint file requires an extra step because its name isn't always the same.
-checkpoint_filename=$(basename $default_checkpoint_path)
-checkpoint_symlink="${DEFAULT_CHECKPOINT_DIR_SYMLINK}""${checkpoint_filename}"
-  remove_previous_checkpoint $DEFAULT_CHECKPOINT_DIR_SYMLINK  #don't know its name so need function to find it.
-  $(remove_existing_symlink "$checkpoint_symlink")
-#echo "Checkpoint symlink is:  $checkpoint_symlink"
-
-
-if [ -f "$default_checkpoint_path" ]; then
-  ln -s "$default_checkpoint_path" "$checkpoint_symlink"
-else
-  echo "Error: File $default_checkpoint_path does not exist."
-fi
-
-echo "Symbolic links created successfully."
+    # Remove any existing checkpoint files from dojo
+    checkpoint_filename=$(basename $default_checkpoint_path)
+    checkpoint_symlink="${DEFAULT_CHECKPOINT_DIR_SYMLINK}""${checkpoint_filename}"
+    remove_previous_checkpoint $DEFAULT_CHECKPOINT_DIR_SYMLINK  #don't know its name so need function to find it.
+    $(remove_existing_symlink "$checkpoint_symlink")
+    
+    # Create symlink for default checkpoint file in dojo
+    if [ -f "$default_checkpoint_path" ]; then
+        ln -s "$default_checkpoint_path" "$checkpoint_symlink"
+    else
+        echo "Error: default checkpoint path file $default_checkpoint_path does not exist."
+    fi
+    echo "Symbolic links created successfully."
 }
-
-
-
 
 
 # MAIN PROGRAM
@@ -482,8 +387,3 @@ find_default_checkpoint_dir
 relative_find_default_checkpoint_file
 relative_link_files
 write_varfiles
-
-
-
-
-
