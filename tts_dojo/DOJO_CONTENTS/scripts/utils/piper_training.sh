@@ -1,55 +1,46 @@
 #!/bin/bash
-#DOCKERIZED VERSION OF piper_training.sh
+# scripts/piper_training.sh - Runs training inside docker container.
+# Expects one parameter:  a relative path to a starting checkpoint file
+echo "Running piper_training.sh"
 
 trap "kill 0" SIGINT
-DOJO_DIR=$(cat ../.DOJO_DIR)
-PIPER_PATH=$(cat $DOJO_DIR/.PIPER_PATH)
-VOICE_NAME=$(cat $DOJO_DIR/.VOICE_NAME)
+set +e # Exit immediately if any command returns a non-zero exit code
 
-TTS_VOICES="tts_voices"
-EXPORT_START_TIME="/tmp/export_start_time" #save timestamp for beginning of last export
-LAST_EXPORT_SECONDS="/tmp/last_voice_export_seconds"
+SETTINGS_FILE="SETTINGS.txt"
+# infer name of dojo and voice from directory name
+DOJO_NAME=$(basename "$(dirname "$PWD")")  # this script runs from <name>_dojo/scripts so need parent directory   
+VOICE_NAME=$(echo "$DOJO_NAME" | sed 's/_dojo$//')
 
-#settings_file=$DOJO_DIR/scripts/SETTINGS.txt
-settings_file=SETTINGS.txt
-if [ -e $settings_file ]; then
-    source $settings_file
+# sanity check for current directory
+if [[ ! "$DOJO_NAME" =~ _dojo$ ]]; then
+    echo "Error: DOJO_NAME did not end with '_dojo'. Are you running from <voice>_dojo/scripts directory?  Exiting." >&2
+    exit 1
+fi
+
+# load training settings from SETTINGS_FILE
+if [ -e $SETTINGS_FILE ]; then
+    source $SETTINGS_FILE
 else
     echo "$0 - settings not found"
-    echo "     expected location: $settings_file"
+    echo "     expected location: $SETTINGS_FILE"
     echo 
     echo "press <enter> to exit"
     exit 1
 fi
 
-
-
-
-
-# Check if the starting checkpoint is provided
+# Check if the starting checkpoint parameter is provided
 if [ -z "$1" ]; then
   echo "Usage: $0 <starting_checkpoint>:path to a checkpoint file"
   exit 1
 fi
-
-# Assign the starting checkpoint to a variable
 starting_checkpoint=$1
 echo
 echo
 echo "starting_checkpoint path = $starting_checkpoint"
 echo
 echo
-#PIPER_PATH=$(cat .PIPER_PATH)
-#echo "PIPER_PATH = '$PIPER_PATH'"
 
-DOJO_DIR=$(cat .DOJO_DIR)
-echo "DOJO_DIR = '$DOJO_DIR'"
-DOJO_NAME=$(basename $DOJO_DIR)
-echo "DOJO_NAME = '$DOJO_NAME'"
-
-#cd $PIPER_PATH/src/python
-#source .venv/bin/activate
-
+# run piper training in docker container (textymcspeechy-piper)
 docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
     && python -m piper_train \
     --dataset-dir "/app/tts_dojo/$DOJO_NAME/training_folder/" \
@@ -63,6 +54,5 @@ docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
     --checkpoint-epochs $PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS \
     --precision 32
 "
-#deactivate    
-exit 0
 
+exit 0
