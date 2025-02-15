@@ -1,81 +1,67 @@
 #!/bin/bash
+#preprocess_dataset.sh:   Configures and runs piper_train.preprocess inside the textymcspeechy-piper docker container
+
+DOJO_NAME=$(basename $PWD) # Get from <voice_name>_dojo
+SETTINGS_FILE="SETTINGS.txt"
+MASTER_SETTINGS_FILE="../../DOJO_CONTENTS/scripts/$SETTINGS_FILE" #relative to this dojo's scripts dir 
+
+#.SAMPLING_RATE and .MAX_WORKERS are stored in <voice>_dojo/scripts by link_dataset.sh
+if [[ -f .SAMPLING_RATE ]]; then
+    SAMPLING_RATE=$(cat .SAMPLING_RATE)
+else
+    echo "Error: .SAMPLING_RATE file not found."
+    exit 1 
+fi
+
+if [[ -f .MAX_WORKERS ]]; then
+    MAX_WORKERS=$(cat .MAX_WORKERS)
+else
+    echo "Error: .MAX_WORKERS file not found."
+    exit 1
+fi
 
 
-# Exit immediately if any command returns a non-zero exit code
-set +e
+cd scripts # needed to ensure relative paths are built properly
+set +e # Exit immediately if any command returns a non-zero exit code
 language=""
-current_dir=$(pwd)
+
+# load settings
+if [ -e "$SETTINGS_FILE" ]; then 
+    source "$SETTINGS_FILE"  #loads vars from SETTINGS.txt
+else
+    echo "could not find $SETTINGS_FILE. Exiting."
+    exit 1
+fi
 
 
-
-# Function to handle errors
 error_handler() {
   echo "An error occurred in the script. Exiting."
   exit 1
 }
+
 export -f error_handler
+
 # Trap errors and call the error_handler function
-#trap 'error_handler' ERR SIGINT SIGTERM
+trap 'error_handler' ERR SIGINT SIGTERM
 
-BIN_DIR=$(cat .BIN_DIR)
-#echo "BIN_DIR = '$BIN_DIR'"
-
-PIPER_PATH=$(cat .PIPER_PATH)
-#echo "PIPER_PATH = '$PIPER_PATH'"
-
-DOJO_DIR=$(cat .DOJO_DIR)
-#echo "DOJO_DIR = '$DOJO_DIR'"
-cd $DOJO_DIR/scripts
-
-TTS_DOJO_DIR=$(dirname $DOJO_DIR)  # parent of all dojos
-
-#if [[ -n "$VIRTUAL_ENV" ]]; then
-#    echo
-#    
-#elif [ -e "$BIN_DIR/activate" ]; then
-#   echo "Activating virtual environment."
-#   source $BIN_DIR/activate
-#else
-#    echo "ERROR --  No python virtual environment was found."
-#    echo
-#    echo "Exiting."
-#    exit 1
-#fi
-
-SETTINGS_FILE="SETTINGS.txt"
-
-if [ -e "$SETTINGS_FILE" ]; then 
-    source "$SETTINGS_FILE"
-else
-    echo "could not find $SETTINGS_FILE.   exiting."
-    exit 1
-fi
-
-MASTER_SETTINGS_FILE="$TTS_DOJO_DIR/DOJO_CONTENTS/scripts/$SETTINGS_FILE"
 
 check_pretrained_language(){
-   local pretrained=$(cat "$TTS_DOJO_DIR/PRETRAINED_CHECKPOINTS/default/.ESPEAK_LANGUAGE" 2>/dev/null || echo "")
+   local pretrained=$(cat "../../PRETRAINED_CHECKPOINTS/default/.ESPEAK_LANGUAGE" 2>/dev/null || echo "")
    echo $pretrained
 }
 
 
-
-
-
-SAMPLING_RATE=$(cat .SAMPLING_RATE)      #inferred by dataset sanitizer
-echo -e "       Auto-configured sampling rate: $SAMPLING_RATE"
-
-MAX_WORKERS=$(cat .MAX_WORKERS)          #calculated by dataset sanitizer.
+# MAIN PROGRAM ********************************************************************************
+      
+echo -e "       Auto-configured sampling rate: $SAMPLING_RATE"         
 echo -e "    Calculated value for max-workers: $MAX_WORKERS"
 echo
 echo
 
-
-
 pretrained_language=$(check_pretrained_language)
-pretrained_absent=$?
+pretrained_absent=$? 
 
-SETTINGS_LANGUAGE=$SETTINGS_ESPEAK_LANGUAGE #eg, en-us
+SETTINGS_LANGUAGE=$SETTINGS_ESPEAK_LANGUAGE #eg en-us (sourced from SETTINGS.txt)
 
 if [ "$pretrained_language" = "" ] && [ "$SETTINGS_LANGUAGE" != "" ]; then
     echo "Warning: No language was configured in PRETRAINED_CHECKPOINTS/DEFAULT/.ESPEAK_LANGUAGE"
@@ -89,9 +75,9 @@ elif [ "$pretrained_language" != "" ] && [ "$SETTINGS_LANGUAGE" = "" ]; then
     echo "What would you like to do?"
     echo "[1] Make $pretrained_language the default language for this and all future dojos (recommended)"
     echo "[2] Make $pretrained_language the default language for this dojo only"
-    echo "[3] Ask this again next time"
-    
+    echo "[3] Ask this again next time"   
     read savelang
+    
     if [ "$savelang" = "1" ]; then
         sed -i "s/^SETTINGS_ESPEAK_LANGUAGE=.*/SETTINGS_ESPEAK_LANGUAGE=$pretrained_language/" $MASTER_SETTINGS_FILE
     fi
@@ -104,7 +90,7 @@ elif [ "$pretrained_language" != "" ] && [ "$SETTINGS_LANGUAGE" = "" ]; then
 elif [ "$pretrained_language" != "$SETTINGS_LANGUAGE" ] && [ "$SETTINGS_LANGUAGE" != "" ]; then
     echo "Warning: Default pretrained checkpoint files are not using the same language specified in $SETTINGS_FILE"
     echo -e "PRETRAINED_CHECKPOINTS/DEFAULT/.PRETRAINED_LANGUAGE contained:\n    $pretrained_language\n"
-    echo -e "$(basename $DOJO_DIR)/scripts/SETTINGS.txt contained:\n    $SETTINGS_LANGUAGE\n"
+    echo -e "/scripts/SETTINGS.txt contained:\n    $SETTINGS_LANGUAGE\n"
     echo
     echo "What would you like to do?"
     echo "    [1] use $pretrained_language (the language of your pretrained TTS model)"
@@ -131,16 +117,13 @@ else
    language=$SETTINGS_LANGUAGE
 fi
 
-echo "Configuring piper for language: $language"
+echo "Configuring Piper for language: $language"
 echo "Running piper_train.preprocess"
 echo
 echo
 
-#extract the basename to build correct path for docker container
-DOJO_NAME=$(basename $DOJO_DIR)
- 
-# Change to the appropriate directory
-# Run the Python script
+# Run the piper preprocessing script inside of the textymspeechy-piper docker container.
+# note:  /app/piper/src/python refers to a path inside the container. 
 docker exec textymcspeechy-piper bash -c "
   cd /app/piper/src/python && \
   python3 -m piper_train.preprocess \
@@ -156,16 +139,14 @@ result=$?
 if [ $result -eq 0 ];then 
     echo
     echo
-    echo
     echo "    Successfully preprocessed dataset."
     echo 
-    echo "    Press <ENTER> to continue"
+    echo "    Press <Enter> to continue"
     read
     echo
 else
-    echo  "piper_train.preprocess failed.  Press <enter> to exit."
+    echo  "piper_train.preprocess failed.  Press <Enter> to exit."
     read
     exit 1
 fi
-cd $DOJO_DIR/scripts
 exit 0
