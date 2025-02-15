@@ -1,87 +1,22 @@
 #!/bin/bash
 trap "kill 0" SIGINT
-DOJO_DIR=$(cat .DOJO_DIR)
-#echo "DOJO_DIR = '$DOJO_DIR'"
 
-if [ -e ".DOJO_DIR" ]; then   # running from voicename_dojo
-    DOJO_DIR=$(cat ".DOJO_DIR")
-else
-    echo ".DOJO_DIR not found.   Exiting"
-    exit 1
-fi
-
-
-
-if [ ! -e ".BIN_DIR" ]; then
-   echo ".BIN_DIR not present"
-   sleep 1
-fi
-
-BIN_DIR=$(cat ".BIN_DIR")
-
-
-#if [ ! -e "$BIN_DIR/activate" ]; then
-#   echo "Can't find venv in $BIN_DIR."
-#   sleep 3
-#fi
-
-#if [[ -n "$VIRTUAL_ENV" ]]; then
-#    :
-#    #echo "OK    --  Virtual environment is active in  $VIRTUAL_ENV"
-#    
-#elif [ -e "$BIN_DIR/activate" ]; then
-#   echo "Activating virtual environment."
-#   source $BIN_DIR/activate
-#else
-#    echo "ERROR --  No python virtual environment was found."
-#    echo
-#    echo "Exiting."
-#    exit 1
-#fi
-
-
-
-
-source $DOJO_DIR/scripts/SETTINGS.txt
-source $DOJO_DIR/scripts/.colors
-
-#VENV_ACTIVATE="$BIN_DIR/activate"
+# init path constants
+DOJO_DIR="."  # run_training.sh runs this script from <voice>_dojo
+DOJO_NAME=$(basename $PWD) # set dojo name used for building paths to <voice>_dojo
+SETTINGS_FILE="scripts/SETTINGS.txt"
+COLOR_FILE="scripts/.colors"
 OVERRIDE_DIRNAME="starting_checkpoint_override"
-
-
 VOICE_CHECKPOINTS_DIRNAME=${SETTINGS_VOICE_CHECKPOINT_DIRNAME:-"voice_checkpoints"}
 SAVED_CHECKPOINTS="$DOJO_DIR/$VOICE_CHECKPOINTS_DIRNAME"
-if ! [ -d $SAVED_CHECKPOINTS ]; then
-   echo "Error. Required directory does not exist: $SAVED_CHECKPOINTS  Exiting."
-   exit 1
-fi   
-
 TTS_VOICES_DIRNAME="tts_voices"
 TTS_VOICES="$DOJO_DIR/$TTS_VOICES_DIRNAME"
-if ! [ -d $TTS_VOICES ]; then
-   echo "Error. Required directory does not exist: $TTS_VOICES  Exiting."
-   exit 1
-fi   
-
-
 PRETRAINED_TTS_CHECKPOINT_DIRNAME="pretrained_tts_checkpoint"
-
-
 ARCHIVED_CHECKPOINTS_DIRNAME="archived_checkpoints"
 ARCHIVED_CHECKPOINTS="$DOJO_DIR/$ARCHIVED_CHECKPOINTS_DIRNAME"
-if [ ! -d "$ARCHIVED_CHECKPOINTS" ]; then
-   echo " $ARCHIVED_CHECKPOINTS directory does not exist.  Exiting."
-   exit 1
-fi
-
 ARCHIVED_TTS_VOICES_DIRNAME="archived_tts_voices"   
 ARCHIVED_TTS_VOICES="$DOJO_DIR/$ARCHIVED_TTS_VOICES_DIRNAME"
-if ! [ -d $ARCHIVED_TTS_VOICES ]; then
-   echo "Error. Required directory does not exist: $ARCHIVED_TTS_VOICES  Exiting."
-   exit 1
-fi   
-
-
+LIGHTNING_LOGS_LOCATION="./training_folder/lightning_logs"
 
 # init global vars
 highest_saved_epoch_ckpt=""
@@ -99,45 +34,68 @@ resume_or_restart=""
 checkpoint_recommendation=""
 voice_dir_count=0
 
-# Delete lightning logs folder from last run
-LIGHTNING_LOGS_LOCATION="${DOJO_DIR}/training_folder/lightning_logs"
-cp "$LIGHTNING_LOGS_LOCATION=/version_0/checkpoints/*.ckpt" "$dojo_dir/$VOICE_CHECKPOINTS_DIRNAME/" >/dev/null 2>&1
-sleep 1
-rm -r $LIGHTNING_LOGS_LOCATION
+load_settings(){
+# load training settings from SETTINGS_FILE
+    if [ -e $SETTINGS_FILE ]; then
+        source $SETTINGS_FILE
+    else
+        echo "$0 - settings not found"
+        echo "     expected location: $SETTINGS_FILE"
+        echo 
+        echo "press <Enter> to exit"
+        exit 1
+    fi
+}
 
+load_colors(){
+# load color codes from COLOR_FILE (eg scripts/.colors)
+    if [ -e $COLOR_FILE ]; then
+        source $COLOR_FILE
+    else
+        echo "$0 - COLOR_FILE not found"
+        echo "     expected location: $settings_file"
+        echo 
+        echo "exiting"
+        exit 1
+    fi
+}
 
-#PIPER_PATH=$(cat .PIPER_PATH)
+verify_dirs_exist(){
+# make sure <voice>_dojo has expected directories
+    # verify SAVED_CHECKPOINTS dir (eg <voice>_dojo/voice_checkpoints) exists
+    if ! [ -d ./$SAVED_CHECKPOINTS ]; then
+       echo "Error. Required directory does not exist: $SAVED_CHECKPOINTS  Exiting."
+       exit 1
+    fi   
 
-# Check if the user provided a --piper_path parameter
-#while [ $# -gt 0 ]; do
-#    case "$1" in
-#        --piper_path=*)
-#            PIPER_PATH="${1#*=}"
-#            shift
-#            ;;
-#        *)
-#            shift
-#            ;;
-#    esac
-#done
+    # verify TTS_VOICES dir (eg <voice>_dojo/tts_voices) exists
+    if ! [ -d ./$TTS_VOICES ]; then
+       echo "Error. Required directory does not exist: $TTS_VOICES  Exiting."
+       exit 1
+    fi   
 
+    # verify ARCHIVED_CHECKPOINTS dir (eg <voice>_dojo/archived_checkpoints) exists
+    if [ ! -d "./$ARCHIVED_CHECKPOINTS" ]; then
+       echo " $ARCHIVED_CHECKPOINTS directory does not exist.  Exiting."
+       exit 1
+    fi
 
+    # verify ARCHIVED_TTS_VOICES dir (eg <voice>_dojo/archived_tts_voices) exists
+    if ! [ -d ./$ARCHIVED_TTS_VOICES ]; then
+       echo "Error. Required directory does not exist: $ARCHIVED_TTS_VOICES  Exiting."
+       exit 1
+    fi   
+}
 
-#BIN_DIR=$(cat .BIN_DIR)
-#echo "BIN_DIR = '$BIN_DIR'"
-
-# If PIPER_PATH is still empty, attempt to infer it from BIN_DIR
-#if [ -z "$PIPER_PATH" ]; then
-#    # Extract /path/to/piper/
-#    PIPER_PATH=$(echo "$BIN_DIR" | grep -oP "^.+?/piper/")
-#fi
-
-
-
-clear
-
+empty_checkpoint_folder(){
+# Copy checkpoint file from prior run to allow user to resume from there and empty the folder 
+    cp "$LIGHTNING_LOGS_LOCATION/version_0/checkpoints/*.ckpt" "./$VOICE_CHECKPOINTS_DIRNAME/" >/dev/null 2>&1
+    sleep 1
+    rm -r $LIGHTNING_LOGS_LOCATION
+}
 
 calculate_directory_size() {
+# return size of directory in GB
     if [ -d "$1" ]; then
         # Calculate the total size in bytes
         size_in_bytes=$(du -sb "$1" | cut -f1)
@@ -150,9 +108,11 @@ calculate_directory_size() {
 }
 
 count_directories() {
+# return number of directories in specified directory
+    local directory=$1
     local dir_count=0   
-    if [ -d "$1" ]; then
-        dir_count=$(find "$1" -mindepth 1 -maxdepth 1 -type d | wc -l)
+    if [ -d "$directory" ]; then
+        dir_count=$(find "$directory" -mindepth 1 -maxdepth 1 -type d | wc -l)
         echo "$dir_count"
     else
         echo "-1"
@@ -160,83 +120,97 @@ count_directories() {
 }
 
 count_ckpt_files() {
+# return number of checkpoint files in specified directory
     local directory=$1
-
     if [[ ! -d "$directory" ]]; then
         echo "Directory does not exist: $directory"
         return 1
     fi
-
     local count=$(find "$directory" -maxdepth 1 -name '*.ckpt' | wc -l)
-
     echo "$count"
 }
 
-get_total_ckpt_size_gb() {
-    local directory=$1
 
+get_total_ckpt_size_gb() {
+# returns total size in GB of checkpoint files in directory
+    local directory=$1
     if [[ ! -d "$directory" ]]; then
         echo "Directory does not exist: $directory"
         return 1
     fi
-
     local total_size_kb=$(find "$directory" -name '*.ckpt' -exec du -k {} + | awk '{sum += $1} END {print sum}')
-
     if [[ -z "$total_size_kb" ]]; then
         echo "No .ckpt files found in the directory: $directory"
         return 1
     fi
-
     local total_size_gb=$(echo "scale=2; $total_size_kb / 1024 / 1024" | bc)
-
     echo "$total_size_gb GB"
 }
 
-get_epoch_number() {
-    local checkpoint_file=$1
 
+get_epoch_number() {
+# extracts epoch number from a checkpoint file name and returns it
+    local checkpoint_file=$1
     if [[ ! -f "$checkpoint_file" ]]; then
         echo "File does not exist: $checkpoint_file"
         return 1
     fi
-
     local epoch_number=$(echo "$checkpoint_file" | awk -F'[=-]' '{print $2}')
-
     if [[ -z "$epoch_number" ]]; then
         echo "No epoch number found in the file name: $checkpoint_file"
         return 1
     fi
-
     echo "$epoch_number"
 }
 
 get_highest_epoch_ckpt() {
-    # function to return highest epoch of checkpoint file in any directory.
+# returns highest epoch number from a directory containing checkpoint files
     local checkpoint_dir=$1
-
     if [[ ! -d "$checkpoint_dir" ]]; then
         echo "Directory does not exist: $checkpoint_dir"
         return 1
     fi
-
     local highest_epoch_ckpt=$(ls "$checkpoint_dir"/*.ckpt 2>/dev/null | \
         awk -F'[-=]' '{print $2, $0}' | \
         sort -nr | \
         head -n 1 | \
         awk '{print $2}')
-
     if [[ -z "$highest_epoch_ckpt" ]]; then
         echo "No .ckpt files found in the directory: $checkpoint_dir"
         return 1
     fi
-
     echo "$highest_epoch_ckpt"
 }
 
+make_docker_path(){
+# converts a path from host to absolute path inside textymcspeechy-piper docker container
+    local path="$1"
+    echo "/app/tts_dojo/$DOJO_NAME/${path#*/tts_dojo}"
+}
+
+update_voice_dir_count(){
+# updates global variable containing number of voices stored in dojo
+    voice_dir_count=$(count_directories $DOJO_DIR/$TTS_VOICES_DIRNAME)
+}
+
+check_pretrained_ckpt(){
+# locate highest epoch checkpoint stored in dojo 
+    pretrained_tts_checkpoint=$(get_highest_epoch_ckpt "$PRETRAINED_TTS_CHECKPOINT_DIRNAME")
+    if [[ -f "$pretrained_tts_checkpoint" ]]; then
+        has_pretrained_checkpoint=true
+        pretrained_epoch=$(get_epoch_number $pretrained_tts_checkpoint)
+    fi
+}
+
+update_saved_ckpt_count(){
+    saved_ckpt_count=$(count_ckpt_files "$VOICE_CHECKPOINTS_DIRNAME")
+}
+
 ask_about_resuming_or_restarting(){
+# lets user decide whether they are starting a new training run or continuing a previous run
+# must set global var resume_or_restart to either "resume" or "restart"
     local choice=""
-    local quick_choice="1"
-    #must return a value for resume_or_restart = [resume, restart]
+    local quick_choice="1" # choice made if user presses "Enter" without choosing any option  
     echo
     echo
     echo -e "        This dojo contains saved checkpoints from previous training runs."
@@ -246,15 +220,16 @@ ask_about_resuming_or_restarting(){
     echo -e "        2. Restart training using original pretrained TTS model (epoch $pretrained_epoch)"
     echo -e "        3. Quit"
     echo
-   echo -ne "        What would you like to do (1-3):  "
+    echo -ne "        What would you like to do (1-3):  "
     read choice
-    # substitute action if user only pushes enter. Makes relaunching faster
+    
+    # substitute action if user only pushes enter.
     if [[ "$choice" = "" ]]; then
         choice=$quick_choice
         echo "Quick choice: $quick_choice"
     fi
     
-    # Check the user's response
+    # Act on user's response
     if [[ "$choice" = "1" ]]; then
         echo "Training will be resumed from saved checkpoint (epoch $highest_saved_epoch)"
         resume_or_restart="resume"
@@ -268,14 +243,13 @@ ask_about_resuming_or_restarting(){
 }
 
 
-# Generalized confirmation function
 ask_confirmation() {
+# General user confirmation function
     local prompt_message=$1
     local yes_action=$2
     local no_action=$3
     local quick_answer=${4:-"n"} #answer no in response to enter key if no parameter given
     local do_it=false
-        
 
     while true; do
         read -p "$prompt_message (y/n): " answer
@@ -303,7 +277,6 @@ ask_confirmation() {
     fi
 }
 
-# Specific actions for each scenario
 delete_voice_checkpoints_yes() {
     echo "Removing saved voice checkpoints."
     cd $SAVED_CHECKPOINTS
@@ -360,7 +333,6 @@ accept_settings_no(){
     exit 1
 }
 
-# Example usage for each scenario
 delete_voice_checkpoints() {
     ask_confirmation "Are you sure you want to delete voice checkpoints?" "delete_voice_checkpoints_yes" "delete_voice_checkpoints_no"
 }
@@ -385,7 +357,7 @@ accept_settings() {
 
 ask_about_existing_checkpoints(){
     local choice=""
-    local quick_choice="1" 
+    local quick_choice="1" # default action if user presses enter without making a choice 
     echo
     echo
     echo
@@ -403,7 +375,7 @@ ask_about_existing_checkpoints(){
     echo -e "        3. Delete all checkpoint files in $VOICE_CHECKPOINTS_DIRNAME (recommended)"
     echo -e "        4. Quit."
     echo
-   echo -ne "        What would you like to do (1-4):  "
+    echo -ne "        What would you like to do (1-4):  "
     
     read choice
     # substitute action if user only pushes enter. Makes relaunching faster
@@ -426,11 +398,6 @@ ask_about_existing_checkpoints(){
         exit 1
     fi
 }
-
-update_voice_dir_count(){
-    voice_dir_count=$(count_directories $DOJO_DIR/$TTS_VOICES_DIRNAME)
-}
-
 
 
 ask_about_existing_voices(){
@@ -471,13 +438,11 @@ ask_about_existing_voices(){
     elif [[ "$choice" = "4" ]]  ; then
         exit 1
     fi
- 
-
 }
 
 check_manual_override_dir(){
-local override_ckpt=$(get_highest_epoch_ckpt "$DOJO_DIR/$OVERRIDE_DIRNAME")
-if [[ -f "$override_ckpt" ]]; then
+    local override_ckpt=$(get_highest_epoch_ckpt "$DOJO_DIR/$OVERRIDE_DIRNAME")
+    if [[ -f "$override_ckpt" ]]; then
         override_epoch=$(get_epoch_number $override_ckpt)
         clear
         echo
@@ -492,15 +457,11 @@ if [[ -f "$override_ckpt" ]]; then
         read
         has_override=true
         override_checkpoint_file=$override_ckpt
-fi
-
-
+    fi
 }
 
-
 find_highest_saved_epoch(){
-        highest_saved_epoch_ckpt=$(get_highest_epoch_ckpt "$DOJO_DIR/$VOICE_CHECKPOINTS_DIRNAME")
-        
+        highest_saved_epoch_ckpt=$(get_highest_epoch_ckpt "$DOJO_DIR/$VOICE_CHECKPOINTS_DIRNAME")       
         if [[ -f "$highest_saved_epoch_ckpt" ]] && [ $saved_ckpt_count -gt 0 ];  then
             has_saved_checkpoints=true
             highest_saved_epoch=$(get_epoch_number $highest_saved_epoch_ckpt)
@@ -510,81 +471,70 @@ find_highest_saved_epoch(){
             echo "            Number of saved checkpoints: $saved_ckpt_count"
             echo "        Total size of saved checkpoints: $saved_ckpt_size"
             echo "          Highest saved epoch available: $highest_saved_epoch"
-            echo
-            
+            echo            
        else
            echo " No saved checkpoints found in $VOICE_CHECKPOINTS_DIRNAME "
        fi
 }
 
-check_pretrained_ckpt(){
-    pretrained_tts_checkpoint=$(get_highest_epoch_ckpt "$DOJO_DIR/$PRETRAINED_TTS_CHECKPOINT_DIRNAME")
-    if [[ -f "$pretrained_tts_checkpoint" ]]; then
-        has_pretrained_checkpoint=true
-        pretrained_epoch=$(get_epoch_number $pretrained_tts_checkpoint)
-    fi
-}
-update_saved_ckpt_count(){
-    saved_ckpt_count=$(count_ckpt_files "$DOJO_DIR/$VOICE_CHECKPOINTS_DIRNAME")
-}
 
 get_starting_checkpoint_recommendation(){
+# Starting checkpoint could be one of three things, which are listed in order of priority. 
+#     1. a manual override checkpoint file that the user has stored in <voice>_dojo/starting_checkpoint_override
+#     2. a checkpoint file saved from a previous training run in <voice>_dojo/voice_checkpoints
+#     3. a default pretrained checkpoint file located in tts_dojo/PRETRAINED_CHECKPOINTS
 
-check_manual_override_dir # sets value of $has_override and $override_checkpoint_fle
+    check_manual_override_dir # sets value of $has_override and $override_checkpoint_fle
 
-# If no override set, continue to search for starting checkpoint.
-if [ "$has_override" = false ]; then  
-
-    #get info about pretrained TTS checkpoint (typically loaded by add_my_files.sh)
-    check_pretrained_ckpt  #sets value of has_pretrained_ckpt
     
-    # count saved checkpoint files
-    update_saved_ckpt_count
-
-    # find the one with the highest epoch
-    if [[ $saved_ckpt_count -gt "0" ]]; then
-        find_highest_saved_epoch
-    fi
-
+    if [ "$has_override" = false ]; then  
+        # No file in override directory, continue to search for starting checkpoint. 
+        check_pretrained_ckpt  #sets value of has_pretrained_ckpt
    
-    if [[ "$has_saved_checkpoints" = true ]]; then
-        echo "                 Highest saved epoch is: $highest_saved_epoch"
-    fi
+        # count saved checkpoint files
+        update_saved_ckpt_count
 
-    if [[ "$has_pretrained_checkpoint" = true ]]; then
-        echo "     Pretrained tts checkpoint epoch is: $pretrained_epoch"
-    fi
+        
+        if [[ $saved_ckpt_count -gt "0" ]]; then
+            # at least one checkpoint file is saved in this dojo, find the one trained the most. 
+            find_highest_saved_epoch
+        fi
+        
+        # Display epoch number of highest saved epoch in dojo if there are any
+        if [[ "$has_saved_checkpoints" = true ]]; then            
+            echo "                 Highest saved epoch is: $highest_saved_epoch"
+        fi
+        
+        # Display epoch number of default checkpoint (in PRETRAINED_CHECKPONTS) if there is a file there
+        if [[ "$has_pretrained_checkpoint" = true ]]; then
+            echo "     Pretrained tts checkpoint epoch is: $pretrained_epoch"
+        fi
     
-    if [[ $highest_saved_epoch -gt $pretrained_epoch ]]; then
-        checkpoint_recommendation="saved"
+        # Recommend the checkpoint option with the highest epoch
+        if [[ $highest_saved_epoch -gt $pretrained_epoch ]]; then
+            checkpoint_recommendation="saved"
+        else
+            checkpoint_recommendation="pretrained"
+        fi
     else
-        checkpoint_recommendation="pretrained"
+        # If an override checkpoint was set, ignore all other options and use it.
+        checkpoint_recommendation="override"
     fi
-else
-    checkpoint_recommendation="override"
-fi
-
-
-
 }
 
+#ERIK
 start_tmux_layout(){
+# Set up tmux windows that will be used to display all of the concurrent processes used during training.
     
-    tmux new-session -s training -d # start tmux session called "training" but don't join it yet
+    tmux new-session -s training -d # start tmux session named "training" in detached mode
     tmux set-option -g mouse on     # turn on mouse scrolling
-    tmux send-keys -t training "tmux set -g pane-border-status top" Enter     # Turn on pane labels
+    tmux send-keys -t training "tmux set -g pane-border-status top" Enter   # Turn on pane labels
 
-    # only run this if the output from the training script is needed elsewhere 
-    #tmux pipe-pane -t training 'exec tee ./training_output.txt'
-
-    # split screen into two rows
-    tmux split-window -v -t training
+    tmux split-window -v -t training # split screen into two rows
     tmux send-keys -t training "tmux resize-pane -t 0.0 -U 24" Enter  # shrink the top pane 
-    tmux send-keys -t training "tmux resize-pane -t 0.0 -R 42" Enter
-    #shrink the top pane
+    tmux send-keys -t training "tmux resize-pane -t 0.0 -R 42" Enter  
 
     tmux split-window -h -t 0.0     # split top row into 2 columns
-
 
     #split the bottom pane into 2 columns horizontally and resize it.
     tmux split-window -h -t 0.2
@@ -602,9 +552,6 @@ start_tmux_layout(){
     tmux send-keys -t training "tmux resize-pane -t $TMUX_CONTROL_PANE -U 10" Enter  # shrink the top pane 
     # label each pane
 
-
-
-    
     tmux select-pane -t "${TMUX_TRAINING_PANE:-0.0}" -T "${TMUX_TRAINING_PANE_TITLE:-'PIPER TRAINING RAW OUTPUT'}"
     tmux select-pane -t "${TMUX_TENSORBOARD_PANE:-0.1}" -T "${TMUX_TENSORBOARD_PANE_TITLE:-'TENSORBOARD SERVER'}"
     tmux select-pane -t "${TMUX_EXPORTER_PANE:-0.2}" -T "${TMUX_EXPORTER_PANE_TITLE:-'VOICE EXPORTER'}"
@@ -615,46 +562,38 @@ start_tmux_layout(){
 }
 
 
-make_docker_path(){
-    local path="$1"
-    echo "/app/tts_dojo${path#*/tts_dojo}"
-}
-
-
 start_tmux_processes(){
-    # start the training script in pane 0.0
-    
+    # start the training script in pane 0.0    
     tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "source $VENV_ACTIVATE" Enter
-    tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/erik/code/testmultilang/TextyMcSpeechy/piper/src/python/.venv/lib64/python3.10/site-packages/nvidia/cublas/lib:/home/erik/code/testmultilang/TextyMcSpeechy/piper/src/python/.venv/lib64/python3.10/site-packages/nvidia/cudnn/lib" Enter
+
+    #ERIK - check whether this is needed.
+    #tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/erik/code/testmultilang/TextyMcSpeechy/piper/src/python/.venv/lib64/python3.10/site-packages/nvidia/cublas/lib:/home/erik/code/testmultilang/TextyMcSpeechy/piper/src/python/.venv/lib64/python3.10/site-packages/nvidia/cudnn/lib" Enter
     
-    # trainer_starting_checkpoint is an absolute path. Containerized piper needs it to be relative.
+    # trainer_starting_checkpoint is an absolute path on the host. Use it to build a path that will work in the container
     docker_starting_checkpoint_path=$(make_docker_path "$trainer_starting_checkpoint")
-
-
+    
+    # launch utils/piper_training.sh on the host which will manage training within the docker container 
     tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "utils/piper_training.sh $docker_starting_checkpoint_path" Enter
 
-    #tmux send-keys -t "${TMUX_TENSORBOARD_PANE:-0.1}" "source $VENV_ACTIVATE" Enter
+    # launch the tensorboard server via utils/run_tensorboard_server.sh
     tmux send-keys -t "${TMUX_TENSORBOARD_PANE:-0.1}" "bash utils/run_tensorboard_server.sh" Enter
 
-    #tmux send-keys -t "${TMUX_EXPORTER_PANE:-0.2}" "source $VENV_ACTIVATE" Enter
+    # clear the the voice exporter pane and display ready message. 
     tmux send-keys -t "${TMUX_EXPORTER_PANE:-0.2}" "clear && echo 'Ready to export voice models' && read " Enter
 
-    #tmux send-keys -t "${TMUX_GRABBER_PANE:-0.3}" "source $VENV_ACTIVATE" Enter
-    tmux send-keys -t "${TMUX_GRABBER_PANE:-0.3}" "bash utils/checkpoint_grabber.sh --save_every ${AUTO_SAVE_EVERY_NTH_CHECKPOINT_FILE} $DOJO_DIR/voice_checkpoints" Enter
+    # launch the checkpoint grabber (checkpoint_grabber.sh)
+    tmux send-keys -t "${TMUX_GRABBER_PANE:-0.3}" "bash utils/checkpoint_grabber.sh --save_every ${AUTO_SAVE_EVERY_NTH_CHECKPOINT_FILE} ../voice_checkpoints" Enter
     
-    # run control console
-    tmux send-keys -t "${TMUX_CONTROL_PANE:-0.5}" "cd $DOJO_DIR/scripts/ && bash utils/_control_console.sh" Enter
+    # launch the control console (/utils/_control_console.sh)
+    tmux send-keys -t "${TMUX_CONTROL_PANE:-0.5}" "bash utils/_control_console.sh" Enter
     
-    # run voice tester
-    #tmux send-keys -t "${TMUX_TESTER_PANE:-0.4}" "source $VENV_ACTIVATE" Enter
+    # launch the voice tester
     tmux send-keys -t "${TMUX_TESTER_PANE:-0.4}" "bash voice_tester.sh" Enter
-    
-
     
 }
 
 
-confirm_preferences(){
+show_setup(){
     echo -e "${GREEN}Training configuration from scripts/SETTINGS.txt:${RESET}"
     echo
     echo -e "        ${PURPLE}CHECKPOINT GRABBER SETTINGS (checkpoint_grabber.sh)${RESET}"
@@ -666,7 +605,6 @@ confirm_preferences(){
     echo -e "                                  --batch-size: ${CYAN}$PIPER_BATCH_SIZE${RESET}"
     echo -e "                           --checkpoint-epochs: ${CYAN}$PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS${RESET}"
 
-   
 }
 
 show_warning(){
@@ -690,17 +628,51 @@ echo
 echo
 }
 
+show_tips(){
+    clear
+    echo -e "    Tips before training starts:"
+    echo -e 
+    echo -e "        1.  Depending on the size of your dataset, training could take several minutes to initialize.  Please be patient."
+    echo
+    echo -e "        2.  If you see ${CYAN}rank_zero_warn(${RESET} in the PIPER TRAINING RAW OUTPUT window, that's a good thing. Keep waiting."
+    echo
+    echo -e "        3.  It is normal to see a warning about a low number of workers. Resolving this would require changes to Piper's source code."
+    echo
+    echo -e "        4.  If you see an error related to ${CYAN}zip${RESET} files in PIPER TRAINING RAW OUTPUT, your starting checkpoint file is probably corrupted."
+    echo -e "            This can be resolved either by restarting training or deleting the highest epoch checkpoint file from ${CYAN}$VOICE_CHECKPOINTS_DIRNAME${RESET}."
+    echo
+    echo -e "        5.  Pay close attention to the amount of storage your dojo is using.  This program will devour disk space if you save checkpoints too often."
+    echo -e "            You are responsible for removing any files you don't want to keep."
+    echo
+    echo -e "        6.  Training runs in a multi-window terminal provided by ${CYAN}tmux${RESET}. The session name is ${CYAN}training${RESET}."
+    echo
+    echo -e "        7.  If you become detached from your tmux session or accidentally close the control panel, "
+    echo -e "            you will need to use ${CYAN}tmux kill-session${RESET} to shut down training."
+    echo
+    echo -e "        8.  If you don't have a mouse, you can use ${GREEN}<CTRL> B${RESET} followed by an arrow key to change the active window."
+    echo 
+    echo
+    echo -e "        Dojo setup is complete.   Press ${GREEN}<ENTER>${RESET} to begin training. "
+    read
+}
+
 # * MAIN PROGRAM **********************************************************
-confirm_preferences
+clear
+load_settings
+load_colors
+verify_dirs_exist
+empty_checkpoint_folder
+show_setup
 show_warning
+
 echo -e "${GREEN}"
 accept_settings
 echo -e "${RESET}"
 
 # choose between override, saved, and pretrained checkpoint options
-get_starting_checkpoint_recommendation
+get_starting_checkpoint_recommendation  # sets global var checkpoint_recommendation
 
-if [[ "$has_override" = true ]]; then   # override will be used if present
+if [[ "$has_override" = true ]]; then   
     echo "Use manual override: $override_epoch"
     trainer_starting_checkpoint=$override_checkpoint_file
     read    
@@ -723,10 +695,7 @@ if [[ "$checkpoint_recommendation" = "saved" ]] || [[ "$checkpoint_recommendatio
        echo "   $pretrained_tts_checkpoint."
        trainer_starting_checkpoint=$pretrained_tts_checkpoint
    fi
-
 fi
-
-
 
 # when restarting training, ask what to do with files from previous runs.
 if [[ $resume_or_restart = "restart" ]] || [[ "$has_override" = true ]] || [[ "$has_saved_checkpoints" = false ]] ; then
@@ -739,43 +708,13 @@ if [[ $resume_or_restart = "restart" ]] || [[ "$has_override" = true ]] || [[ "$
     if [ $voice_dir_count -gt 0 ]; then
         ask_about_existing_voices
     fi
-fi           
-clear
- echo -e "    Tips before training starts:"
- echo -e 
- echo -e "        1.  Depending on the size of your dataset, training could take several minutes to initialize.  Please be patient."
- echo
- echo -e "        2.  If you see ${CYAN}rank_zero_warn(${RESET} in the PIPER TRAINING RAW OUTPUT window, that's a good thing. Keep waiting."
- echo
- echo -e "        3.  It is normal to see a warning about a low number of workers. Resolving this would require changes to Piper's source code."
- echo
- echo -e "        4.  If you see an error related to ${CYAN}zip${RESET} files in PIPER TRAINING RAW OUTPUT, your starting checkpoint file is probably corrupted."
- echo -e "            This can be resolved either by restarting training or deleting the highest epoch checkpoint file from ${CYAN}$VOICE_CHECKPOINTS_DIRNAME${RESET}."
- echo
- echo -e "        5.  Pay close attention to the amount of storage your dojo is using.  This program will devour disk space if you save checkpoints too often."
- echo -e "            You are responsible for removing any files you don't want to keep."
- echo
- echo -e "        6.  Training runs in a multi-window terminal provided by ${CYAN}tmux${RESET}. The session name is ${CYAN}training${RESET}."
- echo
- echo -e "        7.  If you become detached from your tmux session or accidentally close the control panel, "
- echo -e "            you will need to use ${CYAN}tmux kill-session${RESET} to shut down training."
- echo
- echo -e "        8.  If you don't have a mouse, you can use ${GREEN}<CTRL> B${RESET} followed by an arrow key to change the active window."
- echo 
- echo
- echo -e "        Dojo setup is complete.   Press ${GREEN}<ENTER>${RESET} to begin training. "
+fi  
 
-read
+show_tips
 cd $DOJO_DIR/scripts
-
 start_tmux_layout
 start_tmux_processes
 
-# clear screen so that it won't have things on it when tmux exits.
-clear
-
-# join the running multi-shell tmux session.
-tmux a
-
-exit 0
-
+clear # clear screen so that it will be fresh when tmux exits
+tmux a # join the multi-shell tmux session already in progress
+exit 0 # resume run_training.sh which will show exit message
