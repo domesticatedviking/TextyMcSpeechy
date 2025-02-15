@@ -1,24 +1,53 @@
 #!/bin/bash
+# create_dataset.sh
+# repackages a voice dataset into the format expected by TextyMcSpeechy
+# how to use:
+#    1. create a new folder inside of TextyMcSpeechy/tts_dojo/DATASETS/, eg my_dataset
+#    2. copy your audio files and metadata.csv file into the my_datset folder. (keep backups elsewhere - this script will change the files)
+#    3. from DATASETS, run create_dataset.sh my_dataset
+#    4. your files will checked and organized by file type and sampling rate.
+#    5. if WAV files in the sampling rates expected by Piper don't exist, this tool will create them.
 
-# This is working well.  It scans all the files in a dataset, classifies them by format and sampling rate, then resamples them to the sampling rates that piper needs.
+set +e #exit on any error
 
-
-set +e
-input_dir="$1"
-if [[ "$input_dir" == /* ]]; then
-   echo "Absolute paths are not permitted for safety reasons."
-   echo "Please supply the name of a directory inside the DATASETS folder"
-   echo "Exiting."
-   exit 1
+# Pre-run safety checks
+# Abort if run outside of DATASETS folder
+DATASET_DIR=$(pwd)
+if [[ ! "$DATASET_DIR" =~ DATASETS$ ]]; then
+    echo "Error: for safety reasons this script only works within a directory called 'DATASETS'"
+    exit 1
 fi
 
-not_audio_dir="$input_dir/not_audio"
+input_dir="$1"
+# Ensure input_dir is provided
+if [ -z "$input_dir" ]; then
+  echo -e "\n\nUsage: $0 <input_dir>   <input_dir> must contain audio files and a metadata.csv file\n\n"
+  exit 1
+fi
+
+# Check if the directory exists before resolving the path
+if [[ ! -d "$DATASET_DIR/$input_dir" ]]; then
+    echo "Error: The specified directory '$input_dir' does not exist inside the DATASETS folder."
+    echo "Exiting."
+    exit 1
+fi
+
+# For additional safety, ensure that provided path is a real folder rather than a symlink
+full_path=$(realpath "$DATASET_DIR/$input_dir" 2>/dev/null)
+echo "$full_path"
+
+# Ensure the resolved path is still inside DATASETS
+if [[ "$full_path" != "$(realpath "$DATASET_DIR")/"* ]]; then
+    echo "Error: Invalid directory. Path must be inside the DATASETS folder."
+    echo "Exiting."
+    exit 1
+fi
+
+# init global vars
+not_audio_dir="$input_dir/not_audio"  
 metadata_file="$input_dir/metadata.csv"
-DATASET_DIR=$(pwd)
 declare -A file_hashes
-
 supported_formats=("flac" "wav" "m4a" "mp3")
-
 total_files=0
 processed_files=0
 duplicate_files=0
@@ -29,14 +58,16 @@ highest_rate=0
 highest_rate_source_dir=""
 
 
-# Function to calculate SHA256 hash of a file
+
 hash_file() {
+# calculate SHA256 hash of a file
   local file="$1"
   sha256sum "$file" | awk '{ print $1 }'
 }
 
-#Ensures CSV file uses the | character for delimiters
+
 check_delimiter() {
+# Ensures CSV file uses the | character for delimiters
     local file="$1"
     
     if [[ ! -f "$file" ]]; then
@@ -61,16 +92,15 @@ check_delimiter() {
 }
 
 
-
-
-# Function to get the actual format of the audio file
 get_actual_format() {
+# checks whether file extensions are lying about the contents of an audio file
   local file="$1"
   ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=nw=1:nk=1 "$file" 2>/dev/null
 }
 
-# Function to process audio files
+
 process_audio_file() {
+# Processes a single audio file
   local file="$1"
   local extension="${file##*.}"
   local actual_format=$(get_actual_format "$file")
@@ -100,8 +130,9 @@ process_audio_file() {
   fi
 }
 
-# Function to process non-audio files
+
 process_non_audio_file() {
+# Processes a single non-audio file
   local file="$1"
   local force="${2:-false}"
   if [ "$(basename "$file")" != "metadata.csv" ] || [ $force = "true" ]; then
@@ -110,13 +141,15 @@ process_non_audio_file() {
   fi
 }
 
-# Function to clean up empty directories
+
 cleanup_empty_dirs() {
+# removes any dirs that are empty after sorting
   find "$input_dir" -type d -empty -delete
 }
 
-# Function to check if an array contains a value
+
 array_contains() {
+# finds a value in an array
   local array="$1[@]"
   local seeking=$2
   local in=1
@@ -129,16 +162,15 @@ array_contains() {
   return $in
 }
 
-# Function to extract sampling rate from directory name
+
 get_sampling_rate() {
+# extract sampling rate from a directory name
     echo "$1" | awk -F'_' '{print $2}'
 }
 
 
-
-
-# Function to resample and convert audio files
 resample_convert() {
+# resample and convert a folder full of audio files
     local source_folder="$1"
     local output_dir="$DATASET_DIR/$input_dir/"$2""  # Output directory based on argument (wav_16000 or wav_22050)
     #echo "****************************************************"
@@ -177,19 +209,13 @@ resample_convert() {
                         echo "Unsupported output directory: $2"
                         return 1
                         ;;
-                esac
-                #echo -e "file=$file"
-                #echo -e "   target_rate=$target_rate"
-                #echo -e "   output_file=$output_file\n"
-                # Resample and convert using ffmpeg (adjust as per your tools)
+                esac               
+                # Resample and convert using ffmpeg
                 ffmpeg -i "$file" -ar "$target_rate" "$output_file" >/dev/null 2>&1
-                # Alternatively, use sox for audio processing:
-                # sox "$file" -r "$target_rate" "$output_file"
-
-                #echo "Converted $filename to $2"
+                
             else
                 :
-                #echo "$output_file already exists, skipping."
+                # skip file
             fi
         fi
     done
@@ -198,55 +224,55 @@ resample_convert() {
 
 process_files(){
 # Iterate through all files in input_dir and subdirectories
-find "$DATASET_DIR"/"$input_dir" -type f | while read -r file; do
-  processed_files=$((processed_files + 1))
-  extension="${file##*.}"
-  if array_contains supported_formats "$extension"; then
-    process_audio_file "$file"
-  elif [ "$file" != "$metadata_file" ]; then
-    process_non_audio_file "$file"
-  fi
-  echo -ne "Processed $processed_files of $total_files files...\r"
-done
+    find "$DATASET_DIR"/"$input_dir" -type f | while read -r file; do
+        processed_files=$((processed_files + 1))
+        extension="${file##*.}"
+        if array_contains supported_formats "$extension"; then
+            process_audio_file "$file"
+        elif [ "$file" != "$metadata_file" ]; then
+            process_non_audio_file "$file"
+        fi
+        echo -ne "Processed $processed_files of $total_files files...\r"
+   done
 }
 
-# Check for multiple metadata.csv files, compare their hashes and discard duplicates
-check_metadata(){
-deletable_metadata_files=()
-# Find metadata files and store them in an array
-mapfile -t metadata_files < <(find "$input_dir" -name "metadata.csv" -print0 | tr '\0' '\n')
-#metadata_files=($(find "$input_dir" -name "metadata.csv"))
-#echo -e "metadata files found:  $metadata_files \n"
-if [ "${#metadata_files[@]}" -gt 1 ]; then
-  echo -e "Multiple metadata.csv files found:"
-  declare -A metadata_hashes
-  for file in "${metadata_files[@]}"; do
-    hash=$(hash_file "$file")
-    echo -e "    $file\n      hash: $hash\n"
-    if [ -n "${metadata_hashes[$hash]}" ]; then
-      #echo -e "    \nDuplicate metadata.csv found:\n       $file"
-      deletable_metadata_files+=("$file")
-    else
-      metadata_hashes["$hash"]="$file"
-    fi
-  done
 
-  if [ "${#metadata_hashes[@]}" -gt 1 ]; then
-    echo
-    echo "WARNING.  Found multiple metadata.csv files with different contents."
-    echo "          Please ensure only one dataset is in this folder."
-    echo
-    echo "Exiting."
-    exit 1
-  else
-    for file in "${deletable_metadata_files[@]}"; do
-      rm "$file"
-    done
-  fi
-fi
+check_metadata(){
+# Check for multiple metadata.csv files, compare their hashes and discard duplicates
+    deletable_metadata_files=()
+    # Find metadata files and store them in an array
+    mapfile -t metadata_files < <(find "$input_dir" -name "metadata.csv" -print0 | tr '\0' '\n')
+
+    if [ "${#metadata_files[@]}" -gt 1 ]; then
+        echo -e "Multiple metadata.csv files found:"
+        declare -A metadata_hashes
+        for file in "${metadata_files[@]}"; do
+            hash=$(hash_file "$file")
+            echo -e "    $file\n      hash: $hash\n"
+            if [ -n "${metadata_hashes[$hash]}" ]; then
+                deletable_metadata_files+=("$file")
+            else
+                metadata_hashes["$hash"]="$file"
+            fi
+        done
+
+        if [ "${#metadata_hashes[@]}" -gt 1 ]; then
+            echo
+            echo "WARNING.  Found multiple metadata.csv files with different contents."
+            echo "          Please ensure only one dataset is in this folder."
+            echo
+            echo "Exiting."
+            exit 1
+        else
+            for file in "${deletable_metadata_files[@]}"; do
+                rm "$file"
+            done
+        fi
+    fi
 }
 
 locate_highest_rate_folder() {
+# determine which folder has files with highest sampling rate (use these for resampling)
     input_path="$DATASET_DIR"/"$input_dir"
     # Check if input directory is defined
     if [ -z "$input_dir" ]; then
@@ -254,8 +280,7 @@ locate_highest_rate_folder() {
         exit 1
     else
         :
-        #echo "Locate highest rate folder receved input dir = $input_dir"
-        #echo "                                  input_path = $input_path"
+        # could log something here
     fi
 
     # Check if input directory exists
@@ -263,39 +288,33 @@ locate_highest_rate_folder() {
         echo "Directory $input_dir does not exist."
         exit 1
     fi
-  pattern="^($(IFS='|'; echo "${supported_formats[*]}"))_[0-9]+$"
-  while IFS= read -r folder; do
-
-    # Extract the basename of the folder
-    folder_name=$(basename "$folder")
+    pattern="^($(IFS='|'; echo "${supported_formats[*]}"))_[0-9]+$"
+    while IFS= read -r folder; do
+        # Extract the basename of the folder
+        folder_name=$(basename "$folder")
  
-    # Ensure the folder name matches the pattern <audio file format>_<sampling_rate>
-    if [[ "$folder_name" =~ $pattern ]]; then
-        #echo "Found a sorted folder: $folder_name"
-        # Extract sampling rate from folder name
-        sampling_rate=$(echo "$folder_name" | awk -F'_' '{print $2}')
+        # Ensure the folder name matches the pattern <audio file format>_<sampling_rate>
+        if [[ "$folder_name" =~ $pattern ]]; then
+            #echo "Found a sorted folder: $folder_name"
+            # Extract sampling rate from folder name
+            sampling_rate=$(echo "$folder_name" | awk -F'_' '{print $2}')
         
-        # Ensure sampling_rate is a valid integer
-        if [[ "$sampling_rate" =~ ^[0-9]+$ ]]; then
-            # Compare sampling rates
-            if (( sampling_rate > highest_rate )); then
-                highest_rate="$sampling_rate"
-                highest_rate_folder="$folder"
-                
-                #echo "SPECIAL - sampling_rate=$sampling_rate"
-                #echo "    highest_rate_folder=$highest_rate_folder"
-                #echo "                 folder=$folder"
+            # Ensure sampling_rate is a valid integer
+            if [[ "$sampling_rate" =~ ^[0-9]+$ ]]; then
+                # Compare sampling rates
+                if (( sampling_rate > highest_rate )); then
+                    highest_rate="$sampling_rate"
+                    highest_rate_folder="$folder"
+                fi
+            else
+                :
+                # Invalid sampling rate
             fi
         else
             :
-            #echo "Invalid sampling rate: $sampling_rate"
+            # Folder does not match pattern
         fi
-    else
-        :
-        #echo "Folder does not match pattern: $folder_name"
-    fi
-done < <(find "$input_path" -type d -name '*_*')
-
+    done < <(find "$input_path" -type d -name '*_*')
 
     # Print the highest sampling rate folder
     if [ -n "$highest_rate_folder" ]; then
@@ -306,26 +325,21 @@ done < <(find "$input_path" -type d -name '*_*')
 }
 
 
-
-
-# ensure wav_16000 and wav_22050 exist
 ensure_piper_sampling_rates(){
- if [ ! -z "$highest_rate_folder" ]; then
-     #echo "ensure_piper_sampling_rates:   highest_rate_folder=$highest_rate_folder"
-     #echo "ensure_piper_sampling_rates:   input_dir=$input_dir"
-     echo -e "\nGenerating wav_16000 files\n"
-     resample_convert "$highest_rate_folder" "wav_16000"
-     echo -e "\nGenerating wav_22050 files\n"
-     resample_convert "$highest_rate_folder" "wav_22050"
-
- else
-    echo "Error - no highest rate folder was found."
- fi
-
+# ensure wav_16000 and wav_22050 exist
+     if [ ! -z "$highest_rate_folder" ]; then
+         echo -e "\nGenerating wav_16000 files\n"
+         resample_convert "$highest_rate_folder" "wav_16000"
+         echo -e "\nGenerating wav_22050 files\n"
+         resample_convert "$highest_rate_folder" "wav_22050"
+     else
+         echo "Error - no highest rate folder was found."
+     fi
 }
 
 
 verify_wav_files_against_metadata(){
+# make sure files referenced in metadata.csv are present in directory
     local metadata=$1
     local wav_dir=$2
     local outcome="OK"
@@ -348,6 +362,7 @@ verify_wav_files_against_metadata(){
 }
 
 remove_blank_lines() {
+# prevents errors in piper preprocessing by trimming blank lines from metadata.csv
     local csv_file="$1"
     # Use sed to remove blank lines from the end of the file
     sed -i '/^[[:space:]]*$/d' "$csv_file"
@@ -355,25 +370,20 @@ remove_blank_lines() {
 
 
 create_dataset_conf(){
-local cf="$input_dir/dataset.conf"
-echo "# Texty McSpeechy Dataset Configuration" >$cf
-echo "NAME=\"$name\"" >> $cf
-echo "DESCRIPTION=\"$description\"" >> $cf
-echo "DEFAULT_VOICE_TYPE=\"$voicetype\"" >> $cf  
-echo "LOW_AUDIO=\"wav_16000\"" >> $cf  
-echo "MEDIUM_AUDIO=\"wav_22050\"" >> $cf  
-echo "HIGH_AUDIO=\"wav_22050\"" >> $cf  
+# writes values to dataset.conf file
+    local cf="$input_dir/dataset.conf"
+    echo "# Texty McSpeechy Dataset Configuration" >$cf
+    echo "NAME=\"$name\"" >> $cf
+    echo "DESCRIPTION=\"$description\"" >> $cf
+    echo "DEFAULT_VOICE_TYPE=\"$voicetype\"" >> $cf  
+    echo "LOW_AUDIO=\"wav_16000\"" >> $cf  
+    echo "MEDIUM_AUDIO=\"wav_22050\"" >> $cf  
+    echo "HIGH_AUDIO=\"wav_22050\"" >> $cf  
 }
 
 
 # **************************************************************************************************************************************************
 # MAIN PROGRAM START
-
-# Ensure input_dir is provided
-if [ -z "$input_dir" ]; then
-  echo -e "\n\nUsage: $0 <input_dir>   <input_dir> must contain audio files and a metadata.csv file\n\n"
-  exit 1
-fi
 
 clear
 echo -e  "    TextyMcSpeechy Dataset creator"
@@ -433,9 +443,7 @@ while [ "$response" = "" ]; do
     fi
 done
     
-
 # If dataset.conf exists, remove it.
-
 if [ -e "$input_dir/dataset.conf" ]; then
     echo "Removing old dataset.conf"
     rm "$input_dir/dataset.conf"
@@ -443,7 +451,6 @@ fi
 
 # Create not_audio directory if it doesn't exist
 mkdir -p "$not_audio_dir"
-
 
 # Count total files
 total_files=$(find "$input_dir" -type f | wc -l)
@@ -455,7 +462,6 @@ echo -e "\nRemoving empty directories\n"
 cleanup_empty_dirs
 echo -e "\nFinding best available sampling rate\n"
 locate_highest_rate_folder
-#echo "highest_rate_folder=$highest_rate_folder"
 echo -e "\nEnsuring wav_22050 and wav_16000 exist, please wait.\n"
 ensure_piper_sampling_rates
 check_delimiter "$input_dir/metadata.csv"
@@ -468,4 +474,3 @@ echo -e "\ncreating dataset.conf"
 create_dataset_conf
 
 echo -e "Dataset successfully created."
-
