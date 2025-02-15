@@ -12,7 +12,7 @@ START_WITH_AUTO_SAVE=ON
 MINIMUM_DRIVE_SPACE_GB=20             # Stop saving checkpoint files when space gets this low
 DRIVE_SPACE_WARNING_THRESHOLD_GB=20   # Warn about low space when within this many GB of minimum 
  
-# File that passes number of seconds export took from exporter pane to checkpont grabber
+# File that passes number of seconds export took from exporter pane to checkpoint grabber
 EXPORTER_LAST_EXPORT_SECONDS_FILE="/tmp/last_voice_export_seconds"
 
 # TTS dojo pane ids
