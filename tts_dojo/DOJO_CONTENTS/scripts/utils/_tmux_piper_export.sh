@@ -1,62 +1,49 @@
 #!/bin/bash
+# _tmux_piper_export.sh
+# builds a complete piper voice with the help of textymcspeechy-piper Docker container
+
 checkpoint="$1"  #a path to a ckpt file
 destination="$2" #a path to an onnx file 
-dojo_name="$3"  #eg test_dojo, used for building path inside the container.
+dojo_name="$3"   #eg test_dojo, used for building path inside the container.
 
-#EXPORTER_LAST_EXPORT_SECONDS_FILE="/tmp/last_voice_export_seconds"
+SETTINGS_FILE="SETTINGS.txt"
 
-
-DOJO_DIR_FILE="../.DOJO_DIR"
-if [ -e $DOJO_DIR_FILE ]; then
-    DOJO_DIR=$(cat $DOJO_DIR_FILE)
-else
-    echo "Unable to find .DOJO_DIR.  Current path: $(pwd)  Exiting."
-    exit 1
-fi
-
-
-settings_file="SETTINGS.txt"
-if [ -e $settings_file ]; then
-    source $settings_file
+if [ -e $SETTINGS_FILE ]; then
+    source $SETTINGS_FILE
 else
     echo "$0 - settings not found"
-    echo "     expected location: $settings_file"
+    echo "     expected location: $SETTINGS_FILE"
     echo 
     echo "press <enter> to exit"
     exit 1
 fi
 
 
+create_piper_voice(){
+# convert .ckpt to .onnx voice model using textymcspeechy-piper docker container and copy .onnx.json to complete export
 
+    # build absolute path to checkpoint file usable within textymcspeechy-piper docker container
+    # example path: /app/tts_dojo/mydojo/voice_checkpoints/checkpoint_file.ckpt
+    container_checkpoint=/app/tts_dojo/${dojo_name}/$(dirname "$checkpoint" | xargs basename)/$(basename "$checkpoint")
+    
+    # build absolute path to destination of new piper voice usable within textymcspeechy-piper docker container
+    # example path:  /app/tts_dojo/mydojo/tts_voices/mydojo_3343/mydojo_3343.onnx
+    container_destination=/app/tts_dojo/${dojo_name}/tts_voices/$(dirname "$destination" | xargs basename)/$(basename "$destination")
 
-main(){
-# call script in docker container
-
-#echo "checkpoint:  $checkpoint path"
-#echo "destination: $destination"
-#echo "dojo_name:   $dojo_name"
-
-#container_checkpoint=/app/tts_dojo/$dojo_name/$(basename "$checkpoint")
-container_checkpoint=/app/tts_dojo/${dojo_name}/$(dirname "$checkpoint" | xargs basename)/$(basename "$checkpoint")
-#container_destination=/app/tts_dojo/$dojo_name/$(basename "$destination")
-container_destination=/app/tts_dojo/${dojo_name}/tts_voices/$(dirname "$destination" | xargs basename)/$(basename "$destination")
-#echo "container_checkpoint: $container_checkpoint"
-#echo "container_destination: $container_destination"
-#echo "press Enter"
-#read
-
-docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python && python3 -m piper_train.export_onnx $container_checkpoint $container_destination" 
-cp ../training_folder/config.json "$destination.json"
+    # run the export script on the docker container (only creates .onnx file from .ckpt)
+    docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python && python3 -m piper_train.export_onnx $container_checkpoint $container_destination" 
+    
+    # finish the export by copying .onnx.json file to destination folder on host
+    cp ../training_folder/config.json "$destination.json"
 
  }
  
-
-# Capture the output of the `time` command
-#main
+# MAIN PROGRAM ****************************************************
 echo "Checkpoint exporting to ONNX"
-time_output=$( (time main) 2>&1 )
+
+# call the create_piper_voice function using time to track how long it takes to execute
+time_output=$( (time create_piper_voice) 2>&1 )
 echo "Done!"
-##time_output=$( (time main) )
 
 # Extract the real time from the output
 real_time=$(echo "$time_output" | grep real | awk '{print $2}')
@@ -74,5 +61,5 @@ fi
 seconds_precise=$(echo "$minutes * 60 + $seconds" | bc)
 seconds_int=$(printf "%.0f" "$seconds_precise")
 
+# store to file path specified in SETTINGS.txt 
 $(echo $seconds_int > $EXPORTER_LAST_EXPORT_SECONDS_FILE)
-
