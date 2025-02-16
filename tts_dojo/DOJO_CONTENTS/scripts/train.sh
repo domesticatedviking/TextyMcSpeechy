@@ -566,17 +566,14 @@ start_tmux_processes(){
     # start the training script in pane 0.0    
     tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "source $VENV_ACTIVATE" Enter
 
-    #ERIK - check whether this is needed.
-    #tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/erik/code/testmultilang/TextyMcSpeechy/piper/src/python/.venv/lib64/python3.10/site-packages/nvidia/cublas/lib:/home/erik/code/testmultilang/TextyMcSpeechy/piper/src/python/.venv/lib64/python3.10/site-packages/nvidia/cudnn/lib" Enter
-    
     # trainer_starting_checkpoint is an absolute path on the host. Use it to build a path that will work in the container
     docker_starting_checkpoint_path=$(make_docker_path "$trainer_starting_checkpoint")
     
     # launch utils/piper_training.sh on the host which will manage training within the docker container 
     tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "utils/piper_training.sh $docker_starting_checkpoint_path" Enter
 
-    # launch the tensorboard server via utils/run_tensorboard_server.sh
-    tmux send-keys -t "${TMUX_TENSORBOARD_PANE:-0.1}" "bash utils/run_tensorboard_server.sh" Enter
+    # launch the tensorboard server via utils/run_tensorboard_server.sh.
+    tmux send-keys -t "${TMUX_TENSORBOARD_PANE:-0.1}" "bash utils/run_tensorboard_server.sh $DOJO_NAME" Enter
 
     # clear the the voice exporter pane and display ready message. 
     tmux send-keys -t "${TMUX_EXPORTER_PANE:-0.2}" "clear && echo 'Ready to export voice models' && read " Enter
