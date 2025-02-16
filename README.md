@@ -21,7 +21,7 @@
 1.  Check for currently installed Nvidia driver by running `nvidia-smi`.  If something like the image below shows up, you may be able to skip to step 3.
 ![image](https://github.com/user-attachments/assets/d8d9c650-971c-427b-952e-8774f520f9e0)
 2.  If Nvidia drivers are not installed on your system I recommend you do this using whatever "official" method exists for the distribution you are using.  That's all the advice I can give you - I have spent many hours repairing my distribution after installing a driver I shouldn't have.  If you survive move to step 3.
-3.  Check whether docker is installed on your system by running `docker --version`.  It is installed skip to step 5.
+3.  Check whether docker is installed on your system by running `docker --version`.  If it is installed skip to step 5.
 4.  You can install Docker using the instructions here: https://docs.docker.com/engine/install/
 5.  You will need the NVIDIA Container toolkit to enable GPU access within docker containers.  https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
 6.  Clone this repo and switch to the docker-dev branch.  This will do both things: 
