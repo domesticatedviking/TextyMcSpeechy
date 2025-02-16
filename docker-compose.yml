@@ -13,6 +13,6 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     user: "${TMS_USER_ID:-1000}:${TMS_GROUP_ID:-1000}"
     tty: true
-   
-
+    ports:
+      - "6006:6006"  # open tensorboard server port
 
