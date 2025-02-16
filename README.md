@@ -6,7 +6,7 @@
  - Dockerfile
  - docker-compose.yml
  - All scripts in `tts_dojo` have been refactored to use the `textymcspeechy-piper` docker container.
- - There is a prebuilt container on dockerhub at `domesticatedviking/textymcspeechy-piper:latest` 
+ - There is a prebuilt container on dockerhub at `domesticatedviking/textymcspeechy-piper:latest`, however I may have some work to do to integrate it with the dojo scripts.
  
 ## Things that are not finished yet
  - `setup.sh` is unfinished and should not be used yet.
@@ -26,8 +26,8 @@
 git clone -b docker-dev https://github.com/domesticatedviking/TextyMcSpeechy
 ```
 7.  You can either download a prebuilt image of the `textymcspeechy-piper` docker container, or build the image yourself using the provided `Dockerfile` and `docker-dev.yml` file.
-    - To download the prebuilt image, run `docker image pull domesticatedviking/textymcspeechy-piper:latest`  Beware that this is quite a large download (~6GB compressed).  This will be the most reliable choice for most people.  Note: At the time I am writing this I don't know whether the code in the repo will need some minor tweaks to use the image from dockerhub. I will investigate that shortly.
     - To build your own image, run the following command from the main `TextyMcspeechy` directory:  `docker compose build`
+    - (Not yet integrated with the dojo scripts): To download the prebuilt image, run `docker image pull domesticatedviking/textymcspeechy-piper:latest`  Beware that this is quite a large download (~6GB compressed).
 8. There are a few dependencies that need to be installed on the host to train models: `tmux`, `ffmpeg`, `sox` and `inotify-tools`.  
 ```
 sudo apt-get update
