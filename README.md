@@ -34,7 +34,7 @@ sudo apt-get update
 sudo apt-get install tmux ffmpeg inotify-tools
 ```
 9. Every script will need to be made executable (`chmod +x *.sh`) in `tts_dojo`, `tts_dojo/scripts`, `tts_dojo_scripts/utils`, `tts_dojo/DATASETS`, and `tts_dojo/PRETRAINED_CHECKPOINTS`.   This will need to be done manually until the setup script `setup.sh` is finished.
-10. That should be pretty the entire installation process.
+10. That should be pretty much the entire installation process.
 11. `run_training.sh`  automatically runs the container when you start training and shuts it down when training ends. I don't recommend manually starting the container as this could result in permission issues on files shared between the host and container.
 12. Usage is essentially the same as described on the `main` branch.
   
