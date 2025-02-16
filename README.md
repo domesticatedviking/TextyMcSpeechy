@@ -13,7 +13,7 @@
 ## Things that are not finished yet
  - `setup.sh` is unfinished and parts of it are currently disabled.
  - I haven't uploaded a prebuilt docker image yet so you would need to build it yourself with the provided files.
- - The docs will need an overhaul to explain how to install docker, build the image, shut down the image manually, etc.
+ - The docs will need an overhaul to explain how to install docker, install CUDA related dependencies, build the image, shut down the image manually, etc.
 
  
 
