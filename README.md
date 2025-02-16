@@ -6,7 +6,7 @@
  - Dockerfile
  - docker-compose.yml
  - All scripts in `tts_dojo` have been refactored to use the `textymcspeechy-piper` docker container.
- - There is a prebuilt container on dockerhub at `domesticatedviking/textymcspeechy-piper:latest` - 
+ - There is a prebuilt container on dockerhub at `domesticatedviking/textymcspeechy-piper:latest` 
  
 ## Things that are not finished yet
  - `setup.sh` is unfinished and should not be used yet.
