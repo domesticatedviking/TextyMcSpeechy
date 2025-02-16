@@ -53,9 +53,12 @@ echo "these are fake commands"
 echo "sudo apt-get update"
 echo "sudo apt-get install espeak-ng tmux ffmpeg inotify-tools"
 
+# ensure all scripts in tts_dojo/DOJO_CONTENTS are executable
+chmod +x tts_dojo/DOJO_CONTENTS/*.sh
+chmod +x tts_dojo/DOJO_CONTENTS/scripts/*.sh
+chmod +x tts_dojo/DOJO_CONTENTS/scripts/utils/*.sh
+
 # If everything went well, print the success message
-#cd "$TEXTY_PATH"
-#echo "$TEXTY_PATH" > "tts_dojo/.TEXTY_DIR"
 echo -e "${GREEN}All done.${RESET}"
 echo
 
