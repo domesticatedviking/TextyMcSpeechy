@@ -3,26 +3,30 @@
 
 DOJO_NAME=$(basename $PWD) # Get from <voice_name>_dojo
 SETTINGS_FILE="SETTINGS.txt"
+SAMPLING_RATE_FILE=".SAMPLING_RATE"
+MAX_WORKERS_FILE=".MAX_WORKERS"
 MASTER_SETTINGS_FILE="../../DOJO_CONTENTS/scripts/$SETTINGS_FILE" #relative to this dojo's scripts dir 
 
+cd scripts # needed to ensure relative paths are built properly
+set +e # Exit immediately if any command returns a non-zero exit code
+
 #.SAMPLING_RATE and .MAX_WORKERS are stored in <voice>_dojo/scripts by link_dataset.sh
-if [[ -f .SAMPLING_RATE ]]; then
-    SAMPLING_RATE=$(cat .SAMPLING_RATE)
+if [[ -f $SAMPLING_RATE_FILE ]]; then
+    SAMPLING_RATE=$(cat $SAMPLING_RATE_FILE)
 else
     echo "Error: .SAMPLING_RATE file not found."
     exit 1 
 fi
 
-if [[ -f .MAX_WORKERS ]]; then
-    MAX_WORKERS=$(cat .MAX_WORKERS)
+if [[ -f $MAX_WORKERS_FILE ]]; then
+    MAX_WORKERS=$(cat $MAX_WORKERS_FILE)
 else
     echo "Error: .MAX_WORKERS file not found."
     exit 1
 fi
 
 
-cd scripts # needed to ensure relative paths are built properly
-set +e # Exit immediately if any command returns a non-zero exit code
+
 language=""
 
 # load settings
