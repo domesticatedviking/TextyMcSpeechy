@@ -6,7 +6,7 @@
  - Dockerfile
  - docker-compose.yml
  - All scripts in `tts_dojo` have been refactored to use the `textymcspeechy-piper` docker container.
- - if the docker image has been built, `run_training.sh` will automatically bring  and take it down when it closes.
+ - if the docker image has been built, `run_training.sh` will automatically bring it up and take it down when it closes.
  - If you can build the docker image and install the dependencies listed in `setup.sh` the scripts in the `tts_dojo` directory are all ready to use.
  - every script will need to be made executable (`chmod +x *.sh`) in tts_dojo, tts_dojo/scripts, tts_dojo_scripts/utils, tts_dojo/DATASETS, and tts_dojo/PRETRAINED_CHECKPOINTS.   This will need to be done manually until `setup.sh` is finished.
  
