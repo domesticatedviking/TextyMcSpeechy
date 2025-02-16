@@ -107,6 +107,7 @@ show_legend() {
     echo
     echo -e "Use ${CYAN}'tmux kill-session'${RESET} to shut all processes down from any terminal window"
     echo -e "To change to adjacent window without a mouse, use <CTRL> B followed by an arrow key."
+    echo -e "save [t]mux layout, [r]estore tmux layout"
     echo
     echo -e "To [q]uit training, select this pane and press [Q]."
 }
@@ -119,8 +120,18 @@ show_stats() {
     dir_size=$(dir_size_in_gb $DOJO_DIR)      
     echo -e "${YELLOW}${GREEN}${remaining}${YELLOW} GB of storage remaining.  Using ${GREEN}${gb_min}${YELLOW} GB/min.    Approx time until full: ${GREEN}${time_full}${RESET}"
 
-
 }
+
+save_tmux_layout(){
+# save the current arrangement of tmux window panes
+    bash save_tmux_layout.sh
+}
+
+restore_tmux_layout(){
+# restores a previous layout of tmux window panes from .tmux_layout file
+    bash restore_tmux_layout.sh
+}
+
 
 # Function to clean up on termination
 cleanup() {
@@ -131,9 +142,15 @@ cleanup() {
 # Set trap to catch termination signals and run cleanup
 trap cleanup SIGINT SIGTERM
 
+# Check if .tmux_layout exists
+if [ -f ".tmux_layout" ]; then
+    restore_tmux_layout
+fi
+
+
 # Main loop
 last_refresh_time=0
-refresh_interval=60  # how many seconds to wait before refreshing stats
+refresh_interval=60  # how many seconds to wait between refresh
 
 while true; do
     current_time=$(date +%s)
@@ -150,7 +167,9 @@ while true; do
     if read -rsn1 -t 1 key; then
         case "$key" in
             [qQ]) kill_session ;;
+            [rR]) restore_tmux_layout ;;
+            [tT]) save_tmux_layout ;;
             *) ;;
         esac
-    fi
+fi
 done
