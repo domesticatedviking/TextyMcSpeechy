@@ -11,9 +11,10 @@
 - https://www.tomshardware.com/raspberry-pi/add-any-voice-to-your-raspberry-pi-project-with-textymcspeechy
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
-## February 12 2025: Good news everyone:  TTS dojo with dockerized Piper coming soon
-- Since installing Piper has become quite challenging due to complex dependency issues, I have been working on a version of the TTS dojo that runs Piper from a docker container.
-- I had my first successful training run from the docker build this morning, and will post it once all the rest of the scripts are tweaked and tested, probably within a week.
+## February 15 2025: More good news everyone:  TTS dojo with dockerized Piper nearly ready
+- Since installing Piper has become quite challenging due to complex dependency issues, I have made a version of the TTS dojo that runs Piper from a docker container. It is running well and will become the default branch when it is completely ready.
+- All the code needed to train models is finished in the `docker-dev` branch along with the `Dockerfile` and `docker-config.yml` necessary to build the required Docker image.  It is ready to use if you know how to set it up.
+- There is no working setup script or guide yet. Those should be available next week.
 
 ## February 2025: tutorials for using custom Piper voices within Home Assistant OS.
 - I couldn't find a guide for using custom Piper voices in Home Assistant OS, so [I wrote my own](docs/using_custom_voices_in_home_assistant_os.md).
