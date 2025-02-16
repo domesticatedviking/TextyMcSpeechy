@@ -29,8 +29,9 @@
 git clone -b docker-dev https://github.com/domesticatedviking/TextyMcSpeechy
 ```
 8.  You can either download a prebuilt image of the `textymcspeechy-piper` docker container, or build the image yourself using the provided `Dockerfile` and `docker-dev.yml` file.
-    - To download the prebuilt image, run `docker image pull domesticatedviking/textymcspeechy-piper:latest`  Beware that this is quite a large download (~6GB compressed).  This will be the most reliable choice for most people.
+    - To download the prebuilt image, run `docker image pull domesticatedviking/textymcspeechy-piper:latest`  Beware that this is quite a large download (~6GB compressed).  This will be the most reliable choice for most people.  Note: At the time I am writing this I don't know whether the code in the repo will need some minor tweaks to use the image from dockerhub. I will investigate that shortly.
     - To build your own image, run the following command from the main `TextyMcspeechy` directory:  `docker compose build`
+9.
   
     
 
