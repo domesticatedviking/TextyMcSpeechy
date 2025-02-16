@@ -522,7 +522,6 @@ get_starting_checkpoint_recommendation(){
     fi
 }
 
-#ERIK
 start_tmux_layout(){
 # Set up tmux windows that will be used to display all of the concurrent processes used during training.
     
@@ -531,7 +530,7 @@ start_tmux_layout(){
     tmux send-keys -t training "tmux set -g pane-border-status top" Enter   # Turn on pane labels
 
     tmux split-window -v -t training # split screen into two rows
-    tmux send-keys -t training "tmux resize-pane -t 0.0 -U 24" Enter  # shrink the top pane 
+    tmux send-keys -t training "tmux resize-pane -t 0.0 -U 34" Enter  # shrink the top pane 
     tmux send-keys -t training "tmux resize-pane -t 0.0 -R 42" Enter  
 
     tmux split-window -h -t 0.0     # split top row into 2 columns
