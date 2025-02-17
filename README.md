@@ -29,31 +29,27 @@ git clone -b docker-dev https://github.com/domesticatedviking/TextyMcSpeechy
 ```
 7. Run `sudo bash setup.sh`  to install packages, make scripts executable, choose the type of container you wish to run, and verify that needed tools are installed.
 8. Installation is complete.  If you chose to use the prebuilt container from dockerhub it should download automatically the first time you use the `run_container.sh` script. Take note that it's a 6GB download and over 10GB when decompressed.
+9. The TTS Dojo script `run_training.sh`  automatically runs the `textymcspeechy-piper` container by calling `run_container.sh`when you start training and shuts it down when you end the training session.
 
 
 ## Notes
 
 - You can either download a prebuilt image of the `textymcspeechy-piper` docker container, or build the image yourself using the provided `Dockerfile` and `docker-dev.yml` file.
     - To build your own image, run the following command from the main `TextyMcspeechy` directory:  `docker compose build`
-    - To download the prebuilt image, run the command below.   Beware that this is quite a large download (~6GB compressed).  This will be the most reliable option for most users.
+    - To download the prebuilt image manually, run the command below.
 ```
 docker image pull domesticatedviking/textymcspeechy-piper:latest
 ```
+
  - Scripts are provided for launching the `textymcspeechy-piper` image, whether it is prebuilt or locally built.
     - `local_container_run.sh` launches images you have built yourself with `Dockerfile` and `docker-compose.yml`
     - `prebuilt_container_run.sh` launches a prebuilt image.
     - `run_container.sh` is a script that functions as an alias to one of the scripts above.  It is called by `run_training.sh` to automatically bring the container up when training starts.  
- -  There are a few dependencies that need to be installed on the host to train models: `tmux`, `ffmpeg`, `sox` and `inotify-tools`.  
-```
-sudo apt-get update
-sudo apt-get install tmux ffmpeg sox inotify-tools
-```
-10. Every script will need to be made executable (`chmod +x *.sh`) in `TextyMcSpeechy`, `tts_dojo`, `tts_dojo/scripts`, `tts_dojo_scripts/utils`, `tts_dojo/DATASETS`, and `tts_dojo/PRETRAINED_CHECKPOINTS`.   This will need to be done manually until the setup script `setup.sh` is finished.
-12. That should be pretty much the entire installation process.
-13. `run_training.sh`  automatically runs the container when you start training and shuts it down when training ends. 
-14. Usage is essentially the same as described on the `main` branch.
-  
-    
+ 
+## Useful Guides in this repo:
+
+ - [Using custom voices in Home Assistant](docs/using_custom_voices_in_home_assistant_os.md)
+ - [Rendering custom voices for Home Assistant on a networked device with a GPU](docs/running_custom_piper_voices_on_GPU.md)
 
 
 
