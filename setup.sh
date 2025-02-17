@@ -1,15 +1,12 @@
 #!/bin/bash
-# Setup for dockerized piper build
+# setup.sh setup script for TextyMcSpeechy dockerized piper build
 
-echo "This script is currently disabled as it is incomplete."
-exit 0
-
+RUN_CONTAINER_SCRIPT_NAME="run_container.sh"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 RESET='\033[0m' # Reset text color to default
-TEXTY_PATH=$(pwd)
 
 # Define an error handler
 error_handler() {
@@ -19,50 +16,144 @@ error_handler() {
 # Set up the error trap to run the error handler on any error
 trap error_handler ERR
 
-# Exit on error
-set -e
-
-echo
-echo
-echo
-echo -e "${GREEN}   TextyMcspeechy setup${RESET}"
-echo 
-echo -e "   This script will prepare the TextyMcSpeechy TTS dojo for its first run by:"
-echo -e "       - Verifying that docker is installed on your system"
-echo -e "       - Getting the textymcspeechy-piper docker image needed for training"
-echo -e "       - Installing packages needed by the TTS dojo."
-echo
-
-echo -ne "${YELLOW}Would you like to [i]nstall or [q]uit?${RESET}  "
-read choice
-if [ "$choice" != "i" ] && [ "$choice" != "I" ]; then
+informed_consent(){
+# explains what script will do
+    echo
+    echo "This script will do the following things:"
     echo 
-    echo "Exiting."
+    echo "1. Install required packages"
+    echo "    apt-get update"
+    echo "    apt-get install tmux ffmpeg inotify-tools sox"
+    echo
+    echo "2. Make all .sh files in this project executable."
+    echo "     eg. chmod +x *.sh"
+    echo 
+    echo "3. Let you choose which type of container you want to use with the tts dojo"
+    echo "   (prebuilt image from dockerhub vs locally built docker image)"
+    echo
+    echo "4. Check whether Docker and NVIDIA Container Toolkit are installed"
+    echo 
+    
+}
+
+script_run_container_boilerplate(){
+# writes static part of run_container.sh
+    tf=$RUN_CONTAINER_SCRIPT_NAME
+    echo "#!/bin/bash" > $tf
+    echo "# run_container.sh:  This script provides a single alias to one of the available ways of starting a docker container." >> $tf
+    echo "#" >> $tf
+    echo "# use one of the following options in this script: " >> $tf
+    echo "# bash prebuilt_container_run.sh  # launches prebuilt docker images which you downloaded " >> $tf
+    echo "#    bash local_container_run.sh  # launches images you built locally " >> $tf
+    echo "" >> $tf
+}
+
+check_docker() {
+# Check if Docker is installed by looking for the 'docker' command
+    if command -v docker &> /dev/null; then
+        echo "    OK! -- Docker is installed. "
+        
+    else
+        echo "WARNING -- Required package Docker is not installed."
+        echo "install instructions can be found here:"
+        echo "https://docs.docker.com/engine/install/"
+        echo
+        
+    fi
+}
+
+
+check_nvidia_container_toolkit() {
+# Check if nvidia-container-toolkit is installed
+    if dpkg -l | grep -q nvidia-container-toolkit; then
+        echo "    OK! -- NVIDIA Container Toolkit is installed."
+    else
+        echo "WARNING! -- Required package NVIDIA Container Toolkit is not installed."
+        echo "install instructions can be found here:"
+        echo "https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html"
+    fi
+}
+
+if [ "$(id -u)" -ne 0 ]; then
+    informed_consent    
     echo
     echo
+    echo "    Run this script again with sudo privileges to proceed"
+    echo "             sudo bash setup.sh "
     echo
-    exit 0
+    exit 1
 fi
 
-echo "Checking if the image already exists.  press <Enter>."
-read
-echo "TMS_USER_ID=$(id -u) TMS_GROUP_ID=$(id -g) docker compose build is the command that would be used to build the container if this is real "
+clear
+informed_consent
+read -p "Do you wish to continue? (y/n): " response
+
+if [[ "$response" =~ ^[Yy]$ ]]; then
+    :
+else
+    echo "Exiting..."
+    exit 1
+fi
 
 
-
-# Check if the script has root access before using sudo
+echo "Updating package index"
 echo
-echo -e "${YELLOW}The tts dojo requires tmux, ffmpeg, inotify-tools and sox packages.  This requires sudo privileges${RESET}"
-echo "these are fake commands"
-echo "sudo apt-get update"
-echo "sudo apt-get install espeak-ng tmux ffmpeg inotify-tools"
+apt-get update
+echo
+echo "Installing required packages"
+echo
+apt-get install tmux ffmpeg inotify-tools sox
+echo
+echo "Press <Enter> to continue"
+read 
+clear
+echo 
+echo "What kind of docker package do you want to use for textymcspeechy-piper?"
+echo 
+echo "     1.  I want to use a pre-built image from dockerhub. (recommended)"
+echo "     2.  I want to use a local image that I will build myself."
+echo
+read -p "please choose 1 or 2: " response
+if [[ "$response" == 1 ]]; then
+    echo
+    echo "configuring script: run_container.sh to run docker image using prebuilt_container_run.sh"
+    echo "The prebuilt container will download the first time you run this script."
+    echo 
+    echo "The TTS dojo will automatically launch the docker image when you start training a model"
+    script_run_container_boilerplate
+    echo "prebuilt_container_run.sh" >> $RUN_CONTAINER_SCRIPT_NAME
+    echo "done."
+    echo
+elif [[ "$response" == 2 ]]; then
+    echo "configuring script: run_container.sh to run a locally built docker image with local_container_run.sh"
+    echo 
+    echo "The TTS dojo will automatically launch the docker image when you start training a model"
+    script_run_container_boilerplate
+    echo "local_container_run.sh" >> $RUN_CONTAINER_SCRIPT_NAME
+    echo "done."
+fi
 
-# ensure all scripts in tts_dojo/DOJO_CONTENTS are executable
+echo 
+echo  "Making all scripts executable"
+
+chmod +x ./*.sh
+chmod +x tts_dojo/*.sh
 chmod +x tts_dojo/DOJO_CONTENTS/*.sh
 chmod +x tts_dojo/DOJO_CONTENTS/scripts/*.sh
 chmod +x tts_dojo/DOJO_CONTENTS/scripts/utils/*.sh
+chmod +x tts_dojo/DATASETS/*.sh
+chmod +x tts_dojo/PRETRAINED_CHECKPOINTS/*.sh
+echo "done."
+
+echo
+echo "Checking for presence of required packages"
+echo
+check_docker
+check_nvidia_container_toolkit
 
 # If everything went well, print the success message
+echo
 echo -e "${GREEN}All done.${RESET}"
 echo
-
+echo "  Please see quick_start_guide.md for instructions on how to train your first model" 
+echo
