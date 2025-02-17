@@ -14,6 +14,7 @@
  - test install process
  - get feedback from users on how this is working for them
  - make this branch the new main branch
+ - support custom `espeak-ng` pronunciation rules in the docker container, since `espeak-ng` lives there now.
  
 
 ## Installation 
