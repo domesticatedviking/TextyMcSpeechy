@@ -1,10 +1,9 @@
 #!/bin/bash
-# tts_dojo/ESPEAK_RULES/run_in_container_as_root_apply_custom_rules.sh
-# activates custom espeak-ng pronunciation rules inside the textymcspeechy-piper container
+# tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh
+# activates custom pronunciation rules inside the textymcspeechy-piper container (requires root)
 #
-# ESPEAK_RULES should contain all the pronunciation files for your chosen language from espeak-ng/dictsource 
-# (https://github.com/espeak-ng/espeak-ng/tree/master/dictsource)
-# for English, the files you need are:  en_list, en_rules, en_emoji
+# ESPEAK_RULES should contain all the pronunciation files for your chosen language from espeak-ng/dictsource (available on github)
+# for English, the files you need are:  en_list, en_rules, en_emoji, en_extra
 # you also need to create an en_extra file which contains your customized pronunciations.
 #
 # see https://github.com/domesticatedviking/TextyMcSpeechy/blob/docker-dev/docs/altering_pronunciation.md for instructions.
@@ -14,15 +13,18 @@
 # docker exec -u root -it textymcspeechy-piper "/app/tts_dojo/ESPEAK_RULES/apply_custom_rules.sh en > apply_rules.log"  
 
 LANGUAGE=$1 
-if [ -z "$LANGUAGE" ]; then
-    echo "Error: You must provide the language code as the first parameter"
-    echo "It should be the same code used in the prefix for the custom rules"
-    echo "  eg: for en_list, the language code is en"
-    echo "exiting"
-    exit 1
-fi
+LOGFILE="container_apply_custom_rules.log"
+
+show_launch_command(){
+echo "docker exec -u root -it textymcspeechy-piper \"/app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh <language prefix> $LOGFILE\""
+echo "eg:    docker exec -u root -it textymcspeechy-piper \"/app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh en > $LOGFILE\""
+}
 
 ESPEAK_RULES_DIR="/app/tts_dojo/ESPEAK_RULES"  # this is a path inside the docker container
+echo "************************************************"
+echo "      container_apply_custom_rules.sh"
+echo "************************************************"
+echo
 
 if [ ! -d "$ESPEAK_RULES_DIR" ]; then
     echo
@@ -30,8 +32,8 @@ if [ ! -d "$ESPEAK_RULES_DIR" ]; then
     echo "This is likely because you are trying to run this script on the host computer."
     echo "This script is intended to run as root, inside the textymcspeechy-piper docker container."
     echo "to run it manually, first bring the docker container up, then run:"
-    echo
-    echo "    docker exec -u root -it textymcspeechy-piper \"/app/tts_dojo/ESPEAK_RULES/apply_custom_rules.sh en > apply_rules.log\""
+    show_launch_command
+     
     echo
     echo "Exiting."
     echo
@@ -39,10 +41,19 @@ if [ ! -d "$ESPEAK_RULES_DIR" ]; then
     exit 1
 fi
 
+if [ -z "$LANGUAGE" ]; then
+    echo "Error: You must provide the language code as the first parameter to $0."
+    echo "It should be the same code used in the prefix for the custom rules"
+    echo "  eg: for en_list, the language code is en"
+    echo "exiting"
+    exit 1
+fi
+
+
 if [ "$(id -u)" -ne 0 ]; then    
     echo "ERROR: This script must be run in the textymcspeechy-piper docker container with root privileges "
     echo "Run it from the host with:"
-    echo "docker exec -u root -it textymcspeechy-piper \"/app/tts_dojo/ESPEAK_RULES/apply_custom_rules.sh en > apply_rules.log\""
+    show_launch_command
     echo
     exit 1
 fi
@@ -82,5 +93,9 @@ echo "This script was run on: $(date '+%Y-%m-%d %H:%M:%S') UTC"
 check_files
 echo "Compiling rules for espeak-ng.  These will be applied to all future voice models"
 espeak-ng --compile=$LANGUAGE
-echo "done."
+if [ $? -eq 0 ]; then
+  echo "Successfully compiled espeak-ng rules."
+else
+  echo "Compiling espeak-ng rules failed. (exit code=$?)."
+fi
 exit 0
