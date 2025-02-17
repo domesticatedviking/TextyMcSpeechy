@@ -143,6 +143,7 @@ chmod +x tts_dojo/DOJO_CONTENTS/scripts/*.sh
 chmod +x tts_dojo/DOJO_CONTENTS/scripts/utils/*.sh
 chmod +x tts_dojo/DATASETS/*.sh
 chmod +x tts_dojo/PRETRAINED_CHECKPOINTS/*.sh
+chmod +x tts_dojo/ESPEAK_RULES/*.sh
 echo "done."
 
 echo
