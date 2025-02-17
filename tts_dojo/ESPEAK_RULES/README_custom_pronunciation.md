@@ -22,7 +22,7 @@ APPLY_CUSTOM_RULESET_SCRIPT="tts_dojo/ESPEAK_RULES/apply_custom_rules.sh $CUSTOM
 Noella  no'El:V O
 ```
 
-- I have created an [IPA to kirschenbaum cheatsheet](/docs/IPA_to_kirschenbaum_cheatsheet.md) which will help you convert ipa pronunciatiions to the format espeak-ng needs.
+- I have created an [IPA to kirschenbaum cheatsheet](/docs/IPA_to_kirschenbaum_cheatsheet.md) which will help you convert ipa pronunciations to the format espeak-ng needs.
 - [This site](https://www.internationalphoneticalphabet.org/ipa-sounds/ipa-chart-with-sounds/) is a great reference for IPA.  You can click on each symbol to hear how it sounds, which will help you choose the symbols that represent the sounds of your target word.
 - [This site](https://ipa-reader.com/) is useful for testing IPA transcriptions.
 
