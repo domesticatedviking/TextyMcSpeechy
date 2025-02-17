@@ -35,34 +35,15 @@ else
     exit 1
 fi
 
-# Prepare to launch docker container.
-
-cd ../.. #docker-conf.yml is in TextyMcSpeechy dir, 2 levels up from <name>_dojo
-
-# ensure docker files exist.
-if [[ ! -f "docker-compose.yml" ]]; then
-    echo "Error: docker-compose.yml not found! Press <Enter> to exit." >&2
-    read
-    exit 1
-fi
-
-if [[ ! -f "Dockerfile" ]]; then
-    echo "Error: Dockerfile not found! Press <Enter> to exit." >&2
-    read
-    exit 1
-fi
-
-echo "Starting Docker container textymcspeechy-piper"
-# pass PUID and PGID to docker-compose.yml (prepend as environment vars) 
-# Ensures current user will have rights to files created by docker container in mounted folder
-export TMS_USER_ID=$(id -u)
-export TMS_GROUP_ID=$(id -g)
-echo
-TMS_USER_ID="${TMS_USER_ID}" TMS_GROUP_ID="${TMS_GROUP_ID}" docker compose up -d
+# Launch textymcspeechy-piper docker image
+cd ../.. #container launcher files are in TextyMcSpeechy dir, 2 levels up from <name>_dojo
+bash run_container.sh  # this script runs either local_container_run.sh or prebuilt_container_run.sh
 echo
 echo "Press <Enter> to continue"
 read
 cd tts_dojo/$DOJO_NAME # return to this dojo after starting docker
+
+
 
 set -e # Exit immediately if any command returns a nonzero exit code
 
