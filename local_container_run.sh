@@ -1,5 +1,5 @@
 #!/bin/sh
-# locak_container_run.sh  - launches a locally built docker container  
+# local_container_run.sh  - launches a locally built docker container  
 
 # ensure docker files exist.
 if [[ ! -f "docker-compose.yml" ]]; then
