@@ -24,7 +24,7 @@
 3.  Check whether docker is installed on your system by running `docker --version`.  If it is installed skip to step 5.
 4.  You can install Docker using the instructions here: https://docs.docker.com/engine/install/
 5.  You will need the NVIDIA Container toolkit to enable GPU access within docker containers.  https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
-6.  Clone this repo and switch to the docker-dev branch.  This will do both things: 
+6.  Clone this repo and switch to the docker-dev branch.  The command below will accomplish both: 
 ```
 git clone -b docker-dev https://github.com/domesticatedviking/TextyMcSpeechy
 ```
