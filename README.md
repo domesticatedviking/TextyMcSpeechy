@@ -7,6 +7,7 @@
  - A prebuilt image of the docker container is now up on dockerhub.
  - `Dockerfile` and `docker-compose.yml` are provided if you want to run a locally built container
  - `setup.sh` now works
+ - Added support for custom `espeak_ng` rules to be applied automatically whenever the container runs - more details [here](tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)
  - Install instructions are below
 
 ## To do:
@@ -14,7 +15,6 @@
  - test install process
  - get feedback from users on how this is working for them
  - make this branch the new main branch
- - support custom `espeak-ng` pronunciation rules in the docker container, since `espeak-ng` lives there now.
  
 
 ## Installation 
