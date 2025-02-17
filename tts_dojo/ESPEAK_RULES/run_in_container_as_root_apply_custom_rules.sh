@@ -1,5 +1,5 @@
 #!/bin/bash
-# tts_dojo/ESPEAK_RULES/apply_custom_rules.sh
+# tts_dojo/ESPEAK_RULES/run_in_container_as_root_apply_custom_rules.sh
 # activates custom espeak-ng pronunciation rules inside the textymcspeechy-piper container
 #
 # ESPEAK_RULES should contain all the pronunciation files for your chosen language from espeak-ng/dictsource 
@@ -15,7 +15,7 @@
 
 LANGUAGE=$1 
 if [ -z "$LANGUAGE" ]; then
-    echo "Error: You must provide the language code as the first parameter to $0."
+    echo "Error: You must provide the language code as the first parameter"
     echo "It should be the same code used in the prefix for the custom rules"
     echo "  eg: for en_list, the language code is en"
     echo "exiting"
