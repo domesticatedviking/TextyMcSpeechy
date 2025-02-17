@@ -10,7 +10,6 @@
  
 ## Things that are not finished yet
  - `setup.sh` is unfinished and should not be used yet.
- - Integration of prebuilt image with `run_training.sh` - The way the prebuilt image needs to be brought up is different from the locally built one.  I have a functioning launch script and am integrating it.  Will be done today.
  
 
 
@@ -27,16 +26,20 @@ git clone -b docker-dev https://github.com/domesticatedviking/TextyMcSpeechy
 ```
 7.  You can either download a prebuilt image of the `textymcspeechy-piper` docker container, or build the image yourself using the provided `Dockerfile` and `docker-dev.yml` file.
     - To build your own image, run the following command from the main `TextyMcspeechy` directory:  `docker compose build`
-    - (Not yet integrated with the dojo scripts): To download the prebuilt image, run `docker image pull domesticatedviking/textymcspeechy-piper:latest`  Beware that this is quite a large download (~6GB compressed).
-8. There are a few dependencies that need to be installed on the host to train models: `tmux`, `ffmpeg`, `sox` and `inotify-tools`.  
+    - To download the prebuilt image, run `docker image pull domesticatedviking/textymcspeechy-piper:latest`  Beware that this is quite a large download (~6GB compressed).  This will be the most reliable option for most users.
+8. Scripts are provided for launching the `textymcspeechy-piper` image, whether it is prebuilt or locally built.
+    - `local_container_run.sh` launches images you have built yourself with `Dockerfile` and `docker-compose.yml`
+    - `prebuilt_container_run.sh` launches a prebuilt image.
+    - `run_container.sh` is a script that functions as an alias to one of the scripts above.  It is called by `run_training.sh` to automatically bring the container up when training starts.  
+10. There are a few dependencies that need to be installed on the host to train models: `tmux`, `ffmpeg`, `sox` and `inotify-tools`.  
 ```
 sudo apt-get update
 sudo apt-get install tmux ffmpeg sox inotify-tools
 ```
-9. Every script will need to be made executable (`chmod +x *.sh`) in `tts_dojo`, `tts_dojo/scripts`, `tts_dojo_scripts/utils`, `tts_dojo/DATASETS`, and `tts_dojo/PRETRAINED_CHECKPOINTS`.   This will need to be done manually until the setup script `setup.sh` is finished.
-10. That should be pretty much the entire installation process.
-11. `run_training.sh`  automatically runs the container when you start training and shuts it down when training ends. I don't recommend manually starting the container as this could result in permission issues on files shared between the host and container.
-12. Usage is essentially the same as described on the `main` branch.
+10. Every script will need to be made executable (`chmod +x *.sh`) in `TextyMcSpeechy`, `tts_dojo`, `tts_dojo/scripts`, `tts_dojo_scripts/utils`, `tts_dojo/DATASETS`, and `tts_dojo/PRETRAINED_CHECKPOINTS`.   This will need to be done manually until the setup script `setup.sh` is finished.
+12. That should be pretty much the entire installation process.
+13. `run_training.sh`  automatically runs the container when you start training and shuts it down when training ends. 
+14. Usage is essentially the same as described on the `main` branch.
   
     
 
