@@ -5,8 +5,14 @@
 - for English models, the files that are required in this folder are:  `en_list`, `en_rules`, `en_emoji`, `en_extra`
 - the language code is the prefix of the rule file (for the files above the language code is `en`)
 
-Note: Typically when you compile rules for `espeak-ng`, those rules are applied globally and are permanent.
-However, due to the nature of docker containers, you will need to apply your custom ruleset every time your container runs.
+- Typically when you compile rules for `espeak-ng`, those rules are applied globally and are permanent. However, due to the nature of docker containers, you will need to apply your custom ruleset every time your container runs.  You can do this automatically by editing the constants in `TextyMcSpeechy/prebuilt_container_run.sh`
+```
+# TextyMcSpeechy/prebuilt_container_run.sh
+
+APPLY_CUSTOM_ESPEAK_RULES=true`
+CUSTOM_ESPEAK_RULES_LANGUAGE="en"  #use the language code for your ruleset
+APPLY_CUSTOM_RULESET_SCRIPT="tts_dojo/ESPEAK_RULES/apply_custom_rules.sh $CUSTOM_ESPEAK_RULES_LANGUAGE"
+```
 
 ## Creating a custom pronunciation file (eg.`en_extra`)
 - Each line in `en_extra` begins with the text to be pronounced, followed by its phonetic representation in [Kirschenbaum](https://en.wikipedia.org/wiki/Kirshenbaum) format (Also known as ASCII-IPA or erkIPA format).
