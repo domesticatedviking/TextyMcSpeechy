@@ -121,7 +121,7 @@ if [[ "$response" == 1 ]]; then
     echo 
     echo "The TTS dojo will automatically launch the docker image when you start training a model"
     script_run_container_boilerplate
-    echo "prebuilt_container_run.sh" >> $RUN_CONTAINER_SCRIPT_NAME
+    echo "bash prebuilt_container_run.sh" >> $RUN_CONTAINER_SCRIPT_NAME
     echo "done."
     echo
 elif [[ "$response" == 2 ]]; then
@@ -129,7 +129,7 @@ elif [[ "$response" == 2 ]]; then
     echo 
     echo "The TTS dojo will automatically launch the docker image when you start training a model"
     script_run_container_boilerplate
-    echo "local_container_run.sh" >> $RUN_CONTAINER_SCRIPT_NAME
+    echo "bash local_container_run.sh" >> $RUN_CONTAINER_SCRIPT_NAME
     echo "done."
 fi
 
