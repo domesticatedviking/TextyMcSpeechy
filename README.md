@@ -10,7 +10,7 @@
  
 ## Things that are not finished yet
  - `setup.sh` is unfinished and should not be used yet.
- - I am still quite new to docker and don't know whether I will need to update the dojo scripts to use the prebuilt container.  Will update after testing.
+ - Integration of prebuilt image with `run_training.sh` - The way the prebuilt image needs to be brought up is different from the locally built one.  I have a functioning launch script and am integrating it.  Will be done today.
  
 
 
