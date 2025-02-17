@@ -6,15 +6,20 @@
  - Dockerfile
  - docker-compose.yml
  - All scripts in `tts_dojo` have been refactored to use the `textymcspeechy-piper` docker container.
+ - A prebuilt image of the docker container is now up on dockerhub.  To download it:
+```
+docker image pull domesticatedviking/textymcspeechy-piper:latest
+```
+ - The prebuilt image is now integrated with the TTS Dojo
 
  
 ## Things that are not finished yet
- - `setup.sh` is unfinished and should not be used yet.
+ - `setup.sh` is unfinished and should not be used yet.  You will need to manually install packages and make all scripts executable.
  
 
 
 ## The beginnings of an installation guide (WIP)
-1.  Check for currently installed Nvidia driver by running `nvidia-smi`.  If something like the image below shows up, you may be able to skip to step 3.
+1.  Check for currently installed Nvidia driver by running `nvidia-smi`.  If something like the image below shows up, you may be able to skip to step 2
 ![image](https://github.com/user-attachments/assets/d8d9c650-971c-427b-952e-8774f520f9e0)
 2.  If Nvidia drivers are not installed on your system I recommend you do this using whatever "official" method exists for the distribution you are using.  That's all the advice I can give you - I have spent many hours repairing my distribution after installing a driver I shouldn't have.  If you survive move to step 3.
 3.  Check whether docker is installed on your system by running `docker --version`.  If it is installed skip to step 5.
@@ -26,7 +31,10 @@ git clone -b docker-dev https://github.com/domesticatedviking/TextyMcSpeechy
 ```
 7.  You can either download a prebuilt image of the `textymcspeechy-piper` docker container, or build the image yourself using the provided `Dockerfile` and `docker-dev.yml` file.
     - To build your own image, run the following command from the main `TextyMcspeechy` directory:  `docker compose build`
-    - To download the prebuilt image, run `docker image pull domesticatedviking/textymcspeechy-piper:latest`  Beware that this is quite a large download (~6GB compressed).  This will be the most reliable option for most users.
+    - To download the prebuilt image, run the command below.   Beware that this is quite a large download (~6GB compressed).  This will be the most reliable option for most users.
+```
+docker image pull domesticatedviking/textymcspeechy-piper:latest
+```
 8. Scripts are provided for launching the `textymcspeechy-piper` image, whether it is prebuilt or locally built.
     - `local_container_run.sh` launches images you have built yourself with `Dockerfile` and `docker-compose.yml`
     - `prebuilt_container_run.sh` launches a prebuilt image.
