@@ -13,7 +13,7 @@
 
 ## February 16 2025: TTS dojo with dockerized Piper ready to use in docker-dev branch
 - Since installing Piper has become quite challenging due to complex dependency issues, I have made a version of the TTS dojo that runs Piper from a docker container. It is running well and will become the default branch when it is completely ready.
-- All the code needed to train models is finished in the `docker-dev` branch along with the `Dockerfile` and `docker-config.yml` necessary to build the required Docker image.  It is ready to use if you know how to set it up.
+- All the code needed to train models is finished in the `docker-dev` branch along with the `Dockerfile` and `docker-config.yml` necessary to build the required Docker image.
 - There is now a prebuilt docker image on dockerhub for maximum convenience.
 - A basic install guide is now up as well
 
