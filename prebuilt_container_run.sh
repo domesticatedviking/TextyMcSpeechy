@@ -1,6 +1,6 @@
 #!/bin/bash
 # prebuilt_container_run.sh  - Launches a prebuilt image of textymcspeechy-piper
-APPLY_CUSTOM_ESPEAK_RULES=true
+APPLY_CUSTOM_ESPEAK_RULES=false
 CUSTOM_ESPEAK_RULES_LANGUAGE="en"
 APPLY_CUSTOM_RULESET_SCRIPT="tts_dojo/ESPEAK_RULES/apply_custom_rules.sh $CUSTOM_ESPEAK_RULES_LANGUAGE"
 
