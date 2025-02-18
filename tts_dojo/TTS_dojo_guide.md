@@ -1,43 +1,41 @@
 # TTS Dojo
 
-The TTS Dojo is a simplified workflow for changing the voice of text-to-speech models using [rhasspy/piper](https://github.com/rhasspy/piper).
+- The TTS Dojo is a set of shell scripts that use [Piper TTS](https://github.com/rhasspy/piper) to produce custom text-to-speech models by finetuning pretrained Piper TTS checkpoint files.
+- Piper's training services are provided via a docker container called `textymcspeechy-piper`, which can either be downloaded from dockerhub or built locally.
+- Voice dojos automatically start the `textymcspeechy-piper` docker image by calling `TextyMcspeechy/run_container.sh` and stop it when training ends.
+- If you have set up custom pronunciation rules in `tts_dojo/ESPEAK_RULES`, these can be configured to be activated automatically when your container runs.  A guide can be found [here](tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)
+ 
 
-## Notes before we begin
-1. Piper must be installed before you can use the dojo. I recommend using `install_piper.sh` to ensure everything ends up in the expected locations.
-2. `tts_dojo/DOJO_CONTENTS` is the directory structure that will be cloned for each model you train.  Don't change the contents of this folder unless you know what you're wanting to accomplish.
-3. Piper expects datasets that have sampling rates of either 16000Hz or 22050Hz.   Low quality pretrained piper models use 16000Hz datasets, and 22050Hz datasets are used by medium and high quality models.  TextyMcSpeechy automatically creates `wav` files at both of these sampling rates when you create your dataset by running `tts_dojo/DATASETS/create_dataset.sh`
-
-
-## Gathering your training files.
-You will need: 
-- a dataset for your target voice consisting of a collection of audio files and a `metadata.csv` file containing the transcripts must be created in its own folder inside `tts_dojo/DATASETS`
-- a checkpoint file `.ckpt` of a [partially trained text-to-speech model](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main).   Default checkpoint files should be stored in the folder structure found in `tts_dojo/PRETRAINED_CHECKPOINTS/default`.   `PRETRAINED_CHECKPOINTS/download_defaults.sh` can be used to download a complete set of default checkpoint files for your chosen language.   `PRETRAINED_CHECKPOINTS/languages/en-us.conf` can be used as a template if you wish to add support for more languages.  Pull requests for those would be gratefully accepted.
-- It is also possible to force a specific starting checkpoint to be used by manually copying or symlinking it into `<your_dojo>/starting_checkpoint_override`
-
-
-## Usage
-1. `cd tts_dojo`
-2. your dataset must be scanned and repackaged before it can be used with the dojo.  To do this, create a new folder in the `tts_dojo/DATASETS` folder, copy your audio files and metadata.csv file inside (WARNING: keep backups of your original files because this step will change them), and run `./create_dataset.sh <your_dataset_folder>`
-3. Default pretrained piper TTS checkpoint files for each voice type `[M/F]` and quality setting `[low, medium, high]` are to be stored in the folders found in `/tts_dojo/PRETRAINED_CHECKPOINTS`.   You will need to add these files yourself, either by manually [downloading](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main) them and copying them into the appropriate folders or by running `download_defaults.sh`, which currently only includes a set of links for `en-us` language checkpoints.  (Warning, running this script will download approximately 5GB of data)
-4. Once your dataset is created, run `./newdojo.sh <VOICE_NAME>` to create the directory structure (inside `<VOICE_NAME>_dojo`)  for the components of your new model.  Note: newdojo.sh stores several paths in hidden files inside the dojo folder.  If you move your dojo folder to another location after creating it, the scripts will not work unless you manually update the paths in `.BIN_DIR`, `.DOJO_DIR`, `.PIPER_PATH`, and `.TEXTY_DIR`.
-5. `cd <VOICE_NAME>_dojo` 
-6. Run `./run_training.sh` and choose your dataset from the menu.  This script will preprocess your dataset and then open the training environment.
-7. Training can take a long time (hours).  If you choose to quit training, the next time you run `./run_training.sh` you will be given the option to resume where you left off.
-8. The training scripts run in a multi-window environment provided by `tmux`.  The tmux session is named `training`.   This session can be shut down from any terminal window with the command `tmux kill-session` if there is a problem and the normal ways of shutting the session down are unavailable.
-9. Warning:  If you are initiating training within the dojo in any way other than using the provided scripts, be aware that the provided scripts (specifically `scripts/train.sh` which is called by `run_training.sh`) always begin by deleting the contents of `<VOICE_NAME>_dojo/training_folder/lightning_logs` in order to ensure that generated checkpoint files will be found in a consistent location. 
+## About the training process
+- The [quick_start_guide](https://github.com/domesticatedviking/TextyMcSpeechy/blob/docker-dev/quick_start_guide.md) contains everything you need to know about getting your first training session running
+- Be aware the provided training scripts delete all data stored in  `<VOICE_NAME>_dojo/training_folder/lightning_logs` at the beginning of each training run.
+- When training starts, the training scripts run in a multi-window environment provided by `tmux`.  The tmux session is named `training`.
+- The training session can be shut down from any terminal window with the command `tmux kill-session` if there is a problem and the normal ways of shutting the session down are unavailable.
+- If your training session crashes you may need to manually bring down the textymcspeechy-piper docker image.  Check its status by runnning `docker ps` 
+- You can shut the docker container down manually by either:
+   1. navigating to the main `TextyMcSpeechy` folder and running `./stop_container.sh`
+   2. running `docker stop textymcspeechy-piper` from any terminal window.
+- The layout of the training panes isn't always ideal the first time you run a training session. You can drag the boundaries between panes around with your mouse to adjust them to your liking.  The layout can be saved by clicking on the "CONTROL CONSOLE" pane and pressing `t`.  This layout will be applied automatically on future training runs.
+ 
 
 ## What do the different windows in the training dojo do?
-0. `PIPER TRAINING RAW OUTPUT`  This pane contains all of the text generated by piper as it trains your model.  For the most part you can ignore it.
-   - You may see `rank_zero_warn (` appear for several minutes as training is initializing.  This is normal.
+0. `PIPER TRAINING RAW OUTPUT`  This pane contains all of the text generated by piper as it trains your model.   I generally recommend making this pane 2 rows tall since most of the information provided here isn't very useful.  There are often many warnings that appear in this pane.   Most of them can be ignored.
+   - The best indicator that your training session is working properly is when  `rank_zero_warn (` appears at the bottom of this pane. It is normal for this to appear for several minutes as training is initializing.   
    - You may see a warning about a low number of workers being a bottleneck.  Currently the only way to resolve this is to modify piper's source code.
-   - If you see an error related to `zip` files here, this usually means your starting checkpoint file is corrupted.   Either restart training or delete the highest epoch checkpoint in the `voice_checkpoints` directory.
-   - If training doesn't start because of a missing `libcudnn_cnn_infer.so.8` and `libcuda.so` file, you can solve this by installing tensorflow.  With your .venv activated, run `python3 -m pip install tensorflow[and-cuda]` (Enter this command exactly as it appears here, including the square brackets)
+   - If you see an error related to `zip` files here, this usually means your starting checkpoint file is corrupted.   Either restart training or delete the highest epoch checkpoint in the `voice_checkpoints` directory.  
+1. `TENSORBOARD SERVER`  This pane runs a web server that lets you view graphs related to training progress.  Open http://localhost:6006 in your web browser if you want to see them.  When the graph for `loss_disc_all` levels off, your model is probably almost ready.  It isn't necessary to use this at all during training but I provide it for those who prefer a more quantitative approach than "listening to a model and seeing if it sounds good".
+2. `TTS MODEL EXPORTER` This pane contains piper's output when it converts a checkpoint file into a `.onnx` file.  It can be reduced to a single row high since it produces almost no output during normal operation.
+3. `CHECKPOINT GRABBER` This pane runs a script which allows you to periodically save one of the checkpoint files that Piper generates during training and automatically convert it into a text-to-speech model.  This allows allows you to decide when your model is done training by listening to which checkpoint's version of the voice sounds the best.   Beware that leaving this tool unattended for a long time or saving checkpoint files frequently could quite easily fill your entire hard drive -- each checkpoint file is over 800MB.  You can set up an automatic shutdown if your available storage falls below a certain threshold by editing the global SETTINGS.txt file in `tts_dojo/DOJO_CONTENTS` before creating a new voice dojo.
+4. `CONTROL CONSOLE` This pane displays information about the amount of storage your training session is using, and also provides several controls when it is selected. Select the CONTROL_CONSOLE pane by clicking it with a mouse or navigating to it with <CTRL>-B followed by arrow keys if you don't have a mouse, then:
+    -  To shut down training: press `q`.
+    -  To save the current tmux window layout: press `t`
+    -  To restore a previous tmux window layout: press `r`
+5. `VOICE TESTER` This pane allows you to hear what the voice associated with a saved checkpoint file sounds like.
+   -  After at least one checkpoint has been saved and exported, a list of voice files will appear in this window.
+   -  Select this window and use the arrow keys to highlight the version of the voice you want to hear, then press `s` to have it speak the text in the `"Text to say:"` field.
+   -  Any voice that appears in the voice tester pane is ready to be used in your Piper projects.
+   -  The finished voices are stored in  subfolders of `<VOICE_NAME_dojo>/tts_voices`
 
-1. `TENSORBOARD SERVER`  This pane is where the web server that lets you view graphs related to training progress runs.  Open http://localhost:6006 in your web browser if you want to see them.  When the graph for "loss_disc_all" levels off, your model is probably almost ready.
-2. `TTS MODEL EXPORTER` This pane contains piper's output when it converts a checkpoint file into a `.onnx` file.  For the most part this can be ignored as well.
-3. `CHECKPOINT GRABBER` This pane contains a script which allows you to periodically save one of the checkpoint files that piper generates during training and convert it into a text-to-speech model.   Saving these files periodically as the model trains allows you to decide which version of the voice sounds the best.   Please be careful with this tool as leaving it unattended and saving checkpoint files frequently could quite easily fill your entire hard drive -- each checkpoint file is over 800MB.
-4. `CONTROL CONSOLE`  Currently the only control available here is to shut down the training session.   Select this pane and press `q`.
-5. `VOICE TESTER` This allows you to hear what the voice associated with a saved checkpoint file sounds like.  After at least one checkpoint has been saved, a list of voice files will appear in this window.   Use the arrow keys to choose the voice you want to hear, then press `s` to have it speak the text in the `"Text to say:"` field.  Any voice that appears in the voice tester pane is ready to be used in your Piper projects.  You will find the voices in `<VOICE_NAME_dojo>/tts_voices` 
 
 
 
