@@ -50,8 +50,11 @@ Read the [quick start guide](quick_start_guide.md) to learn how to build dataset
 ```
 git clone https://github.com/domesticatedviking/TextyMcSpeechy
 ```
-7. From the `TextyMcSpeechy` directory, run `sudo bash setup.sh`  to install packages, make scripts executable, choose the type of container you wish to run, and verify that needed tools are installed.
-8. Installation is complete.  If you chose to use the prebuilt container from dockerhub it will download automatically the first time you use the `run_container.sh` script or start to train a model. Take note that it's a 6GB download and over 10GB when decompressed.
+7.  To install packages, make scripts executable, choose the type of container you wish to run, and verify that needed tools are installed, from the `TextyMcSpeechy` directory, run
+```
+sudo bash setup.sh
+```
+8. Setup is complete.  If you chose to use the prebuilt container from dockerhub it will download automatically the first time you use the `run_container.sh` script or start to train a model. Take note that it's a 6GB download and over 10GB when decompressed.
 9. Continue with the [quick start guide](quick_start_guide.md) to begin training models.
 
 
