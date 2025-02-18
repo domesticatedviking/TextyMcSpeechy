@@ -70,6 +70,7 @@ docker compose build
  - Scripts are provided for launching the `textymcspeechy-piper` image, whether it is prebuilt or locally built.
     - `local_container_run.sh` launches images you have built yourself with `Dockerfile` and `docker-compose.yml`
     - `prebuilt_container_run.sh` launches a prebuilt image.
-    - `run_container.sh` is a script that functions as an alias to one of the scripts above.  It is called by `run_training.sh` to automatically bring the container up when training starts.  
+    - `run_container.sh` is a script that functions as an alias to one of the scripts above.  It is called by `run_training.sh` to automatically bring the container up when training starts.
+    - `stop_container.sh` will shut down the `textymcspeechy-piper` container if it is running.
 
  - Custom `espeak-ng` pronunciation rules can be defined in `tts_dojo/ESPEAK_RULES`.  A guide for customizing pronunciation can be found [here](tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md).
