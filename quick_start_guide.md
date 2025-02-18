@@ -17,10 +17,10 @@ file0003|Six thick slabs of mozzerella cheese.
 
 ## Where do I get a dataset?
 To make a custom text to speech voice requires a custom dataset.   Building a custom dataset requires a bit of work.
-   - The fastest way to get a dataset is to use the scripts provided in the `dataset_recorder` directory to record a dataset using your own voice. I highly recommend everyone tries this option at least 
-once.
-   - You can also create a dataset from any collection of short audio clips that you manually transcribe into a `metadata.csv` file.
-   - It is also possible to download a [public domain training dataset](https://github.com/jim-schwoebel/voice_datasets) and batch-convert the provided audio files to sound like a different voice with an existing RVC voice changer model using [Applio](https://github.com/IAHispano/Applio).  This is quicker because you don't have to transcribe the dataset - you use the `metadata.csv` file that came with the original dataset for training.
+   - The fastest way to get a dataset is to use the [dataset recorder](dataset_recorder/dataset_recorder_README.md) to record a dataset using your own voice. I highly recommend everyone tries this option at least once.
+   - You can also create a dataset from any collection of short audio clips that you manually transcribe into a `metadata.csv` file.  This option requires the most work, but the work is usually worth it.  Some of the character voices I have produced this way sound almost identical to the original recordings when catchphrases present in the dataset are rendered via TTS.
+   - It is also possible to download a [public domain training dataset](https://github.com/jim-schwoebel/voice_datasets) and batch-convert the provided audio files to sound like a different voice with an existing RVC voice changer model using [Applio](https://github.com/IAHispano/Applio).  This is often faster because you don't have to transcribe the dataset - you use the `metadata.csv` file that came with the original dataset for training.  I have had mixed results with this approach since much of the intonation of the resulting model comes from the original dataset.
+   - A hybrid approach to making TTS training datasets from RVC models which works well is to record your best impersonation of the target speaker using the [dataset recorder](dataset_recorder/dataset_recorder_README.md), and then using [Applio](https://github.com/IAHispano/Applio) to batch convert your recordings into the target voice.
 
 ## Part 1. Package your dataset for use with TextyMcSpeechy.
 1. Make a new directory inside of `tts_dojo/DATASETS`.  It should have the same name as the voice you are making, eg `custom_voice`
