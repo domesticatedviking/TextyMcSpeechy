@@ -35,15 +35,15 @@ Noella  no'El:V O
 - [This site](https://ipa-reader.com/) is useful for testing IPA transcriptions.
 
 
-
-
 ## Purpose of scripts in this folder
   1. `apply_custom_rules.sh`: Runs `container_apply_custom_rules.sh` inside the `textymcspeechy-piper` docker container as root.
-  2. `container_apply_custom_rules.sh`:  compiles the ruleset for espeak-ng in the docker container.
+  2. `container_apply_custom_rules.sh`:  compiles the ruleset for espeak-ng.  Must run as root inside the docker container.  
+  3. `automated_espeak_rules.sh`:   run by the container startup scripts eg `prebuilt_container_run.sh` to make sure your custom rules are applied every a container launches.
 
-## Example Usage:
+##  Manual Usage:
 ```
-# Run this command on the host computer
+# Run this command on the host computer to manually apply a ruleset to a runnning textymcspeechy-piper container.
+
 ./apply_custom_rules.sh en    # substitute other language codes for en as needed. 
 ```
    
