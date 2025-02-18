@@ -30,7 +30,7 @@ AUTO_APPLY_CUSTOM_ESPEAK_RULES="true"  <--- EDIT THIS LINE TO TURN AUTOMATIC LOA
 Noella  no'El:V O
 ```
 
-- I have created an [IPA to kirschenbaum cheatsheet](/docs/IPA_to_kirschenbaum_cheatsheet.md) which will help you convert ipa pronunciations to the format espeak-ng needs.
+- I have created an [IPA to kirschenbaum cheatsheet](/docs/IPA_to_kirschenbaum_cheatsheet.md) which will help you convert words from the international phonetic alphabet (IPA) to the format `espeak-ng` uses.
 - [This site](https://www.internationalphoneticalphabet.org/ipa-sounds/ipa-chart-with-sounds/) is a great reference for IPA.  You can click on each symbol to hear how it sounds, which will help you choose the symbols that represent the sounds of your target word.
 - [This site](https://ipa-reader.com/) is useful for testing IPA transcriptions.
 
@@ -38,7 +38,7 @@ Noella  no'El:V O
 ## Purpose of scripts in this folder
   1. `apply_custom_rules.sh`: Runs `container_apply_custom_rules.sh` inside the `textymcspeechy-piper` docker container as root.
   2. `container_apply_custom_rules.sh`:  compiles the ruleset for espeak-ng.  Must run as root inside the docker container.  
-  3. `automated_espeak_rules.sh`:   run by the container startup scripts eg `prebuilt_container_run.sh` to make sure your custom rules are applied every a container launches.
+  3. `automated_espeak_rules.sh`:   run by the container startup scripts eg `prebuilt_container_run.sh` to make sure your custom rules are applied every time a container launches.
 
 ##  Manual Usage:
 ```
