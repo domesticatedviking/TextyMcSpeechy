@@ -7,7 +7,7 @@
  
 
 ## About the training process
-- The [quick_start_guide](https://github.com/domesticatedviking/TextyMcSpeechy/blob/docker-dev/quick_start_guide.md) contains everything you need to know about getting your first training session running
+- The [quick start guide](https://github.com/domesticatedviking/TextyMcSpeechy/blob/docker-dev/quick_start_guide.md) contains everything you need to know about getting your first training session running
 - Be aware the provided training scripts delete all data stored in  `<VOICE_NAME>_dojo/training_folder/lightning_logs` at the beginning of each training run.
 - When training starts, the training scripts run in a multi-window environment provided by `tmux`.  The tmux session is named `training`.
 - The training session can be shut down from any terminal window with the command `tmux kill-session` if there is a problem and the normal ways of shutting the session down are unavailable.
@@ -27,16 +27,35 @@
    - If you see an error related to `zip` files here, this usually means your starting checkpoint file is corrupted.   Either restart training or delete the highest epoch checkpoint in the `voice_checkpoints` directory.  
 1. `TENSORBOARD SERVER`  This pane runs a web server that lets you view graphs related to training progress.  Open http://localhost:6006 in your web browser if you want to see them.  When the graph for `loss_disc_all` levels off, your model is probably almost ready.  It isn't necessary to use this at all during training but I provide it for those who prefer a more quantitative approach than "listening to a model and seeing if it sounds good" (my preferred method).
 2. `TTS MODEL EXPORTER` This pane contains piper's output when it converts a checkpoint file into a `.onnx` file.  It can be reduced to a single row high since it produces almost no output during normal operation.
-3. `CHECKPOINT GRABBER` This pane runs a script which allows you to periodically save one of the checkpoint files that Piper generates during training and automatically convert it into a text-to-speech model.  This allows allows you to decide when your model is done training by listening to which checkpoint's version of the voice sounds the best.   Beware that leaving this tool unattended for a long time or saving checkpoint files frequently could quite easily fill your entire hard drive -- each checkpoint file is over 800MB.  You can set up an automatic shutdown if your available storage falls below a certain threshold by editing the global SETTINGS.txt file in `tts_dojo/DOJO_CONTENTS` before creating a new voice dojo.
-4. `CONTROL CONSOLE` This pane displays information about the amount of storage your training session is using, and also provides several controls when it is selected. Select the CONTROL_CONSOLE pane by clicking it with a mouse or navigating to it with <CTRL>-B followed by arrow keys if you don't have a mouse, then:
+3. `CHECKPOINT GRABBER` 
+![image](https://github.com/user-attachments/assets/a5c6f3fb-123a-4b1b-a134-409c7544d15b)
+   - The `CHECKPOINT GRABBER` pane runs a script which allows you to periodically save one of the checkpoint files that Piper generates during training and automatically convert it into a text-to-speech model.
+   - This allows allows you to decide when your model is done training by listening to which checkpoint's version of the voice sounds the best.
+   - Beware that leaving this tool unattended for a long time or saving checkpoint files frequently could quite easily fill your entire hard drive -- each checkpoint file is over 800MB.
+   - You can set up an automatic shutdown if your available storage falls below a certain threshold by editing the global SETTINGS.txt file in `tts_dojo/DOJO_CONTENTS` before creating a new voice dojo.
+   - You can manually save the most recent checkpoint file and convert it to piper voice model by pressing `s` while this pane is selected.  This can be useful if you need to shut down a training session and resume it later.  `run_training.sh` will automatically prompt you to resume training from the highest epoch checkpoint you have saved.
+   - Since checkpoint files are so large, by default the checkpoint grabber only saves 1 out of every 25 checkpoints that piper generates. You can change how often checkpoints are automatically saved by pressing `i` to save them less often and and `d` to save them more often.  You can also turn automatic saving off and on by pressing `t`. 
+   
+4. `CONTROL CONSOLE` 
+![image](https://github.com/user-attachments/assets/8a4dcf05-ce14-4cdc-89d5-85c935ccb653)
+
+    - This pane displays information about the amount of storage your training session is using, and also provides several controls when it is selected. Select the `CONTROL CONSOLE` pane by clicking it (or navigating to it with <CTRL>-B followed by arrow keys) if you don't have a mouse, then:
     -  To shut down training: press `q`.
     -  To save the current tmux window layout: press `t`
     -  To restore a previous tmux window layout: press `r`
-5. `VOICE TESTER` This pane allows you to hear what the voice associated with a saved checkpoint file sounds like.
+5. `VOICE TESTER`   
+![image](https://github.com/user-attachments/assets/f06e4aac-6ec9-40b9-86ef-aa8efa3398ea)
+
+
+
+   -  This pane allows you to hear what the voice associated with a saved checkpoint file sounds like.
    -  After at least one checkpoint has been saved and exported, a list of voice files will appear in this window.
    -  Select this window and use the arrow keys to highlight the version of the voice you want to hear, then press `s` to have it speak the text in the `"Text to say:"` field.
+   -  The number following the underscore is the epoch number of the corresponding checkpoint file saved in `<VOICE_NAME_dojo>/voice_checkpoints`
    -  Any voice that appears in the voice tester pane is ready to be used in your Piper projects.
-   -  The finished voices are stored in  subfolders of `<VOICE_NAME_dojo>/tts_voices`
+   -  Your finished Piper voices are stored in  subfolders of `<VOICE_NAME_dojo>/tts_voices`
+   -  A Piper voice consists of both an `.onnx` file and a `.onnx.json` file
+   -  Note: Currently the TTS dojo scripts do not name voices using Piper's official specifications.  For now, you can rename them yourself using [this guide](docs/renaming_and_preparing_custom_piper_voices.md). 
 
 
 
