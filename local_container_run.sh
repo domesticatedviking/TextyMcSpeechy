@@ -1,6 +1,6 @@
 #!/bin/sh
 # local_container_run.sh  - launches a locally built docker container  
-
+AUTOMATIC_ESPEAK_RULE_SCRIPT="tts_dojo/ESPEAK_RULES/automated_espeak_rules.sh"
 # ensure docker files exist.
 if [[ ! -f "docker-compose.yml" ]]; then
     echo "Error: docker-compose.yml not found! Press <Enter> to exit." >&2
@@ -22,6 +22,8 @@ export TMS_GROUP_ID=$(id -g)
 echo
 TMS_USER_ID="${TMS_USER_ID}" TMS_GROUP_ID="${TMS_GROUP_ID}" docker compose up -d
 echo
+# Apply any custom pronunciation rules configured to run automatically
+$AUTOMATIC_ESPEAK_RULE_SCRIPT
 
 
 
