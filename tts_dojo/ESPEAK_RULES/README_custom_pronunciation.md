@@ -13,7 +13,7 @@
 #    eg: "en"     - compiles english ruleset   
 #    eg: "en it"  - compiles english and italian rulesets
 
-ALWAYS_CONFIGURE_LANGUAGES="en it"    <--- EDIT THIS LINE TO CHOOSE LANGUAGE(S) TO AUTOMATICALLY LOAD
+ALWAYS_CONFIGURE_LANGUAGES="en it"    <--- EDIT THIS LINE TO CHOOSE WHICH CUSTOM RULES WILL AUTOMATICALLY BE APPLIED
 
 # AUTO_APPLY_CUSTOM_ESPEAK_RULES turns rule processing on and off
 #  true: automatically apply rules for configured languages when container starts 
