@@ -11,7 +11,7 @@
 - Be aware the provided training scripts delete all data stored in  `<VOICE_NAME>_dojo/training_folder/lightning_logs` at the beginning of each training run.
 - When training starts, the training scripts run in a multi-window environment provided by `tmux`.  The tmux session is named `training`.
 - The training session can be shut down from any terminal window with the command `tmux kill-session` if there is a problem and the normal ways of shutting the session down are unavailable.
-- If your training session crashes you may need to manually bring down the textymcspeechy-piper docker image.  Check its status by runnning `docker ps` 
+- If your training session crashes you may need to manually bring down the `textymcspeechy-piper` docker image.  Check its status by runnning `docker ps` 
 - You can shut the docker container down manually by either:
    1. navigating to the main `TextyMcSpeechy` folder and running `./stop_container.sh`
    2. running `docker stop textymcspeechy-piper` from any terminal window.
