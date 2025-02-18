@@ -73,7 +73,4 @@ once.
 ```
 6. If you set up a dataset as described in Part 1, you will be prompted to choose a dataset, the dataset will be pre-processed, and training will begin.
 
-
-## How does the training process work?
-
-TextyMcspeechy works by starting a Piper training session, periodically grabbing the `.ckpt` files that Piper creates, and converting them into usable Piper voice models, which are stored in `tts_dojo/yourvoice_dojo/tts_voices`. The amount of time it takes to train a voice is highly dependent the size of your dataset, and it is not unusual for it to take 20 minutes or more for the first voice model to be generated.    Because each individual checkpoint file is over 800MB, TextyMcSpeechy doesn't save all of the checkpoints that Piper generates.   You can adjust how often checkpoints are saved or manually save the current checkpoint at any point in the training process from the Checkpoint Grabber window.  Whenever the checkpoint grabber saves a checkpoint, it also immediately converts it into a usable Piper voice and saves it in `tts_dojo/yourvoice_dojo/tts_voices`.
+7. Detailed instructions for using the TTS dojo training environment can be found [here](tts_dojo/TTS_dojo_guide.md).
