@@ -6,13 +6,13 @@
 # ALWAYS_CONFIGURE_LANGUAGES determines which ruleset(s) will be compiled when the container starts.
 #    eg: "en"     - compiles english ruleset   
 #    eg: "en it"  - compiles english and italian rulesets 
-ALWAYS_CONFIGURE_LANGUAGES="en it"  
+ALWAYS_CONFIGURE_LANGUAGES="en"  
 
 # AUTO_APPLY_CUSTOM_ESPEAK_RULES turns rule processing on and off
 #  true: automatically apply rules for configured languages when container starts 
 # false: do not automatically apply these rules  
  
-AUTO_APPLY_CUSTOM_ESPEAK_RULES=true
+AUTO_APPLY_CUSTOM_ESPEAK_RULES=false
 
 # path to main script that applies custom rules (default: "./apply_custom_rules.sh")
 APPLY_CUSTOM_RULESET_SCRIPT="./apply_custom_rules.sh"
