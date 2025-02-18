@@ -47,7 +47,9 @@ docker image pull domesticatedviking/textymcspeechy-piper:latest
     - `local_container_run.sh` launches images you have built yourself with `Dockerfile` and `docker-compose.yml`
     - `prebuilt_container_run.sh` launches a prebuilt image.
     - `run_container.sh` is a script that functions as an alias to one of the scripts above.  It is called by `run_training.sh` to automatically bring the container up when training starts.  
- 
+
+ - A guide for customizing pronunciation can be found [here](tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)
+
 ## Useful Guides in this repo:
 
  - [Using custom voices in Home Assistant](docs/using_custom_voices_in_home_assistant_os.md)
