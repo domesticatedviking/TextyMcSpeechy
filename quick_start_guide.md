@@ -24,7 +24,7 @@ once.
 
 ## Part 1. Package your dataset for use with TextyMcSpeechy.
 1. Make a new directory inside of `tts_dojo/DATASETS`.  It should have the same name as the voice you are making, eg `custom_voice`
-2. Copy your dataset's audio files and `metadata.csv` file to the `custom_voice` directory you just created.  Be sure to keep backups of your original files as the script we are about to run is going to change them.  If you recorded a roomtone file, you should ensure that it is NOT copied into the `custom_voice` folder.  If your `metadata.csv` file makes reference to your roomtone file, you will see a few warnings about the missing file, but they can safely be ignored.  You can eliminate those warnings by removing the line that refers to your roomtone file from `metadata.csv`
+2. Copy your dataset's audio files and `metadata.csv` file to the `custom_voice` directory you just created.  **Be sure to keep backups of your original files** as the script we are about to run is going to change them.  If you recorded a roomtone file, you should ensure that it is NOT copied into the `custom_voice` folder.  If your `metadata.csv` file makes reference to your roomtone file, you will see a few warnings about the missing file, but they can safely be ignored.  You can eliminate those warnings by removing the line that refers to your roomtone file from `metadata.csv`
 
 3. from `tts_dojo/DATASETS`, run:
 ```
