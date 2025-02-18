@@ -25,15 +25,18 @@ Read the [quick start guide](quick_start_guide.md) to learn how to build dataset
  - [Using custom voices in Home Assistant](docs/using_custom_voices_in_home_assistant_os.md)
  - [Rendering custom voices for Home Assistant on a networked device with a GPU](docs/running_custom_piper_voices_on_GPU.md)
  
+## System Requirements
+ - A NVIDIA GPU with drivers capable of running CUDA is required. Training on CPU, while technically possible, is not officially supported.
+ - A hard drive with sufficient storage capacity for the base installation (~15GB) and checkpoint files generated during training.  50gb of free space is suggested as a practical minimum.
+ - This project is written entirely in shell script and is primarily intended for Linux users.   Windows users will need to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to run it.
 
 ## Installation:
-
 1.  Check for currently installed Nvidia driver by running `nvidia-smi`.  If something like the image below shows up, you may be able to skip to step 3
 ![image](https://github.com/user-attachments/assets/d8d9c650-971c-427b-952e-8774f520f9e0)
-2.  If Nvidia drivers are not installed on your system I recommend you do this using whatever "official" method exists for the distribution you are using.  That's all the advice I can give you - In the past I have known the pain of spending hours repairing my OS after installing a driver I shouldn't have.  If you survive this step continue to step 3.
-3.  Check whether docker is installed on your system by running `docker --version`.  If it is installed skip to step 5.
+2.  If Nvidia drivers are not installed on your system I recommend you do this using whatever "official" method exists for the distribution you are using.  That's all the advice I can give you - in the past I have known the pain of spending hours repairing my OS after installing a driver I shouldn't have.  If you survive this step continue to step 3.
+3.  Check whether Docker is installed on your system by running `docker --version`.  If it is installed skip to step 5.
 4.  You can install Docker using the instructions here: https://docs.docker.com/engine/install/
-5.  You will need the NVIDIA Container toolkit to enable GPU access within docker containers.  https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+5.  You will need the NVIDIA Container Toolkit to enable GPU access within docker containers.  https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
 6.  Clone this repo and switch to the docker-dev branch.  The command below will accomplish both: 
 ```
 git clone -b docker-dev https://github.com/domesticatedviking/TextyMcSpeechy
@@ -61,10 +64,3 @@ docker compose build
     - `run_container.sh` is a script that functions as an alias to one of the scripts above.  It is called by `run_training.sh` to automatically bring the container up when training starts.  
 
  - Custom `espeak-ng` pronunciation rules can be defined in `tts_dojo/ESPEAK_RULES`.  A guide for customizing pronunciation can be found [here](tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md).
-
-
-
-
-
- 
-
