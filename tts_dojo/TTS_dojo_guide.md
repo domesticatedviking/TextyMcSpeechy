@@ -2,7 +2,7 @@
 
 - The TTS Dojo is a set of shell scripts that use [Piper TTS](https://github.com/rhasspy/piper) to produce custom text-to-speech models by finetuning pretrained Piper TTS checkpoint files.
 - Piper's training services are provided via a docker container called `textymcspeechy-piper`, which can either be downloaded from dockerhub or built locally.
-- Voice dojos automatically start the `textymcspeechy-piper` docker image by calling `TextyMcspeechy/run_container.sh` and stop it when training ends.
+- Voice dojos automatically start the `textymcspeechy-piper` docker image by calling `TextyMcSpeechy/run_container.sh` and automatically stop it when training ends.
 - If you have set up custom pronunciation rules in `tts_dojo/ESPEAK_RULES`, these can be configured to be activated automatically when your container runs.  A guide can be found [here](tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)
  
 
