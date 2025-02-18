@@ -1,11 +1,10 @@
 #!/bin/bash
 # prebuilt_container_run.sh  - Launches a prebuilt image of textymcspeechy-piper
-APPLY_CUSTOM_ESPEAK_RULES=false
-CUSTOM_ESPEAK_RULES_LANGUAGE="en"
-APPLY_CUSTOM_RULESET_SCRIPT="tts_dojo/ESPEAK_RULES/apply_custom_rules.sh $CUSTOM_ESPEAK_RULES_LANGUAGE"
 
+# Path to script that sets which custom pronunciation rules will be applied when the container is brought up
+AUTOMATIC_ESPEAK_RULE_SCRIPT="tts_dojo/ESPEAK_RULES/automated_espeak_rules.sh"
 fail=0  
-# Check that docker is installd
+# Check that docker is installed
 if command -v docker &> /dev/null; then
     :       
 else
@@ -82,14 +81,8 @@ docker run --rm -d \
 # Check if the container is running
 if [ $? -eq 0 ]; then
     echo "Container $CONTAINER_NAME started successfully."
-    # Conditionally apply custom espeak rules
-    if [ "$APPLY_CUSTOM_ESPEAK_RULES" = true ]; then
-    # Run the script with the specified language
-        echo "Applying custom eSpeak rules for language: $CUSTOM_ESPEAK_RULES_LANGUAGE"
-        $APPLY_CUSTOM_RULESET_SCRIPT > /dev/null 2>&1 
-    else
-        : #do nothing
-    fi
+    # Apply any custom pronunciation rules configured to run automatically
+    $AUTOMATIC_ESPEAK_RULE_SCRIPT
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 else
     echo "Failed to start the container."
