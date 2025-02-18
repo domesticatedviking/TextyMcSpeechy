@@ -9,11 +9,11 @@
 # see https://github.com/domesticatedviking/TextyMcSpeechy/blob/docker-dev/docs/altering_pronunciation.md for instructions.
 #
 
-LANGUAGE=$1
+LANGUAGES=$1
 LOGFILE="container_apply_custom_rules.log"
 
-if [ -z "$LANGUAGE" ]; then
-    echo
+if [ -z "$LANGUAGES" ]; then
+    echo 	
     echo "Usage:  apply_custom_rules.sh <language>
     echo "   eg:  apply_custom_rules.sh en   # english"
     echo
@@ -27,7 +27,8 @@ fi
 rm $LOGFILE # remove old logfile to avoid confusion
 echo "Attempting to apply custom espeak-ng rules to textymcspeechy-piper docker container:"
 echo
-docker exec -u root -it textymcspeechy-piper bash /app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh ${LANGUAGE} > $LOGFILE
+docker exec -u root -it textymcspeechy-piper bash /app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh "${LANGUAGES}" > $LOGFILE
+result=$?
 echo 
 sleep 2
 
@@ -41,4 +42,4 @@ else
   exit 1
 fi
 
-exit 0
+exit $result
