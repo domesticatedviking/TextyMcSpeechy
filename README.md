@@ -21,6 +21,9 @@
     - This brand new branch runs Piper in a docker container, which makes installation far, far, far, less painful.
     - The scripts and docs in this branch have all been overhauled.
     - The branch formerly known as `main` is now the `non-containerized` branch.  It will be kept around for reference purposes but will not be maintained.
+- **February 17 2025** - latest features:
+    - Layout of tmux training environment can now be saved by selecting the control console and pressing `t`.  This layout will be applied automatically on subsequent runs.
+    - [Custom pronunciation rules]((tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)) can now be defined in `tts_dojo/ESPEAK_RULES`.  These can be applied automatically whenever the `textymcspeechy-piper` container launches via `ESPEAK_RULES/automated_espeak_rules.sh`.
 
 ## Usage
 
