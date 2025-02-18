@@ -12,8 +12,14 @@
 # call it with the command below (substitute appropriate language for "en")
 # docker exec -u root -it textymcspeechy-piper "/app/tts_dojo/ESPEAK_RULES/apply_custom_rules.sh en > apply_rules.log"  
 
-LANGUAGE=$1 
-LOGFILE="container_apply_custom_rules.log"
+LANGUAGES=$1  # this will be a string.  Multiple languages can be separated with spaces (eg. "en ru it de")
+LOGFILE=$2
+
+problem_count=0
+
+# Convert the string into an array using a delimiter and assign to language_array
+IFS=' ' read -r -a language_array <<< "$LANGUAGES"
+
 
 show_launch_command(){
 echo "docker exec -u root -it textymcspeechy-piper \"/app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh <language prefix> $LOGFILE\""
@@ -41,7 +47,7 @@ if [ ! -d "$ESPEAK_RULES_DIR" ]; then
     exit 1
 fi
 
-if [ -z "$LANGUAGE" ]; then
+if [ -z "$LANGUAGES" ]; then
     echo "Error: You must provide the language code as the first parameter to $0."
     echo "It should be the same code used in the prefix for the custom rules"
     echo "  eg: for en_list, the language code is en"
@@ -59,7 +65,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 check_files() {
-    local prefix="$LANGUAGE"  # The prefix parameter
+    local prefix=$1  # The prefix parameter
+    echo "Checking for presence of required files"
     if [ -z "$prefix" ]; then
         echo "Error: No language code provided."
         exit 1
@@ -80,22 +87,39 @@ check_files() {
 
     # If there are missing files, exit with error
     if [ ${#missing_files[@]} -gt 0 ]; then
-        echo "Error: Some required files are missing."
-        exit 1
+        echo "Error: Some required files are missing for language: $prefix."
+        echo "       These rules will not be applied."
+        (( problem_count++))
+        return 1
+    else
+        echo "All required espeak-ng rules files are present for language: $prefix"
+        return 0
     fi
-
-    echo "All required espeak-ng rules files are present. (language=$LANGUAGE)"
 }
 
 
 cd $ESPEAK_RULES_DIR
 echo "This script was run on: $(date '+%Y-%m-%d %H:%M:%S') UTC"
-check_files
-echo "Compiling rules for espeak-ng.  These will be applied to all future voice models"
-espeak-ng --compile=$LANGUAGE
-if [ $? -eq 0 ]; then
-  echo "Successfully compiled espeak-ng rules."
+echo "language(s) requested by user:  $LANGUAGES"
+echo "Compiling rules for espeak-ng.  These rules will be in effect until the container is restarted."
+
+# Loop through the array and print each element
+for lang in "${language_array[@]}"; do
+  echo
+  echo "Processing language rules for: $lang"
+  check_files $lang
+  if [ $? -eq 0 ]; then           
+      espeak-ng --compile=$lang  # only runs if no files were missing
+      (( problem_count += $? ))  # count nonzero exit codes for espeak as problems
+  fi  
+done
+
+if [ $problem_count -eq 0 ]; then
+  echo "Successfully compiled espeak-ng rules for: $LANGUAGES."
+  exit 0
 else
-  echo "Compiling espeak-ng rules failed. (exit code=$?)."
+  echo "Warning: There were problems compiling espeak-ng rules."
+  exit $problem_count
 fi
+
 exit 0
