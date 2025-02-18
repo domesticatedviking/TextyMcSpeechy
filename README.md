@@ -16,6 +16,12 @@
 - https://www.tomshardware.com/raspberry-pi/add-any-voice-to-your-raspberry-pi-project-with-textymcspeechy
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
+## News
+- **February 18 2025** - A new main branch appears!
+    - This brand new branch runs Piper in a docker container, which makes installation far, far, far, less painful.
+    - The scripts and docs in this branch have all been overhauled.
+    - The branch formerly known as `main` is now the `non-containerized` branch.  It will be kept around for reference purposes but will not be maintained.
+
 ## Usage
 
 Read the [quick start guide](quick_start_guide.md) to learn how to build datasets and train models.
@@ -37,11 +43,11 @@ Read the [quick start guide](quick_start_guide.md) to learn how to build dataset
 3.  Check whether Docker is installed on your system by running `docker --version`.  If it is installed skip to step 5.
 4.  You can install Docker using the instructions here: https://docs.docker.com/engine/install/
 5.  You will need the NVIDIA Container Toolkit to enable GPU access within docker containers.  https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
-6.  Clone this repo and switch to the docker-dev branch.  The command below will accomplish both: 
+6.  Clone this repo: 
 ```
-git clone -b docker-dev https://github.com/domesticatedviking/TextyMcSpeechy
+git clone https://github.com/domesticatedviking/TextyMcSpeechy
 ```
-7. Run `sudo bash setup.sh`  to install packages, make scripts executable, choose the type of container you wish to run, and verify that needed tools are installed.
+7. From the `TextyMcSpeechy` directory, run `sudo bash setup.sh`  to install packages, make scripts executable, choose the type of container you wish to run, and verify that needed tools are installed.
 8. Installation is complete.  If you chose to use the prebuilt container from dockerhub it will download automatically the first time you use the `run_container.sh` script. Take note that it's a 6GB download and over 10GB when decompressed.
 9. The TTS Dojo script `run_training.sh`  automatically runs the `textymcspeechy-piper` container by calling `run_container.sh`when you start training and shuts it down when you end the training session.
 
