@@ -32,7 +32,7 @@ once.
 
 ./create_dataset.sh custom_voice  <---change custom_voice to the name of the folder containing your voice dataset
 ```
- 4. You will be prompted for some information about the speaker in your dataset, and then `create_dataset.sh` will analyze your files, sort them by file format and sampling rate, and automatically create 22050hz and 16000hz `.wav` versions of your files if they do not exist. It will also ensure that files mentioned in `metadata.csv` are present.  
+ 4. You will be prompted for some information about the speaker in your dataset, and then `create_dataset.sh` will analyze your files, sort them by file format and sampling rate, and automatically create 22050hz and 16000hz `.wav` versions of your files if they do not exist. It will also warn you if any files mentioned in `metadata.csv` are not present.  
 
 ## Part 2.  Get pretrained checkpoint files
 1. You only need to do this step the first time you train a model.  Subsequent voices you train will use the same files.
