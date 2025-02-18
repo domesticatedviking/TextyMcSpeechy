@@ -5,13 +5,21 @@
 - for English models, the files that are required in this folder are:  `en_list`, `en_rules`, `en_emoji`, `en_extra`
 - the language code is the prefix of the rule file (for the files above the language code is `en`)
 
-- Typically when you compile rules for `espeak-ng`, those rules are applied globally and are permanent. However, due to the nature of docker containers, you will need to apply your custom ruleset every time your container runs.  You can do this automatically by editing the constants in `TextyMcSpeechy/prebuilt_container_run.sh`
+- Typically when you compile rules for `espeak-ng`, those rules are applied globally and are permanent. However, due to the nature of docker containers, you will need to apply your custom ruleset every time your container runs.  You can do this automatically by editing  `ESPEAK_RULES/automated_espeak_rules.sh`
 ```
-# TextyMcSpeechy/prebuilt_container_run.sh
+# TextyMcSpeechy/tts_dojo/ESPEAK_RULES/automated_espeak_rules.sh
 
-APPLY_CUSTOM_ESPEAK_RULES=true`
-CUSTOM_ESPEAK_RULES_LANGUAGE="en"  #use the language code for your ruleset
-APPLY_CUSTOM_RULESET_SCRIPT="tts_dojo/ESPEAK_RULES/apply_custom_rules.sh $CUSTOM_ESPEAK_RULES_LANGUAGE"
+# ALWAYS_CONFIGURE_LANGUAGES determines which ruleset(s) will be compiled when the container starts.
+#    eg: "en"     - compiles english ruleset   
+#    eg: "en it"  - compiles english and italian rulesets
+
+ALWAYS_CONFIGURE_LANGUAGES="en it"    <--- EDIT THIS LINE TO CHOOSE LANGUAGE(S) TO AUTOMATICALLY LOAD
+
+# AUTO_APPLY_CUSTOM_ESPEAK_RULES turns rule processing on and off
+#  true: automatically apply rules for configured languages when container starts 
+# false: do not automatically apply these rules  
+
+AUTO_APPLY_CUSTOM_ESPEAK_RULES="true"  <--- EDIT THIS LINE TO TURN AUTOMATIC LOADING OF RULESETS ON/OFF
 ```
 
 ## Creating a custom pronunciation file (eg.`en_extra`)
