@@ -13,8 +13,8 @@
 - The training session can be shut down from any terminal window with the command `tmux kill-session` if there is a problem and the normal ways of shutting the session down are unavailable.
 - If your training session crashes you may need to manually bring down the `textymcspeechy-piper` docker image.  Check its status by running `docker ps` 
 - You can shut the docker container down manually by either:
-   1. navigating to the main `TextyMcSpeechy` folder and running `./stop_container.sh`
-   2. running `docker stop textymcspeechy-piper` from any terminal window.
+   - navigating to the main `TextyMcSpeechy` folder and running `./stop_container.sh`
+   - running `docker stop textymcspeechy-piper` from any terminal window.
 - The layout of the training panes isn't always ideal the first time you run a training session. You can drag the boundaries between panes around with your mouse to adjust them to your liking.  The layout can be saved by clicking on the "CONTROL CONSOLE" pane and pressing `t`.  This layout will be applied automatically on future training runs.
  
 
