@@ -42,7 +42,7 @@ Noella  no'El:V O
 
 ##  Manual Usage:
 ```
-# Run this command on the host computer to manually apply a ruleset to a runnning textymcspeechy-piper container.
+# Run this command on the host computer to manually apply a ruleset to a running textymcspeechy-piper container.
 
 ./apply_custom_rules.sh en    # substitute other language codes for en as needed. 
 ```
