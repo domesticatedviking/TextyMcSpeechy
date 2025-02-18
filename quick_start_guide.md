@@ -9,7 +9,7 @@ file0001|The rain in Spain falls mainly on the plain.
 file0002|Ask her to bring these things with her from the store.
 file0003|Six thick slabs of mozzerella cheese.
 ```
-- Each line in the dataset begins with the name of an audio file. Do not include the file extension (eg `.wav`). 
+- Each line in `metadata.csv` begins with the name of an audio file. Do not include the file extension (eg `.wav`). 
 - After the `|` character, there is a text transcription of the exact words spoken in the audio file in the first column.
 - It doesn't matter what you name your files as long as the transcriptions match the words recorded in the filename in the first column.
 - The more phrases you use the more accurate your voice will be, but it will also take much longer to train.
