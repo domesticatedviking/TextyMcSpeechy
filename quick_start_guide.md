@@ -36,7 +36,7 @@ To make a custom text to speech voice requires a custom dataset.   Building a cu
 
 ## Part 2.  Get pretrained checkpoint files
 1. You only need to do this step the first time you train a model.  Subsequent voices you train will use the same files.
-2. TextyMcSpeechy uses pretrained Piper TTS checkpoint files as the foundation of the models it creates.  This allows for custom voices to be trained much more rapidly than if they were being trained from scratch. Training from scratch is not currently supported by TextyMcSpeechy, but support for this may be added in the future in order to support as many languages as possible.
+2. TextyMcSpeechy uses pretrained Piper TTS checkpoint files as the foundation of the models it creates.  This allows for custom voices to be trained much more rapidly than if they were being trained from scratch. Training from scratch is not currently supported by TextyMcSpeechy, but I will be adding support for this very soon because I just figured out how to do it.
 3. You technically only need one pretrained checkpoint file to train a model.
      -  Checkpoint files have names like `epoch=2307-step=558536.ckpt`, and represent a specific voice trained at a specific quality level.  They are large files, typically ~800MB each.
      -  It is helpful if the voice of the pretrained checkpoint is similar to the one you intend to train
