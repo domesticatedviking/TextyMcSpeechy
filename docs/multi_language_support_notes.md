@@ -2,22 +2,12 @@
 
 ## What I have determined so far
 
-- Piper uses `espeak-ng` to turn words into phonemes (symbols representing the sounds the human voice can make)
-- `espeak-ng` supports many languages - a list is [here](https://github.com/espeak-ng/espeak-ng/blob/master/docs/languages.md)
-- The "identifier" appears to be the code that is used internally by `espeak-ng` to choose a "voice" - which appears to primarily determine which phonemes are produced.
-
-```
-# test of espeak-ng saying "Pickles" in Japanese with international phonetic alphabet output
-espeak-ng -v ja ピクルス --ipa
-pˌikɯᵝɽˈɯᵝsɯᵝ
-```
-
 - Piper uses two different language codes in `.onnx.json` files.
 - The first is the espeak voice identifier.
 - The second is the BCP-47 language code which is required to be used as the first part of a piper voice's file name
-- The data in the "language" field seems like it is mostly used for sorting and selecting voices.
+- The data in the "language" field seems like it is mostly used for sorting and selecting voices in menus.
 - Obviously the espeak voice identifier is here because it is used to configure the generation of phonemes.
-- But where is this configured?  Is piper internally looking up an espeak identifier based on the BCP-47 codes? Hmmm.
+- But where does piper get this identifer from?
 
 ```
 {
@@ -48,6 +38,20 @@ pˌikɯᵝɽˈɯᵝsɯᵝ
 
 ```
 
+The espeak identifier seems to be mainly of interest during preprocessing.
+per the piper docs:
+`The --language argument refers to an espeak-ng voice by default, such as de for German.`
+
+So the language code below is NOT the BCP-47 language code, but rather the espeak identifier
+```
+python3 -m piper_train.preprocess \
+  --language en-us \
+  --input-dir /path/to/dataset_dir/ \
+  --output-dir /path/to/training_dir/ \
+  --dataset-format ljspeech \
+  --single-speaker \
+  --sample-rate 22050
+```
 
 
 ## Espeak-ng language identifier table
