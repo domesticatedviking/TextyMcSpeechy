@@ -43,7 +43,7 @@ To make a custom text to speech voice requires a custom dataset.   Building a cu
      -  It is critically important that the quality level of your pretrained checkpoint is the same as the quality level of the model you are building.
      -  Because the names of these files don't include any information about the quality level or speaker, keeping them organized is important.
      -  TextyMcSpeechy handles this organization problem by storing a set of voices for all quality levels in `PRETRAINED_CHECKPOINTS/defaults`, where they are classified using subfolders first by voice type (M/F) and then by quality level (low, medium, high).   By storing pretrained checkpoints for all quality levels within this structure, an appropriate checkpoint can be selected automatically.
-     -  Currently, TextyMcspeechy only supports storing pretrained checkpoints for a single language in PRETRAINED_CHECKPOINTS.
+     -  Currently, TextyMcspeechy only supports storing pretrained checkpoints for a single language in PRETRAINED_CHECKPOINTS.  Rectifying this is on my to-do list.
 
 4. Since it is a bit tedious to locate and download 6 pretrained checkpoint files (low, medium and high quality in both masculine and feminine voices), there is a script that can download a complete set of pretrained checkpoints and store them in the correct folders automatically:  
    ```
