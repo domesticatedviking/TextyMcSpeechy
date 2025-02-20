@@ -3,19 +3,25 @@
 
 # path constants
 DOJO_DIR="."       # path to <voice>_dojo 
-TTS_DOJO_DIR=".."  # path to TextyMcSpeechy/tts_dojo
+TTS_DOJO_DIR="../.."  # path to TextyMcSpeechy/tts_dojo relative to scripts dir.
 VARFILE_SAMPLING_RATE=".SAMPLING_RATE"
 VARFILE_MAX_WORKERS=".MAX_WORKERS"
 VARFILE_QUALITY="../target_voice_dataset/.QUALITY"
+VARFILE_SCRATCH="../target_voice_dataset/.SCRATCH"
 AUDIO_DIR_SYMLINK="../target_voice_dataset/wav"
 DATASET_CONFIG_SYMLINK="../target_voice_dataset/dataset.conf" 
 METADATA_PATH_SYMLINK="../target_voice_dataset/metadata.csv"
 DEFAULT_CHECKPOINT_DIR_SYMLINK="../pretrained_tts_checkpoint/"
-DATASET_DIR="../DATASETS"
+DATASET_DIR="../../DATASETS"
 
 # infer name of dojo and voice from directory name
 DOJO_NAME=$(awk -F'/' '{print $(NF)}' <<< "$PWD")
 VOICE_NAME=$(awk -F'/' '{print $(NF)}' <<< "$PWD" | sed 's/_dojo$//')
+
+cd scripts  #IMPORTANT: Paths all require this to run from scripts dir
+
+
+
 
 # initialize global vars
 declare -a menu_items  
@@ -26,6 +32,7 @@ qualitydir=""
 menu_length=0
 sampling_rate=0
 conf_file_path=""
+scratch=""
 
 
 count_wav_files() {
@@ -42,7 +49,7 @@ count_wav_files() {
 
 get_max_workers() {
 # calculates the max_workers parameter for piper preprocessing
-# prevents Piper errors when preprocessing small datasets on high core count CPUs (closed issue #2)  
+# prevents Piper errors when preprocessing small datasets on high core count CPUs (closed issue #2)
     local wav_count=$(count_wav_files $audio_dir)
     local core_count=$(nproc)
     if [ "$wav_count" -ge $((2 * $core_count)) ]; then
@@ -73,6 +80,10 @@ write_varfile_quality(){
     echo ${quality} > ${VARFILE_QUALITY}
  }
 
+write_varfile_scratch(){
+# Sets whether we are training this model from scratch
+    echo ${scratch} > ${VARFILE_SCRATCH}
+ }
 
 get_conf_values() {
 # retrieves NAME and DESCRIPTION from voice dataset configuration file
@@ -88,7 +99,7 @@ populate_menu(){
     while IFS= read -r -d '' conf_file; do
         conf_values=$(get_conf_values "$conf_file")
         location=$(basename $(dirname $conf_file))
-        IFS='|' read -r name description <<< "$conf_values"   # unpack multiple values from get_conf_values
+        IFS='|' read -r name description <<< "$conf_values"   # unpack multiple values from conf_values
         menu_items+=("$index)           Name: $name   \n      Description: $description   \n         location: DATASETS/$location \n")
         dataset_dirs+=("$(dirname "$conf_file")")
         ((index++))
@@ -144,13 +155,66 @@ get_quality_choice(){
     done
 }
 
+get_scratch_choice(){
+# Prompts user to choose whether training from pretrained checkpoint or training a model from scratch.
+    clear
+    answer=""
+    echo
+    echo
+    echo -e  "    Training from a pretrained checkpoint:"
+    echo -e
+    echo -e  "        Training using a pretrained checkpoint file allows models to be trained much more quickly using smaller datasets."
+    echo -e  "        Most users should choose this option.  If you can't find a checkpoint file for the language you wish to train,"
+    echo -e  "        using a pretrained checkpoint file from a different language may still be worth trying."
+    echo
+    echo -e  "        Pretrained checkpoint files will be automatically chosen for the voice type and quality"
+    echo -e  "        if they exist in the proper folders within tts_dojo/PRETRAINED_CHECKPOINTS/defaults."
+    echo -e  
+    echo -e  "        You can also manually copy a pretrained checkpoint file into the starting_checkpoint_override folder"
+    echo -e  "        to force training to begin at that checkpoint." 
+    echo -e  
+    echo -e  "    Training from scratch:"
+    echo -e
+    echo -e  "        Training models from scratch takes longer and may require larger datasets for ideal results."
+    echo -e  "        However, training from scratch may be a good option if there are no pretrained models in your language yet.\n"
+    echo
+    echo -e  "    How would you like to train this model?\n"
+    echo -e  "    [1] Train using a pretrained checkpoint file (recommended)?"
+    echo -e  "    [2] Train model from scratch?"
+    echo
+    echo -ne "     "
+    while [ "$answer" = "" ]; do
+        read scratchchoice
+        scratchchoice="${scratchchoice^^}"
+        if [ "$scratchchoice" == "1" ] || [ "$scratchchoice" == "2" ]; then
+            answer="true"
+        else
+            echo -ne "    [1,2]? " 
+        fi
+        if [[ "$scratchchoice" == "2" ]]; then
+        echo
+        echo "    Model will be trained from scratch." 
+        scratch="true"
+        else
+        echo "    Model will be trained using pretrained checkpoint files."
+        scratch="false"
+        fi
+    done
+    
+}
+
+
 
 relative_import_dataset_conf(){
 # Builds relative path to conf file that will work in docker container, loads it on host
     conf_file_path="../../DATASETS/$(basename $selected_dataset_dir)/dataset.conf"
-    cd scripts    # temporarily change dir so path above works in this script.
+    if [[ ! -f "$conf_file_path" ]]; then
+        echo "Error: Configuration file dataset.conf not found: $conf_file_path" >&2
+        exit 1
+    fi
     source $conf_file_path
-    cd ..  
+  
+    echo
 }
 
 
@@ -170,7 +234,7 @@ find_default_checkpoint_dir(){
 }
 
 
-function find_default_checkpoint_file(){
+find_default_checkpoint_file(){
 # verifies that pretrained checkpoint file exists in PRETRAINED_CHECKPOINTS
 # considered defaults because they can be overridden by files in <voice>_dojo/starting_checkpoint_override 
 
@@ -243,6 +307,7 @@ write_varfiles(){
    write_varfile_max_workers
    write_varfile_sampling_rate
    write_varfile_quality
+   write_varfile_scratch
 }
 
 remove_existing_symlink(){
@@ -331,7 +396,7 @@ relative_link_files(){
     echo "Creating relative symbolic links in your dojo."
     echo
      
-    cd scripts # paths stored by this script are relative to <voice>_dojo/scripts so this is necessary here   
+    #cd scripts # paths stored by this script are relative to <voice>_dojo/scripts so this is necessary here   
     
     # Create symlink for relevant audio directory of dataset inside dojo  
     if [ -d "$audio_dir" ]; then
@@ -356,19 +421,27 @@ relative_link_files(){
     else
         echo "WARNING: dataset configuration file $conf_file_path does not exist."
     fi
-
-    # Remove any existing checkpoint files from dojo
-    checkpoint_filename=$(basename $default_checkpoint_path)
-    checkpoint_symlink="${DEFAULT_CHECKPOINT_DIR_SYMLINK}""${checkpoint_filename}"
-    remove_previous_checkpoint $DEFAULT_CHECKPOINT_DIR_SYMLINK  #don't know its name so need function to find it.
-    $(remove_existing_symlink "$checkpoint_symlink")
     
-    # Create symlink for default checkpoint file in dojo
-    if [ -f "$default_checkpoint_path" ]; then
-        ln -s "$default_checkpoint_path" "$checkpoint_symlink"
+# jump over linking a default checkpoint file when training from scratch
+    if [ $scratch == "false" ]; then
+    
+        # Remove any existing checkpoint files from dojo
+        checkpoint_filename=$(basename $default_checkpoint_path)
+        checkpoint_symlink="${DEFAULT_CHECKPOINT_DIR_SYMLINK}""${checkpoint_filename}"
+        remove_previous_checkpoint $DEFAULT_CHECKPOINT_DIR_SYMLINK  #don't know its name so need function to find it.
+        $(remove_existing_symlink "$checkpoint_symlink")
+    
+ 
+        # Create symlink for default checkpoint file in dojo
+        if [ -f "$default_checkpoint_path" ]; then
+            ln -s "$default_checkpoint_path" "$checkpoint_symlink"
+        else
+            echo "Error: default checkpoint path file $default_checkpoint_path does not exist."
+        fi
     else
-        echo "Error: default checkpoint path file $default_checkpoint_path does not exist."
+        : # we are training from scratch
     fi
+    
     echo "Symbolic links created successfully."
 }
 
@@ -383,7 +456,15 @@ display_menu
 get_dataset_choice
 relative_import_dataset_conf
 get_quality_choice
-find_default_checkpoint_dir
-relative_find_default_checkpoint_file
+get_scratch_choice
+
+# skip finding default checkpoint if training from scratch.
+if [ $scratch == "false" ]; then 
+    find_default_checkpoint_dir
+    relative_find_default_checkpoint_file
+else
+    default_checkpoint_path=""
+fi
+
 relative_link_files
 write_varfiles
