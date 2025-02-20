@@ -56,7 +56,8 @@ non_audio_files=0
 highest_rate_folder=""
 highest_rate=0
 highest_rate_source_dir=""
-
+espeak_lang=""  # stores espeak language identifier used by piper preprocessing to convert words to phonemes
+piper_lang=""   # stores piper language code used by piper language naming specification
 
 
 hash_file() {
@@ -378,8 +379,135 @@ create_dataset_conf(){
     echo "DEFAULT_VOICE_TYPE=\"$voicetype\"" >> $cf  
     echo "LOW_AUDIO=\"wav_16000\"" >> $cf  
     echo "MEDIUM_AUDIO=\"wav_22050\"" >> $cf  
-    echo "HIGH_AUDIO=\"wav_22050\"" >> $cf  
+    echo "HIGH_AUDIO=\"wav_22050\"" >> $cf
+    echo "ESPEAK_LANGUAGE_IDENTIFIER=$espeak_lang" >> $cf
+    echo "PIPER_FILENAME_PREFIX=$piper_lang" >> $cf
 }
+
+#!/bin/bash
+
+
+convert_espeak_to_piper() {
+# Convert espeak-ng language identifiers to format used by Piper language filenames
+    local espeak_code="$1"
+
+    # Define a mapping of espeak-ng codes to Piper language codes
+    declare -A lang_map=(
+        ["af"]="af"          # Afrikaans
+        ["sq"]="sq"          # Albanian
+        ["am"]="am"          # Amharic
+        ["ar"]="ar"          # Arabic
+        ["an"]="an"          # Aragonese
+        ["hy"]="hy"          # Armenian (Eastern)
+        ["hyw"]="hyw"        # Armenian (Western)
+        ["as"]="as"          # Assamese
+        ["az"]="az"          # Azerbaijani
+        ["ba"]="ba"          # Bashkir
+        ["cu"]="cu"          # Chuvash
+        ["eu"]="eu"          # Basque
+        ["be"]="be"          # Belarusian
+        ["bn"]="bn"          # Bengali
+        ["bpy"]="bpy"        # Bishnupriya Manipuri
+        ["bs"]="bs"          # Bosnian
+        ["bg"]="bg"          # Bulgarian
+        ["my"]="my"          # Burmese
+        ["ca"]="ca"          # Catalan
+        ["chr"]="chr"        # Cherokee - Western/C.E.D.
+        ["yue"]="zh_HK"      # Chinese - Cantonese (Hong Kong)
+        ["hak"]="zh_HK"      # Chinese - Hakka
+        ["haw"]="haw"        # Hawaiian
+        ["cmn"]="zh_CN"      # Chinese - Mandarin
+        ["hr"]="hr"          # Croatian
+        ["cs"]="cs"          # Czech
+        ["da"]="da"          # Danish
+        ["nl"]="nl"          # Dutch
+        ["en-us"]="en_US"    # English - American
+        ["en"]="en_GB"       # English - British
+        ["en-029"]="en"      # English - Caribbean (default to generic)
+        ["en-gb-x-gbclan"]="en_GB"  # English - Lancastrian
+        ["en-gb-x-rp"]="en_GB"      # English - Received Pronunciation
+        ["en-gb-scotland"]="en_GB"  # English - Scottish
+        ["en-gb-x-gbcwmd"]="en_GB"  # English - West Midlands
+        ["eo"]="eo"          # Esperanto
+        ["et"]="et"          # Estonian
+        ["fa"]="fa"          # Persian
+        ["fa-latn"]="fa"     # Persian (Latin transliteration)
+        ["fi"]="fi"          # Finnish
+        ["fr-be"]="fr_BE"    # French - Belgium
+        ["fr"]="fr"          # French - France
+        ["fr-ch"]="fr_CH"    # French - Switzerland
+        ["ga"]="ga"          # Gaelic - Irish
+        ["gd"]="gd"          # Gaelic - Scottish
+        ["ka"]="ka"          # Georgian
+        ["de"]="de"          # German
+        ["grc"]="grc"        # Greek - Ancient
+        ["el"]="el"          # Greek - Modern
+        ["kl"]="kl"          # Greenlandic
+        ["gn"]="gn"          # Guarani
+        ["gu"]="gu"          # Gujarati
+        ["ht"]="ht"          # Haitian Creole
+        ["he"]="he"          # Hebrew
+        ["hi"]="hi"          # Hindi
+        ["hu"]="hu"          # Hungarian
+        ["is"]="is"          # Icelandic
+        ["id"]="id"          # Indonesian
+        ["ia"]="ia"          # Interlingua
+        ["io"]="io"          # Ido
+        ["it"]="it"          # Italian
+        ["ja"]="ja"          # Japanese
+        ["kn"]="kn"          # Kannada
+        ["kok"]="kok"        # Konkani
+        ["ko"]="ko"          # Korean
+        ["ku"]="ku"          # Kurdish
+        ["kk"]="kk"          # Kazakh
+        ["ky"]="ky"          # Kyrgyz
+        ["la"]="la"          # Latin
+        ["lb"]="lb"          # Luxembourgish
+        ["ltg"]="ltg"        # Latgalian
+        ["lv"]="lv"          # Latvian
+        ["lfn"]="lfn"        # Lingua Franca Nova
+        ["lt"]="lt"          # Lithuanian
+        ["jbo"]="jbo"        # Lojban
+        ["mi"]="mi"          # Māori
+        ["mk"]="mk"          # Macedonian
+        ["ms"]="ms"          # Malay
+        ["ml"]="ml"          # Malayalam
+        ["mt"]="mt"          # Maltese
+        ["mr"]="mr"          # Marathi
+        ["nci"]="nci"        # Nahuatl - Classical
+        ["ne"]="ne"          # Nepali
+        ["nb"]="nb"          # Norwegian Bokmål
+        ["nog"]="nog"        # Nogai
+        ["or"]="or"          # Oriya
+        ["om"]="om"          # Oromo
+        ["pap"]="pap"        # Papiamento
+        ["py"]="py"          # Pyash
+        ["pl"]="pl"          # Polish
+        ["pt-br"]="pt_BR"    # Portuguese - Brazil
+        ["qdb"]="qdb"        # Lang Belta
+        ["qu"]="qu"          # Quechua
+        ["quc"]="quc"        # K'iche'
+        ["qya"]="qya"        # Quenya
+        ["pt"]="pt_PT"       # Portuguese - Portugal
+        ["pa"]="pa"          # Punjabi
+        ["piqd"]="tlh"       # Klingon
+        ["ro"]="ro"          # Romanian
+        ["ru"]="ru"          # Russian
+        ["ru-lv"]="ru"       # Russian - Latvia (fallback to Russian)
+        ["uk"]="uk"          # Ukrainian
+        ["sjn"]="sjn"        # Sindarin
+        ["sr"]="sr"          # Serbian
+        ["tn"]="tn"          # Setswana
+        ["sd"]="sd"          # Sindhi
+        ["shn"]="shn"        # Shan (Tai Yai)
+        ["si"]="si"          # Sinhala
+    )
+
+    # Return Piper code or fallback to input if not found
+    echo "${lang_map[$espeak_code]:-NOT_FOUND}"
+}
+
+
 
 
 # **************************************************************************************************************************************************
@@ -410,6 +538,53 @@ if  [ $choice != "Y" ] && [  $choice != "y" ]; then
     echo "Exiting."
     exit 1
 fi
+
+
+choice=""
+echo -e
+echo -e "    Piper uses espeak-ng to convert words in your dataset into phonemes during preprocessing."
+echo -e "    Espeak-ng requires a specific identifier (eg \"en-us\") to choose which phonemes to use for the languages it supports."
+echo -e "    A list of these codes is available in espeak_language_identifiers.txt."
+echo -e
+echo -ne "    Would you like to view the list now? [y/n]:  "
+read choice
+if [[ $choice == "Y" || $choice == "y" ]]; then
+    less ./espeak_language_identifiers.txt
+fi
+echo
+echo -ne "    What is the espeak-ng identifier for the language used in this dataset? (to show the list again, use \"S\"): "
+
+
+
+while [ -z "$espeak_lang" ]; do
+    read espeak_lang
+    espeak_lang=$(echo "$espeak_lang" | tr '[:upper:]' '[:lower:]') # Convert to lowercase
+
+    if [ "$espeak_lang" = "s" ]; then
+        less ./espeak_language_identifiers.txt
+        echo
+        echo -ne "    What is the espeak-ng identifier for the language used in this dataset? (to show the list again, use \"S\"): "
+        espeak_lang="" # Reset input to loop again
+
+    elif [ -z "$espeak_lang" ]; then
+        echo -ne "    What is the espeak-ng identifier for the language used in this dataset? (to show the list again, use \"S\"): "
+
+    else
+        # Convert espeak identifier to piper code
+        piper_lang=$(convert_espeak_to_piper "$espeak_lang")
+        if [ "$piper_lang" == "NOT_FOUND" ]; then
+            echo -e "\n    The espeak identifier you provided was not valid."
+            echo -ne "    What is the espeak-ng identifier for the language used in this dataset? (to show the list again, use \"S\"): "
+            espeak_lang="" # Reset input to loop again
+            piper_lang=""
+        else
+            echo -e "\n          Espeak language identifier for this language is set to: $espeak_lang"
+            echo -e "               Looked up code to build piper-compliant file name: $piper_lang"
+            echo -e "These values will be saved to dataset.conf in your dataset folder.\n"
+        fi
+    fi
+done
+
 
 echo -ne "    What name would you like to give this dataset?  (required): "
 name=""
