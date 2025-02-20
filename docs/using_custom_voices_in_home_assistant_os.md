@@ -12,7 +12,7 @@ I put together this guide because I couldn't find an adequate explanation of how
  2. Install the Wyoming protocol integration (Settings > Devices & Services > Integrations > Click ADD INTEGRATION BUTTON > search for Wyoming Protocol).
  3. When prompted by Wyoming Protocol for host and port, you can use `core-piper` for `host` and `10200` for `port`
     - `core-piper` is the hostname provided by the piper add-on's docker container. You can also use the ip address of the machine running the docker container. 
-    - `10200` is the default port for Piper. Change it as needed.  
+    - `10200` is the default port for Piper. 
 
 ## Prepare your custom voice models for upload
 Important: In order for your voices to be detected and appear in menus properly, you will need to **rename them** using the system prescribed by Piper.  **You may also need to edit the `.onnx.json` file.**   
