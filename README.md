@@ -18,10 +18,12 @@
 
 ## News
 - **February 20 2025** - WIP: improvements to multi-language suppport
-    - Changed `create_dataset.sh` to prompt user for the `espeak-ng` language identifier to ensure the correct language's phonemes can be automatically configured during preprocessing. Preprocessing script does not use them yet but will very soon.
+    - Changed `create_dataset.sh` to prompt user for the `espeak-ng` language identifier to ensure the correct language's phonemes can be automatically configured during preprocessing. 
     - from now on `dataset.conf` will include two additional variables:
-       - `ESPEAK_LANGUAGE_IDENTIFIER` - will be used to configure phonemizer  (not yet implemented)
+       - `ESPEAK_LANGUAGE_IDENTIFIER` - will be used to configure phonemizer
        - `PIPER_FILENAME_PREFIX` - will be used to generate voice filenames that conform to piper's requirements (not yet implemented).
+       - existing dataset.conf files will need to be updated to include these values.
+       - setting the pre-processing language via SETTINGS.txt is no longer supported.
     
 - **February 18 2025** - A new main branch appears!
     - This brand new branch runs Piper in a docker container, which makes installation far, far, far, less painful.
