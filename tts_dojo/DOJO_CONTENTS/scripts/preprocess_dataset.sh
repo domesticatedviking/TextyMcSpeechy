@@ -75,6 +75,8 @@ if [[ "$missing" == true ]]; then
 fi
 
 
+
+
 # load settings
 if [ -e "$SETTINGS_FILE" ]; then 
     source "$SETTINGS_FILE"  #loads vars from SETTINGS.txt
