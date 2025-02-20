@@ -167,4 +167,5 @@ python3 -m piper_train.preprocess \
 | shn     | Shan (Tai Yai)                   |
 | si      | Sinhala                          |
 
-- The SETTINGS_ESPEAK_LANGUAGE variable in `DOJO_CONTENTS/scripts/SETTINGS.txt` is already a way of configuring the espeak identifier used by preprocessing, but it seems like a better way of managing this would be for the user to assign one of these codes when packaging their dataset, and having it stored in `dataset.conf`.   Will need to refresh my memory on the way that the hidden file `.ESPEAK_LANGUAGE` which gets created in `PRETRAINED_CHECKPOINTS/default` is used.   Should probably revamp the path structure of `PRETRAINED_CHECKPOINTS` to allow storage of more than one language as well. 
+- The SETTINGS_ESPEAK_LANGUAGE variable in `DOJO_CONTENTS/scripts/SETTINGS.txt` should be removed now that these are being stored in `dataset.conf`.
+- Should change the structure of `PRETRAINED_CHECKPOINTS` to allow storage of more than one language, probably in subfolders named by the espeak language identifier, and no longer store it in the hidden file in `/defaults/.ESPEAK_LANGUAGE`
