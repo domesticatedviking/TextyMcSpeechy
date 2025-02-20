@@ -5,7 +5,8 @@ DOJO_NAME=$(basename $PWD) # Get from <voice_name>_dojo
 SETTINGS_FILE="SETTINGS.txt"
 SAMPLING_RATE_FILE=".SAMPLING_RATE"
 MAX_WORKERS_FILE=".MAX_WORKERS"
-MASTER_SETTINGS_FILE="../../DOJO_CONTENTS/scripts/$SETTINGS_FILE" #relative to this dojo's scripts dir 
+MASTER_SETTINGS_FILE="../../DOJO_CONTENTS/scripts/$SETTINGS_FILE" #relative to this dojo's scripts dir
+DATASET_CONF_FILE="../target_voice_dataset/dataset.conf" 
 
 cd scripts # needed to ensure relative paths are built properly
 set +e # Exit immediately if any command returns a non-zero exit code
@@ -25,9 +26,54 @@ else
     exit 1
 fi
 
+# load dataset.conf
+if [ -e $DATASET_CONF_FILE ]; then
+    source $DATASET_CONF_FILE
+else
+    echo "$0 - dataset.conf not found"
+    echo "     expected location: $DATASET_CONF_FILE"
+    echo 
+    echo "press <enter> to exit"
+    exit 1
+fi
 
+# Check whether the conf file is old and is missing values
+missing=false
+# Check if ESPEAK_LANGUAGE_IDENTIFIER is unset or empty
+if [[ -z "$ESPEAK_LANGUAGE_IDENTIFIER" ]]; then
+    echo
+    echo
+    echo "    Error: ESPEAK_LANGUAGE_IDENTIFIER is not set in dataset.conf."
+    missing=true
+fi
 
-language=""
+# Check if PIPER_FILENAME_PREFIX is unset or empty
+if [[ -z "$PIPER_FILENAME_PREFIX" ]]; then
+    echo "    Error: PIPER_FILENAME_PREFIX is not set in dataset.conf."
+    echo
+    missing=true
+fi
+
+# Exit if any variable was missing
+if [[ "$missing" == true ]]; then
+    echo
+    echo "    Your dataset configuration file (dataset.conf) is outdated and needs to be updated."
+    echo "        ESPEAK_LANGUAGE_IDENTIFIER must be set to the espeak-ng language identifier for the language of your dataset"
+    echo "        eg: ESPEAK_LANGUAGE_IDENTIFIER=en-us"
+    echo
+    echo "    PIPER_FILENAME_PREFIX must be set to the language code Piper uses to name language files"
+    echo "        eg: PIPER_FILENAME_PREFIX=en_US"
+    echo
+    echo "    either add these values to your dataset.conf file manually, or run:"
+    echo
+    echo "        DATASETS/create_dataset.sh <dataset_folder>"
+    echo
+    echo "    to rebuild the datasets.conf file."
+    echo 
+    echo "Exiting"
+    exit 1
+fi
+
 
 # load settings
 if [ -e "$SETTINGS_FILE" ]; then 
@@ -49,11 +95,6 @@ export -f error_handler
 trap 'error_handler' ERR SIGINT SIGTERM
 
 
-check_pretrained_language(){
-   local pretrained=$(cat "../../PRETRAINED_CHECKPOINTS/default/.ESPEAK_LANGUAGE" 2>/dev/null || echo "")
-   echo $pretrained
-}
-
 
 # MAIN PROGRAM ********************************************************************************
       
@@ -62,66 +103,8 @@ echo -e "    Calculated value for max-workers: $MAX_WORKERS"
 echo
 echo
 
-pretrained_language=$(check_pretrained_language)
-pretrained_absent=$? 
 
-SETTINGS_LANGUAGE=$SETTINGS_ESPEAK_LANGUAGE #eg en-us (sourced from SETTINGS.txt)
-
-if [ "$pretrained_language" = "" ] && [ "$SETTINGS_LANGUAGE" != "" ]; then
-    echo "Warning: No language was configured in PRETRAINED_CHECKPOINTS/DEFAULT/.ESPEAK_LANGUAGE"
-    echo "Using value from SETTINGS.txt: $SETTINGS_LANGUAGE"
-    language=$SETTINGS_LANGUAGE
-    
-elif [ "$pretrained_language" != "" ] && [ "$SETTINGS_LANGUAGE" = "" ]; then
-    echo "Your pretrained checkpoint files are configured to use Espeak-ng language:  $pretrained_language"
-    echo "However, no value for SETTINGS_ESPEAK_LANGUAGE is specified in scripts/$SETTINGS_FILE."
-    echo
-    echo "What would you like to do?"
-    echo "[1] Make $pretrained_language the default language for this and all future dojos (recommended)"
-    echo "[2] Make $pretrained_language the default language for this dojo only"
-    echo "[3] Ask this again next time"   
-    read savelang
-    
-    if [ "$savelang" = "1" ]; then
-        sed -i "s/^SETTINGS_ESPEAK_LANGUAGE=.*/SETTINGS_ESPEAK_LANGUAGE=$pretrained_language/" $MASTER_SETTINGS_FILE
-    fi
-    if [ "$savelang" = "1" ] || [ "$savelang" = "2" ]; then
-        sed -i "s/^SETTINGS_ESPEAK_LANGUAGE=.*/SETTINGS_ESPEAK_LANGUAGE=$pretrained_language/" $SETTINGS_FILE
-    fi
-    language=$pretrained_language
-    
-
-elif [ "$pretrained_language" != "$SETTINGS_LANGUAGE" ] && [ "$SETTINGS_LANGUAGE" != "" ]; then
-    echo "Warning: Default pretrained checkpoint files are not using the same language specified in $SETTINGS_FILE"
-    echo -e "PRETRAINED_CHECKPOINTS/DEFAULT/.PRETRAINED_LANGUAGE contained:\n    $pretrained_language\n"
-    echo -e "/scripts/SETTINGS.txt contained:\n    $SETTINGS_LANGUAGE\n"
-    echo
-    echo "What would you like to do?"
-    echo "    [1] use $pretrained_language (the language of your pretrained TTS model)"
-    echo "    [2] use $SETTINGS_LANGUAGE (the language in $SETTINGS_FILE)"
-    echo "    [q] quit."
-    echo -ne "     "
-    read choice
-    if [ $choice = "1" ]; then
-        language=$pretrained_language
-    elif [ $choice = "2" ]; then
-        language=$SETTINGS_LANGUAGE
-    else
-        echo "exiting"
-        exit 1
-    fi
-    
-elif [ "$pretrained_language" = "" ] && [ "$SETTINGS_LANGUAGE" == "" ]; then
-    echo "ERROR.  No value found for ESPEAK_LANGUAGE."  
-    echo "edit $SETTINGS_FILE to set a default value for SETTINGS_ESPEAK_LANGUAGE"
-    echo
-    echo "exiting"
-    exit 1
-else
-   language=$SETTINGS_LANGUAGE
-fi
-
-echo "Configuring Piper for language: $language"
+echo "Configuring Piper for language: ${ESPEAK_LANGUAGE_IDENTIFIER}"
 echo "Running piper_train.preprocess"
 echo
 echo
@@ -131,7 +114,7 @@ echo
 docker exec textymcspeechy-piper bash -c "
   cd /app/piper/src/python && \
   python3 -m piper_train.preprocess \
-    --language ${language} \
+    --language ${ESPEAK_LANGUAGE_IDENTIFIER} \
     --input-dir \"/app/tts_dojo/${DOJO_NAME}/target_voice_dataset\" \
     --output-dir \"/app/tts_dojo/${DOJO_NAME}/training_folder\" \
     --dataset-format ljspeech \
