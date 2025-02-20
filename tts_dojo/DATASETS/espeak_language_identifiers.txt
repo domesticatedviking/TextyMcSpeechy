@@ -1,0 +1,114 @@
+Espeak-ng identifiers- used by piper preprocessing to generate phonemes.
++----------------------+--------------------------------------+
+|          Identifier  | Language                             |
++----------------------+--------------------------------------+
+|                  af  | Afrikaans                            |
+|                  sq  | Albanian                             |
+|                  am  | Amharic                              |
+|                  ar  | Arabic                               |
+|                  an  | Aragonese                            |
+|                  hy  | Armenian - East Armenian             |
+|                 hyw  | Armenian - West Armenian             |
+|                  as  | Assamese                             |
+|                  az  | Azerbaijani                          |
+|                  ba  | Bashkir                              |
+|                  cu  | Chuvash                              |
+|                  eu  | Basque                               |
+|                  be  | Belarusian                           |
+|                  bn  | Bengali                              |
+|                 bpy  | Bishnupriya Manipuri                 |
+|                  bs  | Bosnian                              |
+|                  bg  | Bulgarian                            |
+|                  my  | Burmese                              |
+|                  ca  | Catalan                              |
+|                 chr  | Cherokee - Western/C.E.D.            |
+|                 yue  | Chinese - Cantonese                  |
+|                 hak  | Chinese - Hakka                      |
+|                 haw  | Hawaiian                             |
+|                 cmn  | Chinese - Mandarin                   |
+|                  hr  | Croatian                             |
+|                  cs  | Czech                                |
+|                  da  | Danish                               |
+|                  nl  | Dutch                                |
+|               en-us  | English - American                   |
+|                  en  | English - British                    |
+|              en-029  | English - Caribbean                  |
+|       en-gb-x-gbclan | English - Lancastrian                |
+|          en-gb-x-rp  | English - Received Pronunciation     |
+|      en-gb-scotland  | English - Scottish                   |
+|      en-gb-x-gbcwmd  | English - West Midlands              |
+|                  eo  | Esperanto                            |
+|                  et  | Estonian                             |
+|                  fa  | Persian                              |
+|             fa-latn  | Persian                              |
+|                  fi  | Finnish                              |
+|               fr-be  | French - Belgium                     |
+|                  fr  | French - France                      |
+|               fr-ch  | French - Switzerland                 |
+|                  ga  | Gaelic - Irish                       |
+|                  gd  | Gaelic - Scottish                    |
+|                  ka  | Georgian                             |
+|                  de  | German                               |
+|                 grc  | Greek - Ancient                      |
+|                  el  | Greek - Modern                       |
+|                  kl  | Greenlandic                          |
+|                  gn  | Guarani                              |
+|                  gu  | Gujarati                             |
+|                  ht  | Hatian Creole                        |
+|                  he  | Hebrew                               |
+|                  hi  | Hindi                                |
+|                  hu  | Hungarian                            |
+|                  is  | Icelandic                            |
+|                  id  | Indonesian                           |
+|                  ia  | Interlingua                          |
+|                  io  | Ido                                  |
+|                  it  | Italian                              |
+|                  ja  | Japanese                             |
+|                  kn  | Kannada                              |
+|                 kok  | Konkani                              |
+|                  ko  | Korean                               |
+|                  ku  | Kurdish                              |
+|                  kk  | Kazakh                               |
+|                  ky  | Kyrgyz                               |
+|                  la  | Latin                                |
+|                  lb  | Luxembourgish                        |
+|                 ltg  | Latgalian                            |
+|                  lv  | Latvian                              |
+|                 lfn  | Lingua Franca Nova                   |
+|                  lt  | Lithuanian                           |
+|                 jbo  | Lojban                               |
+|                  mi  | Māori                                |
+|                  mk  | Macedonian                           |
+|                  ms  | Malay                                |
+|                  ml  | Malayalam                            |
+|                  mt  | Maltese                              |
+|                  mr  | Marathi                              |
+|                 nci  | Nahuatl - Classical                  |
+|                  ne  | Nepali                               |
+|                  nb  | Norwegian Bokmål                     |
+|                 nog  | Nogai                                |
+|                  or  | Oriya                                |
+|                  om  | Oromo                                |
+|                 pap  | Papiamento                           |
+|                  py  | Pyash                                |
+|                  pl  | Polish                               |
+|               pt-br  | Portuguese - Brazilian               |
+|                 qdb  | Lang Belta                           |
+|                  qu  | Quechua                              |
+|                 quc  | K'iche'                              |
+|                 qya  | Quenya                               |
+|                  pt  | Portuguese - Portugal                |
+|                  pa  | Punjabi                              |
+|                piqd  | Klingon                              |
+|                  ro  | Romanian                             |
+|                  ru  | Russian                              |
+|               ru-lv  | Russian - Latvia                     |
+|                  uk  | Ukrainian                            |
+|                 sjn  | Sindarin                             |
+|                  sr  | Serbian                              |
+|                  tn  | Setswana                             |
+|                  sd  | Sindhi                               |
+|                 shn  | Shan (Tai Yai)                       |
+|                  si  | Sinhala                              |
++----------------------+--------------------------------------+
+
