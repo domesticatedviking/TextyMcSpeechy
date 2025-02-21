@@ -7,6 +7,7 @@ DOJO_DIR="."
 
 #path to expected location of dataset configuration 
 DATASET_CONF="target_voice_dataset/dataset.conf"
+TRAIN_FROM_SCRATCH_FILE="target_voice_dataset/.SCRATCH"
 has_linked_dataset=false
 
 # Prevent execution in DOJO_CONTENTS - used only when making new dojos.  
@@ -89,6 +90,13 @@ check_for_linked_dataset(){
         elif [ "$quality" = "H" ]; then
             quality_str="high"
         fi
+
+        if [[ -f $TRAIN_FROM_SCRATCH_FILE ]]; then
+            TRAIN_FROM_SCRATCH_STATE=$(cat $TRAIN_FROM_SCRATCH_FILE)
+        else
+            echo "Warning: .SCRATCH file not found at: $TRAIN_FROM_SCRATCH_FILE ."
+        fi
+
    
         source $DATASET_CONF # reads variables stored in dataset.conf
         echo "        Found linked dataset."
@@ -103,11 +111,13 @@ show_linked_dataset(){
         echo "        voice name            : $NAME"
         echo "        description           : $DESCRIPTION"
         echo "        voice type            : $DEFAULT_VOICE_TYPE"
+        echo "        espeak-ng language    : $ESPEAK_LANGUAGE_IDENTIFIER"
         echo "        dataset location      : $dataset_path"
         echo 
         echo "        Dojo-specific settings"
         echo
         echo "        quality               : $quality_str"
+        echo "        train from scratch    : $TRAIN_FROM_SCRATCH_STATE"
 }
 
 run_link_dataset(){
