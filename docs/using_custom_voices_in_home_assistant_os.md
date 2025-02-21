@@ -15,10 +15,12 @@ I put together this guide because I couldn't find an adequate explanation of how
     - `10200` is the default port for Piper. 
 
 ## Prepare your custom voice models for upload
-Important: In order for your voices to be detected and appear in menus properly, you will need to **rename them** using the system prescribed by Piper.  **You may also need to edit the `.onnx.json` file.**   
-Instructions for doing this can be found [here](renaming_and_preparing_custom_piper_voices.md).
+### Note:  The latest version of TextyMcSpeechy already exports voices that are ready to use.
+-  If your voice files are named something like `en_US-bob_1234-medium.onnx`, you can use them as-is.
+-  Voices created with earlier versions of TextyMcSpeechy did not comply with Piper's expected naming convention. In order for your voices to be detected and appear in menus properly, you will need to **rename them** using the system prescribed by Piper.  **You may also need to edit the `.onnx.json` file.**   
+- Instructions for doing this can be found [here](renaming_and_preparing_custom_piper_voices.md).
 
-## Upload your renamed `.onnx` and `.onnx.json` files to /share/piper  
+## Upload your `.onnx` and `.onnx.json` files to /share/piper  
 - This is a bit challenging on Home Assistant OS since you don't have permissions to upload to this folder via the webui.
 - There are a variety of ways of accomplishing this which are beyond the scope of this guide.
 - If you don't find a `piper` directory inside `/share`, create it yourself.
