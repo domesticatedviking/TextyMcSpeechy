@@ -7,7 +7,13 @@ trap "kill 0" SIGINT
 set +e # Exit immediately if any command returns a non-zero exit code
 
 SETTINGS_FILE="SETTINGS.txt"
+
+# flag file that overrides the use of pretrained checkpoints
 TRAIN_FROM_SCRATCH_FILE="../target_voice_dataset/.SCRATCH"
+
+# folder where piper creates checkpoint files.   
+# Must be purged prior to starting training run to ensure new checkpoints always arrive in checkpoints/version_0 folder 
+LIGHTNING_LOGS_LOCATION="../training_folder/lightning_logs"
 
 # infer name of dojo and voice from directory name
 DOJO_NAME=$(basename "$(dirname "$PWD")")  # this script runs from <name>_dojo/scripts so need parent directory   
@@ -29,7 +35,6 @@ else
     echo "press <enter> to exit"
     exit 1
 fi
-
 
 
 if [[ -f $TRAIN_FROM_SCRATCH_FILE ]]; then
@@ -81,6 +86,10 @@ docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
     --precision 32
 "
 }
+
+# purge checkpoint folder to ensure consistent location
+rm -r $LIGHTNING_LOGS_LOCATION >/dev/null 2>&1
+echo ".SCRATCH file = $TRAIN_FROM_SCRATCH" 
 
 if [ $TRAIN_FROM_SCRATCH == "true" ]; then
     echo
