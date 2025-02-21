@@ -43,13 +43,14 @@ fi
 
 # Check if the starting checkpoint parameter is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 <starting_checkpoint>:path to a checkpoint file"
-  exit 1
+  echo "No starting checkpoint received."
+  
 fi
 
 starting_checkpoint=$1
+   
 
-
+# run piper training in docker container (textymcspeechy-piper)
 train_from_scratch(){
 docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
     && python -m piper_train \
@@ -81,29 +82,21 @@ docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
 "
 }
 
-
-if [[ $TRAIN_FROM_SCRATCH == "false" ]]; then
-    echo
-    echo
-    echo "Training from pretrained checkpoint file:"
-    echo "    $starting_checkpoint"
-    echo
-    echo
-else
+if [ $TRAIN_FROM_SCRATCH == "true" ]; then
     echo
     echo
     echo
     echo "Training model from scratch."
     echo
     echo
-fi
-    
-
-
-
-if [ $TRAIN_FROM_SCRATCH == "true" ]; then
     train_from_scratch
 else
+    echo
+    echo
+    echo "Training from pretrained checkpoint file:"
+    echo "    $starting_checkpoint"
+    echo
+    echo
     train_from_pretrained
 fi
 
