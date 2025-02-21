@@ -18,7 +18,7 @@
 
 ## News
 #### **February 20 2025** - Improvements to multi-language suppport
-- Training models from scratch (ie. without using pretrained checkpoint files) is now supported.
+- Training models from scratch (ie. without using pretrained checkpoint files) is now an option provided by `run_training.sh`.
 - `create_datasets.sh` now stores the `espeak-ng` language identifier in `dataset.conf` so that there is no need to manually set a language during preprocessing.
 - the language code needed to build filenames that comply with Piper's naming convention is also stored in `dataset.conf` for a future feature update.
 - datasets created with earlier versions of TextyMcSpeechy will need to be updated: `create_datasets.sh <dataset_folder>`
