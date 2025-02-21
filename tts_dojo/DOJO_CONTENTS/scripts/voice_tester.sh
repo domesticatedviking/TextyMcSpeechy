@@ -147,7 +147,7 @@ display_menu() {
     echo -e "$buffer"
 }
 
-say_text() {
+old_say_text() {
     tput sgr0
     local voice_dir=${directories[$selected]}
     local model_onnx="$(basename "$voice_dir").onnx"
@@ -156,6 +156,27 @@ say_text() {
     sleep 1 # ERIK (was 5)
     display_menu 
 }
+
+say_text() {
+    tput sgr0
+    local voice_dir=${directories[$selected]}
+    # dynamically find onnx file in this directory (returns first result) 
+    # local onnx_path=$(find "$voice_dir" -maxdepth 1 -type f -name "*.onnx" | head -n 1)
+    
+    # dynamically find the most recently created .onnx file in this directory 
+    local onnx_path=$(find "$voice_dir" -maxdepth 1 -type f -name "*.onnx" -printf "%T@ %p\n" | sort -nr | awk '{print $2; exit}')
+    echo $onnx_path > voice_tester.log
+
+    if [[ -n "$onnx_path" ]]; then
+        bash tts.sh "$text_to_say" "$onnx_path" >/dev/null 2>&1
+    else
+        echo "No .onnx model found in $voice_dir"
+    fi
+
+    sleep 1
+    display_menu
+}
+
 
 prompt_text_to_say() {
     tput sgr0
@@ -274,4 +295,3 @@ done
 
 tput sgr0
 clear
-
