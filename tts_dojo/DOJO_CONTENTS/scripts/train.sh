@@ -167,7 +167,8 @@ get_highest_epoch_ckpt() {
 # returns highest epoch number from a directory containing checkpoint files
     local checkpoint_dir=$1
     if [[ ! -d "$checkpoint_dir" ]]; then
-        echo "Directory does not exist: $checkpoint_dir"
+        #echo "Directory does not exist: $checkpoint_dir"
+        echo ""
         return 1
     fi
     local highest_epoch_ckpt=$(ls "$checkpoint_dir"/*.ckpt 2>/dev/null | \
@@ -176,10 +177,12 @@ get_highest_epoch_ckpt() {
         head -n 1 | \
         awk '{print $2}')
     if [[ -z "$highest_epoch_ckpt" ]]; then
-        echo "No .ckpt files found in the directory: $checkpoint_dir"
-        return 1
+        #echo "No .ckpt files found in the directory: $checkpoint_dir"
+        echo ""
+        return 2
     fi
     echo "$highest_epoch_ckpt"
+    return 0
 }
 
 make_docker_path(){
@@ -565,8 +568,17 @@ start_tmux_processes(){
     # start the training script in pane 0.0    
     tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "source $VENV_ACTIVATE" Enter
 
-    # trainer_starting_checkpoint is an absolute path on the host. Use it to build a path that will work in the container
-    docker_starting_checkpoint_path=$(make_docker_path "$trainer_starting_checkpoint")
+    # trainer_starting_checkpoint is an absolute path on the host. Use it to build a path that will work in the container if it exists
+    #echo "Trainer starting checkpoint was:  $trainer_starting_checkpoint"
+    #echo "current dir was                :  $PWD"
+    read
+    
+    if [[ -n "$trainer_starting_checkpoint" && -e "../$trainer_starting_checkpoint" ]]; then
+        docker_starting_checkpoint_path=$(make_docker_path "$trainer_starting_checkpoint")
+    else
+        docker_starting_checkpoint_path=""
+    fi
+  
     
     # launch utils/piper_training.sh on the host which will manage training within the docker container 
     tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "utils/piper_training.sh $docker_starting_checkpoint_path" Enter
