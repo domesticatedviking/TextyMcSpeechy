@@ -17,6 +17,7 @@ ARCHIVED_CHECKPOINTS="$DOJO_DIR/$ARCHIVED_CHECKPOINTS_DIRNAME"
 ARCHIVED_TTS_VOICES_DIRNAME="archived_tts_voices"   
 ARCHIVED_TTS_VOICES="$DOJO_DIR/$ARCHIVED_TTS_VOICES_DIRNAME"
 LIGHTNING_LOGS_LOCATION="./training_folder/lightning_logs"
+TRAIN_FROM_SCRATCH_FILE="./target_voice_dataset/.SCRATCH"
 
 # init global vars
 highest_saved_epoch_ckpt=""
@@ -33,6 +34,15 @@ has_pretrained_checkpoint=false
 resume_or_restart=""
 checkpoint_recommendation=""
 voice_dir_count=0
+
+if [[ -f $TRAIN_FROM_SCRATCH_FILE ]]; then
+    TRAIN_FROM_SCRATCH_STATE=$(cat $TRAIN_FROM_SCRATCH_FILE)
+else
+    echo "Warning: .SCRATCH file not found at: $TRAIN_FROM_SCRATCH_FILE ."
+    read
+fi
+
+
 
 load_settings(){
 # load training settings from SETTINGS_FILE
@@ -87,10 +97,24 @@ verify_dirs_exist(){
     fi   
 }
 
+set_train_from_scratch(){
+# link_dataset.sh configures a flag variable in <voice>_dojo/target_voice_dataset/.SCRATCH
+# when it contains "true", piper_training.sh ignores any checkpoint files it is asked to use
+# when it contains "resume" or "false" piper training processes those files.
+
+    local scratch_setting=$1
+    echo "$scratch_setting" > ${TRAIN_FROM_SCRATCH_FILE}
+
+}
+
+
+
 empty_checkpoint_folder(){
 # Copy checkpoint file from prior run to allow user to resume from there and empty the folder 
     cp "$LIGHTNING_LOGS_LOCATION/version_0/checkpoints/*.ckpt" "./$VOICE_CHECKPOINTS_DIRNAME/" >/dev/null 2>&1
     sleep 1
+    # note: this command is duplicated in piper_training.sh in order to allow quck restarts in the tmux session
+    # (eg. recovering from a memory allocation error)
     rm -r $LIGHTNING_LOGS_LOCATION
 }
 
@@ -208,6 +232,43 @@ check_pretrained_ckpt(){
 update_saved_ckpt_count(){
     saved_ckpt_count=$(count_ckpt_files "$VOICE_CHECKPOINTS_DIRNAME")
 }
+
+ask_about_resuming_or_restarting_from_scratch(){
+# presents menu for dojos previously trained from scratch.
+# must set global var resume_or_restart to either "resume" or "restart"
+    local choice=""
+    local quick_choice="1" # choice made if user presses "Enter" without choosing any option  
+    echo
+    echo
+    echo -e "        This dojo contains saved checkpoints from previous training runs."
+    echo -e "        Please select an option:"
+    echo 
+    echo -e "        1. Resume from highest saved checkpoint file (epoch $highest_saved_epoch) (recommended)"  
+    echo -e "        2. Restart training from scratch"
+    echo -e "        3. Quit"
+    echo
+    echo -ne "        What would you like to do (1-3):  "
+    read choice
+    
+    # substitute action if user only pushes enter.
+    if [[ "$choice" = "" ]]; then
+        choice=$quick_choice
+        echo "Quick choice: $quick_choice"
+    fi
+    
+    # Act on user's response
+    if [[ "$choice" = "1" ]]; then
+        echo "Training will be resumed from saved checkpoint (epoch $highest_saved_epoch)"
+        resume_or_restart="resume"
+    elif [[ "$choice" = "2" ]]; then
+        echo "Training will restart from scratch"
+        resume_or_restart="restart"
+    elif [[ "$choice" = "3" ]]; then
+        echo "Exiting."
+        exit 1
+    fi
+}
+
 
 ask_about_resuming_or_restarting(){
 # lets user decide whether they are starting a new training run or continuing a previous run
@@ -571,7 +632,7 @@ start_tmux_processes(){
     # trainer_starting_checkpoint is an absolute path on the host. Use it to build a path that will work in the container if it exists
     #echo "Trainer starting checkpoint was:  $trainer_starting_checkpoint"
     #echo "current dir was                :  $PWD"
-    #read
+    
     
     if [[ -n "$trainer_starting_checkpoint" && -e "../$trainer_starting_checkpoint" ]]; then
         docker_starting_checkpoint_path=$(make_docker_path "$trainer_starting_checkpoint")
@@ -689,14 +750,29 @@ fi
 # get user's choice about whether to resume training or restart it
 if [[ "$checkpoint_recommendation" = "saved" ]] || [[ "$checkpoint_recommendation" = "pretrained" ]]; then  
    if [ $has_saved_checkpoints = "true" ]; then
-       ask_about_resuming_or_restarting
-        if [[ $resume_or_restart = "resume" ]]; then
-
-            trainer_starting_checkpoint=$highest_saved_epoch_ckpt
-        elif [[ $resume_or_restart = "restart" ]]; then
-
-            trainer_starting_checkpoint=$pretrained_tts_checkpoint
-        fi
+       if [[ $TRAIN_FROM_SCRATCH_STATE == "true" ]] || [[ $TRAIN_FROM_SCRATCH_STATE == "resume" ]]; then
+           # Model was trained from scratch and has training data from prior run
+           ask_about_resuming_or_restarting_from_scratch
+           if [[ $resume_or_restart = "resume" ]]; then
+               trainer_starting_checkpoint=$highest_saved_epoch_ckpt            
+               set_train_from_scratch "resume" #        
+           elif [[ $resume_or_restart = "restart" ]]; then
+               trainer_starting_checkpoint=""
+               set_train_from_scratch "true"
+           fi
+       else
+           # Model was trained from pretrained checkpoint and has training data from prior run.
+           ask_about_resuming_or_restarting
+           if [[ $resume_or_restart = "resume" ]]; then
+               trainer_starting_checkpoint=$highest_saved_epoch_ckpt            
+                  
+           elif [[ $resume_or_restart = "restart" ]]; then
+               trainer_starting_checkpoint=$pretrained_tts_checkpoint
+            # models trained from scratch have target_voice_dataset/.SCRATCH set to "true"
+            # which will cause them to ignore any starting checkpoints provided.
+            # this will cause them to restart training from 0.
+           fi
+       fi
    else # no saved checkpoints, no need to ask.
        echo "Dojo is clean, no previous checkpoints found"
        echo "Starting training with pretrained tts checkpoint file:"
