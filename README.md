@@ -17,10 +17,16 @@
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
 ## News
+#### **February 21 2025** - Piper-compliant filenames, improvements to workflow when training from scratch
+- Voice models are now exported with filenames that comply with piper's naming convention (eg `en_US-bob_1234-medium.onnx`)
+- `.onnx.json` files now have fields set correctly when exported
+- These changes should make all models exported to `tts_dojo/tts_voices` usable in Home Assistant without modifications.
+- Fixed issues with menus when resuming sessions that were intially trained from scratch
+
 #### **February 20 2025** - Improvements to multi-language suppport
 - Training models from scratch (ie. without using pretrained checkpoint files) is now an option provided by `run_training.sh`.
 - `create_datasets.sh` now stores the `espeak-ng` language identifier in `dataset.conf` so that there is no need to manually set a language during preprocessing.
-- the language code needed to build filenames that comply with Piper's naming convention is also stored in `dataset.conf` for a future feature update.
+- the language code needed to build filenames that comply with Piper's naming convention is also stored in `dataset.conf`.
 - datasets created with earlier versions of TextyMcSpeechy will need to be updated: `create_datasets.sh <dataset_folder>`
 - `DATASETS/espeak_language_identifiers.txt` provides clear directions about which language codes to use when setting up a dataset.  
     
@@ -28,6 +34,7 @@
    - This brand new branch runs Piper in a docker container, which makes installation far, far, far, less painful.
    - The scripts and docs in this branch have all been overhauled.
    - The branch formerly known as `main` is now the `non-containerized` branch.  It will be kept around for reference purposes but will not be maintained.
+
 #### **February 17 2025** - latest features:
    - Layout of tmux training environment can now be saved by selecting the control console and pressing `t`.  This layout will be applied automatically on subsequent runs.
    - [Custom pronunciation rules]((tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)) can now be defined in `tts_dojo/ESPEAK_RULES`.  These can be applied automatically whenever the `textymcspeechy-piper` container launches via `ESPEAK_RULES/automated_espeak_rules.sh`.
