@@ -5,6 +5,7 @@
 #         <voice>_dojo/training_folder/lightning_logs/version_0/checkpoints/ directory 
 #     2. Periodically saves those files to <voice>_dojo/voice_checkpoints
 #     3. Whenever it saves a .ckpt it exports it as a usable piper voice in <voice>_dojo/tts_voices 
+# This version now exports voices with names that comply with piper's specs.
 
 trap "kill 0" SIGINT
 echo "Starting checkpoint_grabber.sh"
@@ -31,6 +32,42 @@ else
     echo "press <enter> to exit"
     exit 1
 fi
+
+DATASET_CONF_FILE="../target_voice_dataset/dataset.conf"
+QUALITY_FILE="../target_voice_dataset/.QUALITY"
+quality=""
+
+if [[ -f $QUALITY_FILE ]]; then
+    QUALITY_CODE=$(cat $QUALITY_FILE)
+else
+    echo "Error: .QUALITY file not found."
+    exit 1
+fi
+
+# Load dataset.conf
+if [ -e $DATASET_CONF_FILE ]; then
+    source $DATASET_CONF_FILE
+else
+    echo "$0 - dataset.conf not found"
+    echo "     expected location: $DATASET_CONF_FILE"
+    echo 
+    exit 1
+fi
+# Set PIPER_FILENAME_PREFIX from dataset.conf
+
+
+if [ "$QUALITY_CODE" = "L" ]; then
+    quality="low"
+elif [ "$QUALITY_CODE" = "M" ]; then
+    quality="medium"
+elif [ "$QUALITY_CODE" = "H" ]; then
+    quality="high" 
+else 
+    echo "Error - invalid value for quality: $QUALITY_CODE"
+    exit 1
+fi
+
+
 
 clear # clear the screen
 # load constants from values sourced from SETTINGS, supply defaults if not specified
@@ -70,8 +107,11 @@ export_model(){
     # needed format is ../voice_checkpoints/epoch=2579-step=577032.ckpt
     export_checkpoint=$(echo "${last_ckpt}" | sed 's|.*/\(voice_checkpoints/.*\)|../\1|')
     
+    # builds filename according to piper's requirements eg "en_US-somevoice_3439-medium.onnx" 
+    piper_compliant_filename_onnx="${PIPER_FILENAME_PREFIX}-${VOICE_NAME}_${epoch}-${quality}.onnx"
+    
     # send command to exporter pane which will create the .onnx file for the piper tts voice in a subfolder of <voice>_dojo/tts_voices
-    tmux send-keys -t "${TMUX_EXPORTER_PANE:-0.3}" "bash utils/_tmux_piper_export.sh $export_checkpoint ../tts_voices/$voice_folder/$voice_epoch.onnx ${DOJO_NAME}"  Enter
+    tmux send-keys -t "${TMUX_EXPORTER_PANE:-0.3}" "bash utils/_tmux_piper_export.sh $export_checkpoint ../tts_voices/$voice_folder/$piper_compliant_filename_onnx ${DOJO_NAME}"  Enter
     
     # Load the amount of time the export took from temporary file
     last_export_duration_seconds=$(cat $EXPORTER_LAST_EXPORT_SECONDS_FILE)
@@ -423,7 +463,6 @@ show_training_dir_created_message
 inotify_function >"/tmp/INOTIFY.txt" &
 
 main_loop
-
 
 
 
