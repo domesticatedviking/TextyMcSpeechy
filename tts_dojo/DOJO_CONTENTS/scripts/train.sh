@@ -571,7 +571,7 @@ start_tmux_processes(){
     # trainer_starting_checkpoint is an absolute path on the host. Use it to build a path that will work in the container if it exists
     #echo "Trainer starting checkpoint was:  $trainer_starting_checkpoint"
     #echo "current dir was                :  $PWD"
-    read
+    #read
     
     if [[ -n "$trainer_starting_checkpoint" && -e "../$trainer_starting_checkpoint" ]]; then
         docker_starting_checkpoint_path=$(make_docker_path "$trainer_starting_checkpoint")
