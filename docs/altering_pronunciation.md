@@ -67,7 +67,7 @@ etc...
 - `Espeak-ng` is preinstalled in the `textymcspeechy-piper` docker image.   The commands to compile pronunciation must be run as root within the docker container, and must be run every time the container starts.
 - There are scripts for both manually and automatically activating your custom pronunciations provided. Instructions for these are found [here](/tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md). 
 
-### For non-containerized installs of espeak-ng:  
+### For non-containerized installs of espeak-ng (more convenient for testing):  
 - Compile the new pronunciation rule to make it active.
 ```
   # IMPORTANT-  run this from the directory where xx_list, xx_rules, xx_emoji, and xx_extra are located.
