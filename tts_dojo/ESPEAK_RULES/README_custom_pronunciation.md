@@ -29,7 +29,7 @@ AUTO_APPLY_CUSTOM_ESPEAK_RULES="true"  <--- EDIT THIS LINE TO TURN AUTOMATIC LOA
 #en_extra file format example
 Noella  no'El:V O
 ```
-Please check out this useful [guide to producing custom espeak pronunciations](docs/altering_pronunciation.md), now with tips for using AI to generate your pronunciation files.
+Please check out this useful [guide to producing custom espeak pronunciations](/docs/altering_pronunciation.md), now with tips for using AI to generate your pronunciation files.
 
 
 ## Purpose of scripts in this folder
