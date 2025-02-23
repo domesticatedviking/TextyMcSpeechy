@@ -29,10 +29,7 @@ AUTO_APPLY_CUSTOM_ESPEAK_RULES="true"  <--- EDIT THIS LINE TO TURN AUTOMATIC LOA
 #en_extra file format example
 Noella  no'El:V O
 ```
-
-- I have created an [IPA to kirschenbaum cheatsheet](/docs/IPA_to_kirschenbaum_cheatsheet.md) which will help you convert words from the international phonetic alphabet (IPA) to the format `espeak-ng` uses.
-- [This site](https://www.internationalphoneticalphabet.org/ipa-sounds/ipa-chart-with-sounds/) is a great reference for IPA.  You can click on each symbol to hear how it sounds, which will help you choose the symbols that represent the sounds of your target word.
-- [This site](https://ipa-reader.com/) is useful for testing IPA transcriptions.
+Please check out this useful [guide to producing custom espeak pronunciations](docs/altering_pronunciation.md), now with tips for using AI to generate your pronunciation files.
 
 
 ## Purpose of scripts in this folder
