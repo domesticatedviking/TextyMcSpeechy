@@ -1,6 +1,6 @@
 # TTS Dojo
 
-- The TTS Dojo is a set of shell scripts that use [Piper TTS](https://github.com/rhasspy/piper) to produce custom text-to-speech models by finetuning pretrained Piper TTS checkpoint files.
+- The TTS Dojo is a set of shell scripts that use [Piper TTS](https://github.com/rhasspy/piper) to produce custom text-to-speech models, either by finetuning pretrained Piper TTS checkpoint files or training models from scratch.
 - Piper's training services are provided via a docker container called `textymcspeechy-piper`, which can either be downloaded from dockerhub or built locally.
 - Voice dojos automatically start the `textymcspeechy-piper` docker image by calling `TextyMcSpeechy/run_container.sh` and automatically stop it when training ends.
 - If you have set up custom pronunciation rules in `tts_dojo/ESPEAK_RULES`, these can be configured to be activated automatically when your container runs.  A guide can be found [here](tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)
@@ -32,7 +32,7 @@
    - The `CHECKPOINT GRABBER` pane runs a script which allows you to periodically save one of the checkpoint files that Piper generates during training and automatically convert it into a text-to-speech model.
    - This allows allows you to decide when your model is done training by listening to which checkpoint's version of the voice sounds the best.
    - Beware that leaving this tool unattended for a long time or saving checkpoint files frequently could quite easily fill your entire hard drive -- each checkpoint file is over 800MB.
-   - You can set up an automatic shutdown if your available storage falls below a certain threshold by editing the global SETTINGS.txt file in `tts_dojo/DOJO_CONTENTS` before creating a new voice dojo.
+   - You can set up an automatic shutdown if your available storage falls below a certain threshold by editing the global SETTINGS.txt file in `tts_dojo/DOJO_CONTENTS/scripts/SETTINGS.txt` before creating a new voice dojo.
    - You can manually save the most recent checkpoint file and convert it to piper voice model by pressing `s` while this pane is selected.  This can be useful if you need to shut down a training session and resume it later.  `run_training.sh` will automatically prompt you to resume training from the highest epoch checkpoint you have saved.
    - Since checkpoint files are so large, by default the checkpoint grabber only saves 1 out of every 25 checkpoints that piper generates. You can change how often checkpoints are automatically saved by pressing `i` to save them less often and and `d` to save them more often.  You can also turn automatic saving off and on by pressing `t`. 
    
