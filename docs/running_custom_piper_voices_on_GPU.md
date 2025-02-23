@@ -6,7 +6,7 @@ For conversational AI apps, a Raspberry pi just isn't fast enough to render long
 ## Part 1: Setting up a docker container with Piper and Wyoming Protocol
 1. Install Docker on a computer with a Nvidia GPU or faster CPU than your home assistant server.
 2. Give thanks to the creators of this repo [https://github.com/linuxserver/docker-piper] 
-3. Prepare your custom voice files [as required by Piper](renaming_and_preparing_custom_piper_voices.md). 
+3. Ensure that your custom voice files are prepared [as required by Piper](renaming_and_preparing_custom_piper_voices.md). (The latest version of TextyMcSpeechy does this automatically).
 4. Make sure your host machine has a local IP address that won't change.  (Set up a DHCP reservation in your router's admin menu or use a static IP).  You will need this ip address later, so make a note of it.
 5. Create a folder to hold the files that will be used to create the docker container and store the custom voice files: `/path/to/piper_gpu`. 
 6. Create a folder inside `/path/to/piper_gpu` called `custom_voices`
@@ -65,7 +65,7 @@ docker container ps
 ## Part 2: Connecting Home Assistant to your running docker container
 1. Install the Wyoming Protocol integration if it isn't installed already.
 2. If it is already installed, click the ADD SERVICE button
-      -  In the `Host` field, use the IP address of the computer running your docker container. (eg 192.168.1.xxx).
+      -  In the `Host` field, use the IP address of the computer running your docker container. (eg 192.168.1.xxx). A hostname may also work here.
       -  In the `Port` field, use `10200` (or whatever port you configured for piper to use in the docker container)
 3. In the Wyoming protocol integration menu, optionally change the entity name to `piper_gpu` by clicking the `1 entity` link, then click the piper entity on the following screen, in the dialog box that appears, click the gear icon, then change the `Entity id` to `tts.piper_gpu` and click `update`.
 
