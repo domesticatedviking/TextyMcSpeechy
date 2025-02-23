@@ -1,5 +1,7 @@
 # TextyMcSpeechy
 
+# Note:  This branch is no longer maintained.  The version in the main branch is much easier to install and has new features this version doesn't have.
+
 ## A workflow with convenience scripts for making any voice into a Piper text-to-speech (TTS) model.
 - Make a custom text-to-speech (TTS) model out of your own voice samples
 - Make a custom TTS model out of any existing voice dataset
@@ -11,7 +13,7 @@
 - https://www.tomshardware.com/raspberry-pi/add-any-voice-to-your-raspberry-pi-project-with-textymcspeechy
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
-## February 16 2025: TTS dojo with dockerized Piper ready to use in docker-dev branch
+## February 16 2025: TTS dojo with dockerized Piper ready to use in docker-dev branch (EDIT: the docker-dev branch is now the main branch)
 - Since installing Piper has become quite challenging due to complex dependency issues, I have made a version of the TTS dojo that runs Piper from a docker container. It is running well and will become the default branch when it is completely ready.
 - All the code needed to train models is finished in the `docker-dev` branch along with the `Dockerfile` and `docker-config.yml` necessary to build the required Docker image.
 - There is now a prebuilt docker image on dockerhub for maximum convenience.
