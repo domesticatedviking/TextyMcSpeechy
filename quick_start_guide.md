@@ -32,28 +32,27 @@ To make a custom text to speech voice requires a custom dataset.   Building a cu
 
 ./create_dataset.sh custom_voice  <---change custom_voice to the name of the folder containing your voice dataset
 ```
- 4. You will be prompted for some information about the speaker in your dataset, and then `create_dataset.sh` will analyze your files, sort them by file format and sampling rate, and automatically create 22050hz and 16000hz `.wav` versions of your files if they do not exist. It will also warn you if any files mentioned in `metadata.csv` are not present.  
+ 4. You will be prompted for some information about the speaker in your dataset, and asked for the lanugage code used by `espeak-ng`.   A list of languages supported by `espeak-ng` can be found in `DATASETS/espeak_language_identifiers.txt` (note: I am not 100% clear about whether all of these languages are in fact supported by Piper).   After that, `create_dataset.sh` will analyze your files, sort them by file format and sampling rate, and automatically create 22050hz and 16000hz `.wav` versions of your files if they do not exist. It will also warn you if any files mentioned in `metadata.csv` are not present.  
 
-## Part 2.  Get pretrained checkpoint files
+## Part 2.  Get pretrained checkpoint files (optional but recommended if possible)
 1. You only need to do this step the first time you train a model.  Subsequent voices you train will use the same files.
-2. TextyMcSpeechy uses pretrained Piper TTS checkpoint files as the foundation of the models it creates.  This allows for custom voices to be trained much more rapidly than if they were being trained from scratch. Training from scratch is not currently supported by TextyMcSpeechy, but I will be adding support for this very soon because I just figured out how to do it.
-3. You technically only need one pretrained checkpoint file to train a model.
+2. TextyMcSpeechy was originally designed to use pretrained Piper TTS checkpoint files as the foundation of the models it creates.  This allows for custom voices to be trained much more rapidly than if they were being trained from scratch, with smaller datasets needed for good results.
      -  Checkpoint files have names like `epoch=2307-step=558536.ckpt`, and represent a specific voice trained at a specific quality level.  They are large files, typically ~800MB each.
      -  It is helpful if the voice of the pretrained checkpoint is similar to the one you intend to train
      -  It is critically important that the quality level of your pretrained checkpoint is the same as the quality level of the model you are building.
      -  Because the names of these files don't include any information about the quality level or speaker, keeping them organized is important.
      -  TextyMcSpeechy handles this organization problem by storing a set of voices for all quality levels in `PRETRAINED_CHECKPOINTS/defaults`, where they are classified using subfolders first by voice type (M/F) and then by quality level (low, medium, high).   By storing pretrained checkpoints for all quality levels within this structure, an appropriate checkpoint can be selected automatically.
-     -  Currently, TextyMcspeechy only supports storing pretrained checkpoints for a single language in PRETRAINED_CHECKPOINTS.  Rectifying this is on my to-do list.
+     -  Currently, TextyMcspeechy only supports storing pretrained checkpoints for a single language in PRETRAINED_CHECKPOINTS.  Ideally you would want to use pretrained checkpoints of the same language you are training, but there are reports that it is worthwhile to train from a pretrained checkpoint even if one from the same language isn't available. 
 
-4. Since it is a bit tedious to locate and download 6 pretrained checkpoint files (low, medium and high quality in both masculine and feminine voices), there is a script that can download a complete set of pretrained checkpoints and store them in the correct folders automatically:  
+3. Since it is a tedious to locate and download 6 pretrained checkpoint files (low, medium and high quality in both masculine and feminine voices), there is a script that can download a complete set of pretrained checkpoints and store them in the correct folders automatically:  
    ```
    # this script should be run from inside tts_dojo/PRETRAINED_CHECKPOINTS
 
    ./download_defaults.sh en-us   # (currently `en-us` is the only preconfigured language option)
    ```
-5. You can use `PRETRAINED_CHECKPOINTS/languages/en-us.conf` as a template for making `.conf` files to download piper checkpoints for other languages.  I would love to have `.conf` files for all languages but will need your help making them.  Pull requests are appreciated.
-6. If there is no `.conf` file for your language, you can check [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main) for an appropriate checkpoint file, and then manually copy it into the appropriate subfolder of `PRETRAINED_CHECKPOINTS/default`.  Pretrained checkpoints stored here must be in the folder corresponding to the correct voice type (M/F) and quality level (low, medium, high).  If manually installing pretrained checkpoints this way you also need to create or edit the hidden file `PRETRAINED_CHECKPOINTS/default/.ESPEAK_LANGUAGE` with the `espeak-ng` language code for the language you are training.
-7. Once you have a set of checkpoints in your `PRETRAINED_CHECKPOINTS` folder, they are a resource that will be shared by future voices you will train. You can use these checkpoints over and over again.
+4. You can use `PRETRAINED_CHECKPOINTS/languages/en-us.conf` as a template for making `.conf` files to download piper checkpoints for other languages.  I would love to have `.conf` files for all languages but will need your help making them.  Pull requests are appreciated.
+5. If there is no `.conf` file for your language, you can check [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main) for an appropriate checkpoint file, and then manually copy it into the appropriate subfolder of `PRETRAINED_CHECKPOINTS/default`.  Pretrained checkpoints stored here must be in the folder corresponding to the correct voice type (M/F) and quality level (low, medium, high).
+6. Once you have a set of checkpoints in your `PRETRAINED_CHECKPOINTS` folder, they are a resource that will be shared by future voices you will train. You can use these checkpoints over and over again.
 
 ## Part 3. Create a voice dojo and use it to train your custom voice
 1.  A voice dojo is a folder that orgainizes all of the files required for and created by the training process.
