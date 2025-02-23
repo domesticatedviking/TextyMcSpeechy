@@ -1,4 +1,4 @@
-# Using custom espeak-ng pronunciations with textymcspeechy-piper docker container
+## Using custom espeak-ng pronunciations with textymcspeechy-piper docker container
 - `espeak-ng` is a package that Piper uses to convert words into phonemes (symbols describing the way the word sounds).  It is preinstalled in the `textymcspeechy-piper` docker container
 - These rules impact pronunciation both when training TTS models and when rendering words.
 - The `tts_dojo/ESPEAK_RULES` folder must contain all the rule files for your chosen language(s) from [espeak-ng/dictsource](https://github.com/espeak-ng/espeak-ng/tree/master/dictsource) as well as a `<language>_extra` file which you must create yourself.
