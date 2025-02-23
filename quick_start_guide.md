@@ -53,6 +53,7 @@ To make a custom text to speech voice requires a custom dataset.   Building a cu
 4. You can use `PRETRAINED_CHECKPOINTS/languages/en-us.conf` as a template for making `.conf` files to download piper checkpoints for other languages.  I would love to have `.conf` files for all languages but will need your help making them.  Pull requests are appreciated.
 5. If there is no `.conf` file for your language, you can check [here](https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main) for an appropriate checkpoint file, and then manually copy it into the appropriate subfolder of `PRETRAINED_CHECKPOINTS/default`.  Pretrained checkpoints stored here must be in the folder corresponding to the correct voice type (M/F) and quality level (low, medium, high).
 6. Once you have a set of checkpoints in your `PRETRAINED_CHECKPOINTS` folder, they are a resource that will be shared by future voices you will train. You can use these checkpoints over and over again.
+7. If you want to train from scratch (ie. without using a pretrained checkpoint file), you will be prompted to choose that option when you run `run_training.sh` in your voice dojo.
 
 ## Part 3. Create a voice dojo and use it to train your custom voice
 1.  A voice dojo is a folder that orgainizes all of the files required for and created by the training process.
