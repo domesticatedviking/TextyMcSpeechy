@@ -55,7 +55,7 @@
    -  Any voice that appears in the voice tester pane is ready to be used in your Piper projects.
    -  Your finished Piper voices are stored in  subfolders of `<VOICE_NAME_dojo>/tts_voices`
    -  A Piper voice consists of both an `.onnx` file and a `.onnx.json` file
-   -  Note: Currently the TTS dojo scripts do not name voices using Piper's official specifications.  For now, you can rename them yourself using [this guide](docs/renaming_and_preparing_custom_piper_voices.md). 
+   -  Note: the latest version of the TTS dojo scripts name the voice files according to Piper's expected naming conventions.  Voices trained with earlier versions of TextyMcSpeechy may need to be renamed using [this guide](docs/renaming_and_preparing_custom_piper_voices.md) in order to make them work properly with apps such as `Home Assistant`. 
 
 
 
