@@ -13,6 +13,14 @@ TRAIN_FROM_SCRATCH_FILE="../target_voice_dataset/.SCRATCH"
 DOJO_NAME=$(basename "$(dirname "$PWD")")  # this script runs from <name>_dojo/scripts so need parent directory   
 VOICE_NAME=$(echo "$DOJO_NAME" | sed 's/_dojo$//')
 
+# determine quality
+QUALITY=$(cat "../target_voice_dataset/.QUALITY" 2>/dev/null || echo "M")
+case $QUALITY in
+    "L") QUALITY="low" ;;
+    "M") QUALITY="medium" ;;
+    "H") QUALITY="high" ;;
+esac
+
 # sanity check for current directory
 if [[ ! "$DOJO_NAME" =~ _dojo$ ]]; then
     echo "Error: DOJO_NAME did not end with '_dojo'. Are you running from <voice>_dojo/scripts directory?  Exiting." >&2
@@ -62,7 +70,8 @@ docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
     --num-test-examples 0 \
     --max_epochs 30000 \
     --checkpoint-epochs $PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS \
-    --precision 32
+    --precision 32 \
+    --quality $QUALITY
 "
 }
 
@@ -78,7 +87,8 @@ docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
     --max_epochs 30000 \
     --resume_from_checkpoint "$starting_checkpoint" \
     --checkpoint-epochs $PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS \
-    --precision 32
+    --precision 32 \
+    --quality $QUALITY
 "
 }
 
