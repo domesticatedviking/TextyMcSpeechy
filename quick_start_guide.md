@@ -56,7 +56,7 @@ To make a custom text to speech voice requires a custom dataset.   Building a cu
 7. If you want to train from scratch (ie. without using a pretrained checkpoint file), you will be prompted to choose that option when you run `run_training.sh` in your voice dojo.
 
 ## Part 3. Create a voice dojo and use it to train your custom voice
-1.  A voice dojo is a folder that orgainizes all of the files required for and created by the training process.
+1.  A voice dojo is a folder that organizes all of the files required for and created by the training process.
 2.  The `tts_dojo/DOJO_CONTENTS` folder is used as the basic structure for all voice dojos you create.  Do not run scripts or edit files inside `DOJO_CONTENTS` unless you know what you're wanting to achieve.
 3.  You should create a fresh voice dojo for every voice model that you train.   Do this by changing to the `tts_dojo` directory and running:
 ```
