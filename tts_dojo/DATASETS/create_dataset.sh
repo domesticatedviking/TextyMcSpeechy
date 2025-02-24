@@ -43,6 +43,33 @@ if [[ "$full_path" != "$(realpath "$DATASET_DIR")/"* ]]; then
     exit 1
 fi
 
+check_ffmpeg() {
+    if command -v ffmpeg &>/dev/null && command -v ffprobe &>/dev/null; then
+        echo "FFMPEG OK!"
+        return 0
+    fi
+
+    echo "ffmpeg is not installed."
+
+    if command -v apt &>/dev/null; then
+        echo "You can install them using: sudo apt update && sudo apt install -y ffmpeg"
+    elif command -v dnf &>/dev/null; then
+        echo "You can install them using: sudo dnf install -y ffmpeg"
+    elif command -v yum &>/dev/null; then
+        echo "You can install them using: sudo yum install -y ffmpeg"
+    elif command -v pacman &>/dev/null; then
+        echo "You can install them using: sudo pacman -S ffmpeg"
+    elif command -v brew &>/dev/null; then
+        echo "You can install them using: brew install ffmpeg"
+    else
+        echo "Could not detect package manager. Please install ffmpeg manually from https://ffmpeg.org/download.html"
+    fi
+    exit 1
+}
+
+
+
+
 # init global vars
 not_audio_dir="$input_dir/not_audio"  
 metadata_file="$input_dir/metadata.csv"
@@ -512,7 +539,7 @@ convert_espeak_to_piper() {
 
 # **************************************************************************************************************************************************
 # MAIN PROGRAM START
-
+check_ffmpeg
 clear
 echo -e  "    TextyMcSpeechy Dataset creator"
 echo -e
