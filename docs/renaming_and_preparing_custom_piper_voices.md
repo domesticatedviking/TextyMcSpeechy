@@ -6,23 +6,27 @@
   - `name` is the name of the person or character to whom the voice belongs (eg. `bob`)
   -  `quality` is the model quality. Valid values are `x_low`, `low`, `medium`, and `high`
   - rename both your `.onnx` and `.onnx.json` files, eg: `en_US-bob-medium.onnx`,`en_US-bob-medium.onnx.json` Make sure the names match EXACTLY.
-  - If you don't name your model in this format, Home Assistant may not recognize it.
-     
-2. Update the `dataset` field in your `.onnx.json` file to reflect the new name of your model.  This is important if you want your model to show up properly in voice assistant entities created in Settings > Voice Assistants.
-Custom piper models found online don't always follow the standards piper expects. The `quality` field is one I have often had to change.  It usually works fine if you set it to "Medium". I am still exploring what is expected by home assistant a bit here.
-If your model name is `en_US-bob-medium`, your  `en_US-bob-medium.onnx.json` file should look something like this:
+  - If you don't name your model in this format **and** update the fields in your `.onnx.json` file, Home Assistant will not be able to use your voices. If you get errors when you use the `TRY VOICE` button in `Settings` > `Voice Assistants`, it is very likely you have a mistake in one of the fields of your `.onnx.json` file.     
+2. Update your `.onnx.json` file by opening it in a text editor.   **All fields are case sensitive and must enclose strings in double quotes.**
+   - `"dataset":`  must contain the filename of your model, **without its extension**, eg `"en_US-bob-medium"`.  
+   - `"quality":`  must contain the quality code specified in the filename.  `"x_low"`, `"low"`, `"medium"`, or `"high"`.
+   -  `"espeak": {"voice":""}` must contain the espeak language identifier.  Please note that this is *NOT* the same language code used at the beginning of the filename (`"en-us"` is not the same as `"en_US"`).    A list of language identifiers to use for this field can be found [here](/tts_dojo/DATASETS/espeak_language_identifiers.txt)
+   -  `"language": {"code":""}` must be set to the same language code used at the beginning of your filename.
+
+
+If your model name is `en_US-bob-medium`, your  `en_US-bob-medium.onnx.json` file should look something like this.  Note that some models in the wild do not have a `dataset` or a `language` field.  You can add these yourself using this as a template.
 ```
 {
-    "dataset": "en_US-bob-medium",
+    "dataset": "en_US-bob-medium",   
     "audio": {
         "sample_rate": 22050,
-        "quality": "Medium"
+        "quality": "medium"
     },
     "espeak": {
         "voice": "en-us"
     },
     "language": {
-        "code": "en-us"
+        "code": "en_US"     
     },
     "inference": {
         "noise_scale": 0.667,
