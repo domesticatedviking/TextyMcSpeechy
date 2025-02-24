@@ -17,6 +17,11 @@
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
 ## News
+#### **February 24 2025** - fixed docs for manually editing voices to comply with Home Assistant's requirements
+- My previous documentation of this process produced voices that worked in user scripts within Home Assistant, but I discovered that they would crash when used to create entities in `Settings` > `Voice Assistants` if fields set in the `.onnx.json` file differed even slightly from what was expected.
+- I have updated the [docs](docs/renaming_and_preparing_custom_piper_voices.md) to correct this issue.
+- This should not impact voices trained with the latest version of TextyMcSpeechy.
+ 
 #### **February 21 2025** - Piper-compliant filenames, improvements to workflow when training from scratch
 - Voice models are now exported with filenames that comply with piper's naming convention (eg `en_US-bob_1234-medium.onnx`)
 - `.onnx.json` files now have fields set correctly when exported
