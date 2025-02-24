@@ -39,7 +39,7 @@
 4. `CONTROL CONSOLE` 
 ![image](https://github.com/user-attachments/assets/8a4dcf05-ce14-4cdc-89d5-85c935ccb653)
 
-    - This pane displays information about the amount of storage your training session is using, and also provides several controls when it is selected. Select the `CONTROL CONSOLE` pane by clicking it (or navigating to it with <CTRL>-B followed by arrow keys) if you don't have a mouse, then:
+    - This pane displays information about the amount of storage your training session is using, and also provides several controls when it is selected. Select the `CONTROL CONSOLE` pane by clicking it (or navigating to it with `<CTRL>-B` followed by arrow keys) if you don't have a mouse, then:
     -  To shut down training: press `q`.
     -  To save the current tmux window layout: press `t`
     -  To restore a previous tmux window layout: press `r`
