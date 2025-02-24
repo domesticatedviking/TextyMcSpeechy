@@ -1,4 +1,4 @@
-# How to rename Piper voices to comply with the official docs 
+# How to rename Piper voices to comply with the official Piper specifications
 ### Note:  The TTS dojo now exports voices using this standard by default.
 
 1. Per the Piper docs, your voices must be renamed according to the following scheme: `<language>_<REGION>-<name>-<quality>`, eg: `en_US-bob-medium`
