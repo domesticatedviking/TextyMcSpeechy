@@ -35,3 +35,4 @@ If your model name is `en_US-bob-medium`, your  `en_US-bob-medium.onnx.json` fil
     },
     # etc
 ```
+- You may need to restart the Piper add-on, reload the Wyoming integration, restart your Piper docker container if running on GPU, and/or restart Home Assistant for your changes to show up.
