@@ -1,60 +1,60 @@
 # Note - experimental, work in progress.
 
-```
-version: "3.9"
 
+# piper-gpu-hass docker-compose.yml
+```
 services:
-  # Wyoming Piper TTS
-  piper:
-    image: rhasspy/wyoming-piper:latest
-    container_name: wyoming-piper
-    restart: unless-stopped
+  piper-gpu-hass:
+    image: lscr.io/linuxserver/piper:gpu
+    runtime: nvidia
+    hostname: piper-gpu
+    container_name: piper-gpu-hass
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-    command: --voices-dir /voices --host 0.0.0.0 --port 10200
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - PIPER_VOICE=en_US-lessac-medium
+      - PIPER_LENGTH=1.0 #optional
+      - PIPER_NOISE=0.667 #optional
+      - PIPER_NOISEW=0.333 #optional
+      - PIPER_SPEAKER=0 #optional
+      - PIPER_PROCS=1 #optional
     volumes:
-      - ./voices:/voices
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
-    networks:
-      - wyoming
-
-  # Wyoming Faster-Whisper STT
-  whisper:
-    image: rhasspy/wyoming-whisper:latest
-    container_name: wyoming-whisper
+      - /path/to/custom_piper_voices:/config
+    ports:
+      - 10200:10200
     restart: unless-stopped
+```
+
+# faster-whisper-gpu-hass docker-compose.yml
+```
+services:
+  faster-whisper-gpu-hass:
+    runtime: nvidia
+    image: lscr.io/linuxserver/faster-whisper:gpu
+    hostname: whisper-gpu
+    container_name: faster-whisper-gpu-hass
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-    command: --model large-v2 --host 0.0.0.0 --port 10300 --cuda
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WHISPER_MODEL=tiny-int8
+      - WHISPER_BEAM=1 #optional
+      - WHISPER_LANG=en #optional
     volumes:
-      - ./models:/models
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
-    networks:
-      - wyoming
-
-  # OpenWakeWord Wake Word Engine
-  openwakeword:
-    image: rhasspy/wyoming-openwakeword:latest
-    container_name: wyoming-openwakeword
+      - /path/to/faster_whisper_data:/config
+    ports:
+      - 10300:10300
     restart: unless-stopped
-    command: --preload --model-dir /models --host 0.0.0.0 --port 10400
-    volumes:
-      - ./wakeword-models:/models
-    networks:
-      - wyoming
-
-networks:
-  wyoming:
-    driver: bridge
 
 ```
+
+(Change volumes in both files to point to a local folder on the host which will contain your custom voices / whisper models).   The part of the path after the colon is the path inside the docker container.
+
+
+
+https://www.slacker-labs.com/setup-a-raspberry-pi-zero-2-w-as-a-wyoming-satellite/
