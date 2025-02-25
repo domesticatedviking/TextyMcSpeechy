@@ -58,3 +58,12 @@ services:
 
 
 https://www.slacker-labs.com/setup-a-raspberry-pi-zero-2-w-as-a-wyoming-satellite/
+
+
+There are some commands that fail in the above
+```
+#this worked to get the prebuilt apps to install
+.venv/bin/pip3 install-f 'https://synesthesiam.github.io/prebuilt-apps/' -e '.[all]'
+```
+source of correction above:
+https://github.com/rhasspy/wyoming-satellite/blob/f86d236432f3c28ac29594799cfe159ce1407cd9/docs/tutorial_2mic.md
