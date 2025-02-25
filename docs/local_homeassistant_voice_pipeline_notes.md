@@ -1,6 +1,7 @@
 # Note - experimental, work in progress.
 
 
+
 # piper-gpu-hass docker-compose.yml
 ```
 services:
@@ -59,17 +60,4 @@ services:
 # Building Wyoming Satellite for pi zero 2w
 Tutorial
 https://github.com/rhasspy/wyoming-satellite/blob/8850100ca658a80708e562e6741739ed27c91f99/docs/tutorial_installer.md
-
-
-
-https://www.slacker-labs.com/setup-a-raspberry-pi-zero-2-w-as-a-wyoming-satellite/
-
-
-There are some commands that fail in the above
-```
-#this worked to get the prebuilt apps to install
-.venv/bin/pip3 install-f 'https://synesthesiam.github.io/prebuilt-apps/' -e '.[all]'
-```
-source of correction above:
-https://github.com/rhasspy/wyoming-satellite/blob/f86d236432f3c28ac29594799cfe159ce1407cd9/docs/tutorial_2mic.md
 
