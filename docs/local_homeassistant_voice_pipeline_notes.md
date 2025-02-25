@@ -56,6 +56,7 @@ services:
 (Change volumes in both files to point to a local folder on the host which will contain your custom voices / whisper models).   The part of the path after the colon is the path inside the docker container.
 
 
+# Building Wyoming Satellite for pi zero 2w
 
 https://www.slacker-labs.com/setup-a-raspberry-pi-zero-2-w-as-a-wyoming-satellite/
 
