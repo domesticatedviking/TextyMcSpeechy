@@ -57,6 +57,10 @@ services:
 
 
 # Building Wyoming Satellite for pi zero 2w
+Tutorial
+https://github.com/rhasspy/wyoming-satellite/blob/8850100ca658a80708e562e6741739ed27c91f99/docs/tutorial_installer.md
+
+
 
 https://www.slacker-labs.com/setup-a-raspberry-pi-zero-2-w-as-a-wyoming-satellite/
 
@@ -69,6 +73,3 @@ There are some commands that fail in the above
 source of correction above:
 https://github.com/rhasspy/wyoming-satellite/blob/f86d236432f3c28ac29594799cfe159ce1407cd9/docs/tutorial_2mic.md
 
-This might be a better tutorial overall since the other one didn't mention there was an installer.
-
-https://github.com/rhasspy/wyoming-satellite/blob/8850100ca658a80708e562e6741739ed27c91f99/docs/tutorial_installer.md
