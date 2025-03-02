@@ -18,7 +18,7 @@
 
 ## News
 #### **March 2 2025** - added missing languages
-- Added 21 languages supported by `espeak-ng` that were missing from `create_dataset.sh` and `espeak_language_identifiers.txt` due to a truncated list being supplied when chatGPT reformatted the markdown table.
+- Added 21 languages supported by `espeak-ng` that were missing from `create_dataset.sh` and `espeak_language_identifiers.txt` due to a truncated list being supplied when ChatGPT reformatted the markdown table.
 - Sinhala, Slovak, Slovenian, Lule Saami, Spanish (Spain), Spanish (Latin America), Swahili, Swedish, Tamil, Thai, Turkmen, Tatar, Telugu, Turkish, Uyghur, Urdu, Uzbek, Vietnamese (Central Vietnam), Vietnamese (Northern Vietnam), Vietnamese (Southern Vietnam), and Welsh are now available in addition to all previously supported languages.
 
 #### **February 24 2025** - fixed docs for manually editing voices to comply with Home Assistant's requirements
