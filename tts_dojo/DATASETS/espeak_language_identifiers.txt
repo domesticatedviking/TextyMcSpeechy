@@ -1,4 +1,4 @@
-Espeak-ng identifiers- used by piper preprocessing to generate phonemes.
+Espeak-ng identifiers- used by Piper preprocessing to generate phonemes.
 +----------------------+--------------------------------------+
 |          Identifier  | Language                             |
 +----------------------+--------------------------------------+
