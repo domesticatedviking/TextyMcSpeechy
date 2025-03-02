@@ -528,6 +528,26 @@ convert_espeak_to_piper() {
         ["sd"]="sd"          # Sindhi
         ["shn"]="shn"        # Shan (Tai Yai)
         ["si"]="si"          # Sinhala
+	["sk"]="sk"          # Slovak
+        ["sl"]="sl"          # Slovenian
+        ["smj"]="smj"        # Lule Saami
+        ["es"]="es"          # Spanish
+        ["es-419"]="es"      # Spanish - Latin American (fallback to Spanish)
+        ["sw"]="sw"          # Swahili
+        ["sv"]="sv"          # Swedish
+        ["ta"]="ta"          # Tamil
+        ["th"]="th"          # Thai
+        ["tk"]="tk"          # Turkmen
+        ["tt"]="tt"          # Tatar
+        ["te"]="te"          # Telugu
+        ["tr"]="tr"          # Turkish
+        ["ug"]="ug"          # Uyghur
+        ["ur"]="ur"          # Urdu
+        ["uz"]="uz"          # Uzbek
+        ["vi-vn-x-central"]="vi"  # Vietnamese - Central Vietnam (fallback to Vietnamese)
+        ["vi"]="vi"          # Vietnamese - Northern Vietnam
+        ["vi-vn-x-south"]="vi"  # Vietnamese - Southern Vietnam (fallback to Vietnamese)
+        ["cy"]="cy"          # Welsh
     )
 
     # Return Piper code or fallback to input if not found
