@@ -113,8 +113,8 @@ Espeak-ng identifiers- used by piper preprocessing to generate phonemes.
 |                  sk  | Slovak                               |
 |                  sl  | Slovenian                            |
 |                 smj  | Lule Saami                           |
-|                  es  | Spanish                              |
-|              es-419  | Spanish                              |
+|                  es  | Spanish - Spain                      |
+|              es-419  | Spanish - Latin America              |
 |                  sw  | Swahili                              |
 |                  sv  | Swedish                              |
 |                  ta  | Tamil                                |
