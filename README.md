@@ -17,6 +17,10 @@
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
 ## News
+#### **March 2 2025** - added missing languages
+- Added 21 languages supported by `espeak-ng` that were missing from `create_dataset.sh` and `espeak_language_identifiers.txt` due to a truncated list being supplied when chatGPT reformatted the markdown table.
+- Sinhala, Slovak, Slovenian, Lule Saami, Spanish (Spain), Spanish (Latin America), Swahili, Swedish, Tamil, Thai, Turkmen, Tatar, Telugu, Turkish, Uyghur, Urdu, Uzbek, Vietnamese (Central Vietnam), Vietnamese (Northern Vietnam), Vietnamese (Southern Vietnam), and Welsh are now available in addition to all previously supported languages.
+
 #### **February 24 2025** - fixed docs for manually editing voices to comply with Home Assistant's requirements
 - My previous documentation of this process produced voices that worked in user scripts within Home Assistant, but I discovered that they would crash when used to create entities in `Settings` > `Voice Assistants` if fields set in the `.onnx.json` file differed even slightly from what was expected.
 - I have updated the [docs](docs/renaming_and_preparing_custom_piper_voices.md) to correct this issue.
