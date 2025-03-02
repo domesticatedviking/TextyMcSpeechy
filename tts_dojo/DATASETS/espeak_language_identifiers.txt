@@ -126,9 +126,9 @@ Espeak-ng identifiers- used by piper preprocessing to generate phonemes.
 |                  ug  | Uyghur                               |
 |                  ur  | Urdu                                 |
 |                  uz  | Uzbek                                |
-|     vi-vn-x-central  | Vietnamese                           |
-|                  vi  | Vietnamese                           |
-|       vi-vn-x-south  | Vietnamese                           |
+|     vi-vn-x-central  | Vietnamese - Central Vietnam         |
+|                  vi  | Vietnamese - Northern Vietnam        |
+|       vi-vn-x-south  | Vietnamese - Southern Vietnam        |
 |                  cy  | Welsh                                |
 +----------------------+--------------------------------------+
 
