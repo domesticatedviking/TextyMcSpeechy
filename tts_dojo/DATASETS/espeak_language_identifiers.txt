@@ -110,5 +110,25 @@ Espeak-ng identifiers- used by piper preprocessing to generate phonemes.
 |                  sd  | Sindhi                               |
 |                 shn  | Shan (Tai Yai)                       |
 |                  si  | Sinhala                              |
+|                  sk  | Slovak                               |
+|                  sl  | Slovenian                            |
+|                 smj  | Lule Saami                           |
+|                  es  | Spanish                              |
+|              es-419  | Spanish                              |
+|                  sw  | Swahili                              |
+|                  sv  | Swedish                              |
+|                  ta  | Tamil                                |
+|                  th  | Thai                                 |
+|                  tk  | Turkmen                              |
+|                  tt  | Tatar                                |
+|                  te  | Telugu                               |
+|                  tr  | Turkish                              |
+|                  ug  | Uyghur                               |
+|                  ur  | Urdu                                 |
+|                  uz  | Uzbek                                |
+|     vi-vn-x-central  | Vietnamese                           |
+|                  vi  | Vietnamese                           |
+|       vi-vn-x-south  | Vietnamese                           |
+|                  cy  | Welsh                                |
 +----------------------+--------------------------------------+
 
