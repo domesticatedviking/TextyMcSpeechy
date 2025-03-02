@@ -33,7 +33,7 @@ Espeak-ng identifiers- used by Piper preprocessing to generate phonemes.
 |               en-us  | English - American                   |
 |                  en  | English - British                    |
 |              en-029  | English - Caribbean                  |
-|       en-gb-x-gbclan | English - Lancastrian                |
+|      en-gb-x-gbclan  | English - Lancastrian                |
 |          en-gb-x-rp  | English - Received Pronunciation     |
 |      en-gb-scotland  | English - Scottish                   |
 |      en-gb-x-gbcwmd  | English - West Midlands              |
