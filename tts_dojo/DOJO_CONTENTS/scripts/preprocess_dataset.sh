@@ -3,6 +3,9 @@
 
 DOJO_NAME=$(basename $PWD) # Get from <voice_name>_dojo
 SETTINGS_FILE="SETTINGS.txt"
+CACHE_DIR="../training_folder/cache"
+CONFIG_JSON="../training_folder/config.json"
+DATASET_JSONL="../training_folder/dataset.jsonl"
 SAMPLING_RATE_FILE=".SAMPLING_RATE"
 MAX_WORKERS_FILE=".MAX_WORKERS"
 MASTER_SETTINGS_FILE="../../DOJO_CONTENTS/scripts/$SETTINGS_FILE" #relative to this dojo's scripts dir
@@ -75,8 +78,6 @@ if [[ "$missing" == true ]]; then
 fi
 
 
-
-
 # load settings
 if [ -e "$SETTINGS_FILE" ]; then 
     source "$SETTINGS_FILE"  #loads vars from SETTINGS.txt
@@ -84,6 +85,23 @@ else
     echo "could not find $SETTINGS_FILE. Exiting."
     exit 1
 fi
+
+
+previously_preprocessed() {
+# Check for files from previous preprocessing run
+    if [[ -d "$CACHE_DIR" && -f "$CONFIG_JSON" && -f "$DATASET_JSONL" ]]; then
+        echo "TRUE"
+    else
+        echo "FALSE"
+    fi
+}
+
+purge_training_folder(){
+# removes files from previous training runs
+   rm -r $CACHE_DIR
+   rm $CONFIG_JSON
+   rm $DATASET_JSONL
+}
 
 
 error_handler() {
@@ -97,17 +115,47 @@ export -f error_handler
 trap 'error_handler' ERR SIGINT SIGTERM
 
 
+function check_preprocessed_data() {
+    if [[ "$(previously_preprocessed)" == "TRUE" ]]; then
+        echo
+        echo "        training_folder directory already contains a pre-processed dataset. Please choose an option:"
+        echo
+        echo "            [1] Skip preprocessing (recommended if resuming a previous training session)" 
+        echo "            [2] Preprocess the dataset again  (important if you have changed pronunciation rules) "
+        echo             
+        echo -ne "            [1,2]? "
+        read -r redo
+
+        if [[ -z "$redo" || "$redo" == "1" ]]; then
+            echo "Skipping preprocessing."
+            exit 0
+        elif [[ "$redo" == "2" ]]; then
+            echo "Cleaning training_folder prior to preprocessing..."
+            purge_training_folder
+            return 0
+        else
+            echo "Invalid option. Please choose either 1 or 2."
+            check_preprocessed_data  # Recursively ask again if input is invalid
+        fi
+    else
+        echo "training folder is clean, proceeding with preprocessing."
+    fi
+}
+
+
 
 # MAIN PROGRAM ********************************************************************************
-      
+
+check_preprocessed_data
+echo 
+echo "" 
 echo -e "       Auto-configured sampling rate: $SAMPLING_RATE"         
 echo -e "    Calculated value for max-workers: $MAX_WORKERS"
 echo
 echo
 
-
 echo "Configuring Piper for language: ${ESPEAK_LANGUAGE_IDENTIFIER}"
-echo "Running piper_train.preprocess"
+echo "Running piper_train.preprocess in docker container"
 echo
 echo
 
