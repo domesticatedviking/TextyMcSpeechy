@@ -108,7 +108,13 @@ for lang in "${language_array[@]}"; do
   echo
   echo "Processing language rules for: $lang"
   check_files $lang
-  if [ $? -eq 0 ]; then           
+  if [ $? -eq 0 ]; then
+      # show custom rules being applied in log file
+      if [ -f "${lang}_extra" ]; then
+          echo
+          echo "The following custom pronunciation rules will be applied from ${lang}_extra:"
+          cat "${lang}_extra"
+      fi
       espeak-ng --compile=$lang  # only runs if no files were missing
       (( problem_count += $? ))  # count nonzero exit codes for espeak as problems
   fi  
