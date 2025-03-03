@@ -1,6 +1,7 @@
 ## How to modify pronunciation 
 - Thanks to Thorsten Mueller for this helpful [tutorial](https://www.youtube.com/watch?v=493xbPIQBSU) which gives tips on how to add custom pronunciation rules to `espeak-ng`, which `piper` relies on.
-- If you notice that words aren't being pronounced correctly even when they are recorded correctly  in your audio dataset, it is likely because the phonemes supplied by `espeak-ng` are incorrect.
+- If you notice that words aren't being pronounced correctly even when they are recorded correctly  in your audio dataset, it is likely because the phonemes supplied by `espeak-ng` were incorrect when your model was trained.
+- You must set up your custom pronunciation rules **before** you train your model.
 ## Creating custom pronunciation rules
 - Clone the espeak-ng git repo to get the files you will need to modify:  `git clone https://github.com/espeak-ng/espeak-ng`
 - For whichever language(s) you are using, you will need 3 dictionary source files from `espeak-ng/dictsource` (substitute the language code of the language you are modifying for `xx`):  
