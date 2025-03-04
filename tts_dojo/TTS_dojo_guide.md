@@ -3,7 +3,7 @@
 - The TTS Dojo is a set of shell scripts that use [Piper TTS](https://github.com/rhasspy/piper) to produce custom text-to-speech models, either by finetuning pretrained Piper TTS checkpoint files or training models from scratch.
 - Piper's training services are provided via a docker container called `textymcspeechy-piper`, which can either be downloaded from dockerhub or built locally.
 - Voice dojos automatically start the `textymcspeechy-piper` docker image by calling `TextyMcSpeechy/run_container.sh` and automatically stop it when training ends.
-- If you have set up custom pronunciation rules in `tts_dojo/ESPEAK_RULES`, these can be configured to be activated automatically when your container runs.  A guide can be found [here](tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)
+- If you have set up custom pronunciation rules in `tts_dojo/ESPEAK_RULES`, these can be configured to be activated automatically when your container runs.  A guide can be found [here](/tts_dojo/ESPEAK_RULES/README_custom_pronunciation.md)
  
 
 ## About the training process
@@ -55,7 +55,7 @@
    -  Any voice that appears in the voice tester pane is ready to be used in your Piper projects.
    -  Your finished Piper voices are stored in  subfolders of `<VOICE_NAME_dojo>/tts_voices`
    -  A Piper voice consists of both an `.onnx` file and a `.onnx.json` file
-   -  Note: the latest version of the TTS dojo scripts name the voice files according to Piper's expected naming conventions.  Voices trained with earlier versions of TextyMcSpeechy may need to be renamed using [this guide](docs/renaming_and_preparing_custom_piper_voices.md) in order to make them work properly with apps such as `Home Assistant`. 
+   -  Note: the latest version of the TTS dojo scripts name the voice files according to Piper's expected naming conventions.  Voices trained with earlier versions of TextyMcSpeechy may need to be renamed using [this guide](/docs/renaming_and_preparing_custom_piper_voices.md) in order to make them work properly with apps such as `Home Assistant`. 
 
 
 
