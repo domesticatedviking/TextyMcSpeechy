@@ -15,6 +15,13 @@
 LANGUAGES=$1  # this will be a string.  Multiple languages can be separated with spaces (eg. "en ru it de")
 LOGFILE=$2
 
+# Path where espeak-ng rules are globally built when they compile
+GLOBAL_RULE_PATH="/usr/lib/x86_64-linux-gnu/espeak-ng-data"
+# piper phonemizer has its own espeak-ng-data folder in the venv   
+PIPER_PHONEMIZE_RULE_PATH="/app/piper/src/python/.venv/lib/python3.10/site-packages/piper_phonemize/espeak-ng-data"
+
+PIPER_PHONEMIZE_SYMLINK_TARGET=$(dirname "$PIPER_PHONEMIZE_RULE_PATH")
+
 problem_count=0
 
 # Convert the string into an array using a delimiter and assign to language_array
@@ -111,17 +118,27 @@ for lang in "${language_array[@]}"; do
   if [ $? -eq 0 ]; then
       # show custom rules being applied in log file
       if [ -f "${lang}_extra" ]; then
-          echo
+
           echo "The following custom pronunciation rules will be applied from ${lang}_extra:"
           cat "${lang}_extra"
       fi
       espeak-ng --compile=$lang  # only runs if no files were missing
-      (( problem_count += $? ))  # count nonzero exit codes for espeak as problems
+      compile_result=$?
+      (( problem_count += compile_result ))  # count nonzero exit codes for espeak as problems
+      if [ $compile_result -eq 0 ]; then
+          echo "Compiled dictionary entry ${lang}_dict. File will be copied to piper_phonemize ruleset in Piper venv."
+          echo " copying : $GLOBAL_RULE_PATH/${lang}_dict"
+          echo "      to : $PIPER_PHONEMIZE_RULE_PATH"
+          cp "$GLOBAL_RULE_PATH"/"${lang}_dict" "$PIPER_PHONEMIZE_RULE_PATH"
+          echo
+          echo
+      fi
+      
   fi  
 done
 
 if [ $problem_count -eq 0 ]; then
-  echo "Successfully compiled espeak-ng rules for: $LANGUAGES."
+  echo "Successfully compiled espeak-ng rules for: $LANGUAGES." 
   exit 0
 else
   echo "Warning: There were problems compiling espeak-ng rules."
