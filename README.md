@@ -17,9 +17,10 @@
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
 ## News
-#### **March 3 2025** - improvements to preprocessing workflow and fix for custom pronunciations not being used for training.
+#### **March 3 2025** - improvements to preprocessing workflow, fix for custom pronunciations not being used for training, new .conf files.
 - Added option to skip or reinitialize pre-processing when a preprocessed dataset is found in `training_folder`.
 - Discovered that although custom pronunciation rules had been compiling correctly inside the docker container, `piper_phonemize` had a second set of rules that it was using for preprocessing instead.  `container_apply_custom_rules.sh` has been updated to correct this issue.
+- Big thanks to kelmoran for putting together a whole bunch of `.conf` files for downloading pretrained checkpoints in languages other than English!
 
 #### **March 2 2025** - added missing languages
 - Added 21 languages supported by `espeak-ng` that were missing from `create_dataset.sh` and `espeak_language_identifiers.txt` due to a truncated list being supplied when ChatGPT reformatted the markdown table.
