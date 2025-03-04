@@ -30,7 +30,7 @@
 3. `CHECKPOINT GRABBER` 
 ![image](https://github.com/user-attachments/assets/a5c6f3fb-123a-4b1b-a134-409c7544d15b)
    - The `CHECKPOINT GRABBER` pane runs a script which allows you to periodically save one of the checkpoint files that Piper generates during training and automatically convert it into a text-to-speech model.
-   - This allows allows you to decide when your model is done training by listening to which checkpoint's version of the voice sounds the best.
+   - This allows you to decide when your model is done training by listening to which checkpoint's version of the voice sounds the best.
    - Beware that leaving this tool unattended for a long time or saving checkpoint files frequently could quite easily fill your entire hard drive -- each checkpoint file is over 800MB.
    - You can set up an automatic shutdown if your available storage falls below a certain threshold by editing the global SETTINGS.txt file in `tts_dojo/DOJO_CONTENTS/scripts/SETTINGS.txt` before creating a new voice dojo.
    - You can manually save the most recent checkpoint file and convert it to piper voice model by pressing `s` while this pane is selected.  This can be useful if you need to shut down a training session and resume it later.  `run_training.sh` will automatically prompt you to resume training from the highest epoch checkpoint you have saved.
