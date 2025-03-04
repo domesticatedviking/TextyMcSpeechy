@@ -9,7 +9,7 @@
 ## Important things to know: 
 - If you are training a model from pretrained checkpoints, you **MUST** use a pretrained checkpoint of the **same quality** (low, medium, or high) of the settings you have chosen in your tts dojo.
 - Beware that for many languages, pretrained checkpoint files may not be available in all voice types and quality levels, even if you use the supplied `.conf` files.
-- Check the contents `.conf` files in `PRETRAINED_CHECKPOINTS/languages/*.conf` to see which checkpoint files they will download.  You can also edit these files to use different links if you prefer.
+- Check the contents of `.conf` files in `PRETRAINED_CHECKPOINTS/languages/*.conf` to see which checkpoint files they will download.  You can also edit these files to use different links if you prefer.
 
 ## I can't find a pretrained checkpoint in the right language, quality level, or voice type, what are my options?
 If you can't find an appropriate checkpoint for your language, you have several options:
