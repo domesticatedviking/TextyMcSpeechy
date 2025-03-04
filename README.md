@@ -94,7 +94,7 @@ sudo bash setup.sh
 ```
 docker image pull domesticatedviking/textymcspeechy-piper:latest
 ```
-- To build your own image from the `Dockerfile` and `docker-compose.yml` in the main `TextyMcspeechy` directory, change to that directory and run:
+- To build your own image from the `Dockerfile` and `docker-compose.yml` in the main `TextyMcSpeechy` directory, change to that directory and run:
 ```
 docker compose build
 ```
