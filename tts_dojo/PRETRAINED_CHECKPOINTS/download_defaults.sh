@@ -144,3 +144,10 @@ else
     echo "Warning: no value for ESPEAK_LANGUAGE provided by '$requested_language.conf'"
 fi
 
+echo
+echo "Since pretrained checkpoints might not be available for all quality levels and voice types,"
+echo "  please check the subfolders of PRETRAINED_CHECKPOINTS/default  "
+echo "  to ensure that a .ckpt file is available for your desired voice type and quality level before you start training."
+echo "If no .ckpt file is available, you can either train from scratch, or copy a .ckpt from a different language into the relevant folder."
+echo "You can also use .ckpt files generated during your own training sessions (found in dojo's voice_checkpoints folder) as pretrained checkpoints."
+echo
