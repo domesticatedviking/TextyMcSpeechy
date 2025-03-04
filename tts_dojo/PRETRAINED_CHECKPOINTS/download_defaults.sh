@@ -151,3 +151,4 @@ echo "  to ensure that a .ckpt file is available for your desired voice type and
 echo "If no .ckpt file is available, you can either train from scratch, or copy a .ckpt from a different language into the relevant folder."
 echo "You can also use .ckpt files generated during your own training sessions (found in dojo's voice_checkpoints folder) as pretrained checkpoints."
 echo
+echo "A collection of pretrained checkpoints can be found at https://huggingface.co/datasets/rhasspy/piper-checkpoints/tree/main"
