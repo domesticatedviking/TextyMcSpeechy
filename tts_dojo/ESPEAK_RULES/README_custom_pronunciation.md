@@ -44,3 +44,5 @@ Please check out this useful [guide to producing custom espeak pronunciations](/
 ./apply_custom_rules.sh en    # substitute other language codes for en as needed. 
 ```
    
+## Advanced Notes:
+- The `textymcspeechy-piper` docker image uses the files in `ESPEAK_RULES` from the host when it compiles its system-wide ruleset, which is stored in the docker container at `/usr/lib/x86_64-linux-gnu/espeak-ng-data`.   However, during preprocessing, `piper_phonemize` doesn't use the system-wide `espeak-ng` rules. It uses the rules it finds at `/app/piper/src/python/.venv/lib/python3.10/site-packages/piper_phonemize/espeak-ng-data`.  You will need to copy the files from the system-wide ruleset to the one in the venv if you are not using the supplied scripts to compile your custom rules.
