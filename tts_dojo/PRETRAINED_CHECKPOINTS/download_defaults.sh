@@ -133,6 +133,17 @@ download_urls(){
         fi
     done
 }
+clear
+echo "Warning: At present this script provides only partial assistance downloading pretrained checkpoint files."
+echo "Some of the recently added .conf files include filenames that do not fit previous naming conventions."
+echo "textymcspeechy currently requires .ckpt files to be named according to the following pattern:"
+echo "eg:     epoch=1234-step=1234567890.ckpt"
+echo "A fix will be coming soon, but in the meantime you will need to rename any files that do not comply."
+echo "Also keep in mind that pretrained checkpoints are not necessarily available for all voice types and quality levels"
+echo "Please check PRETRAINED_CHECKPOINTS/default subfolders for a properly named .ckpt file before training your model"
+echo
+echo "Press <Enter>"
+read
 
 download_urls "default/M_voice" "${M_URLS[@]}"
 download_urls "default/F_voice" "${F_URLS[@]}"
