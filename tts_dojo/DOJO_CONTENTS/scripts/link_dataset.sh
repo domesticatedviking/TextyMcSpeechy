@@ -233,6 +233,24 @@ find_default_checkpoint_dir(){
     default_checkpoint_dir="$TTS_DOJO_DIR/PRETRAINED_CHECKPOINTS/default/${DEFAULT_VOICE_TYPE}_voice/$qualitydir"
 }
 
+validate_checkpoint_filename() {
+# ensure that checkpoint files conform to name requirement
+    filepath="$1"
+    filename=$(basename $filepath)
+    if [[ "$filename" =~ ^epoch=[0-9]+-step=[0-9]+\.ckpt$ ]]; then
+        return 0
+    else
+        echo 
+        echo
+        echo "    Error: Checkpoint file found with invalid filename at "
+        echo "        $filepath"
+        echo
+        echo "    Checkpoint files must use standard naming convention, eg:  epoch=1234-step=1234567890.ckpt"
+        echo 
+        echo "Exiting."
+        exit 1
+    fi
+}
 
 find_default_checkpoint_file(){
 # verifies that pretrained checkpoint file exists in PRETRAINED_CHECKPOINTS
@@ -273,6 +291,7 @@ find_default_checkpoint_file(){
         exit 1
     else
         default_checkpoint_path=${ckpt_files[0]}
+        validate_checkpoint_filename $default_checkpoint_path 
         echo "Default checkpoint file found:" 
         echo "        $default_checkpoint_path"
         echo
