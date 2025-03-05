@@ -22,7 +22,7 @@
     - Some of the pretrained checkpoint files coming from huggingface do not conform to the `epoch=1234-step=123456789.ckpt` naming format.
     - This script doesn't communicate very well which voice types and quality options are available for use after downloading - not all options exist on huggingface.
     - Please check the contents of all subfolders in `PRETRAINED_CHECKPOINTS/default` to ensure a properly named checkpoint file corresponding to the voice type and quality level of the model you intend to train is present prior to training.
-    - Note that you always have the option of training models from scratch or copying an appropriate checkpoint file to the `starting_checkpoint_override` folder
+    - Note that you always have the option of training models from scratch or copying an appropriate checkpoint file to the `starting_checkpoint_override` folder in your voice dojo.
 - Improving this script is next on my to-do list.
 #### **March 3 2025** - improvements to preprocessing workflow, fix for custom pronunciations not being used for training, new .conf files.
 - Added option to skip or reinitialize pre-processing when a preprocessed dataset is found in `training_folder`.
