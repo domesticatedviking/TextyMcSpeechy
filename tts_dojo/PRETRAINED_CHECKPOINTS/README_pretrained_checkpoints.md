@@ -2,6 +2,7 @@
 
 - This folder provides a convenient way to download and organize pretrained checkpoint files that are used to speed up the training process.
 - Checkpoint files have names like `epoch=2164-step=1355540.ckpt`, which doesn't include any information about the type of voice (M/F) or the quality level of the voice (low, medium, high).  For this reason we use a folder structure to keep these files organized.
+- **IMPORTANT:** Your `.ckpt` files must be named using the `epoch=<xxxx>-step=<yyyyyyyyyy>.ckpt` pattern, otherwise training will fail.
 - The files stored in the `PRETRAINED_CHECKPOINTS/default` folder allow your dojo's `run_training.sh ` to automatically choose a checkpoint whose voice type and quality level are appropriate for the settings of your tts dojo.
 - You can make your own choices about which pretrained checkpoint files you want to store in these folders, but only one checkpoint file is allowed to be in each folder.
 - `download_defaults.sh` is a script that makes getting pretrained checkpoints a bit easier, however since there are not pretrained checkpoints available for all quality levels and voice types in all languages, you will still need to pay attention to which checkpoints actually get downloaded.
