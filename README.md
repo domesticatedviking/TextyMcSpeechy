@@ -17,13 +17,10 @@
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
 ## News
-#### **March 5 2025** - Known issue with `download_defaults.sh` 
-- I have discovered that the script that attempts to download pretrained checkpoint files has some issues that will need fixing.
-    - Some of the pretrained checkpoint files coming from huggingface do not conform to the `epoch=1234-step=123456789.ckpt` naming format.
-    - This script doesn't communicate very well which voice types and quality options are available for use after downloading - not all options exist on huggingface.
-    - Please check the contents of all subfolders in `PRETRAINED_CHECKPOINTS/default` to ensure a properly named checkpoint file corresponding to the voice type and quality level of the model you intend to train is present prior to training.
-    - Note that you always have the option of training models from scratch or copying an appropriate checkpoint file to the `starting_checkpoint_override` folder in your voice dojo.
-- Improving this script is next on my to-do list.
+#### **March 5 2025** - Fixed `download_defaults.sh` to handle `.ckpt` files that have non-conforming filenames.
+- `download_defaults.sh` can now handle checkpoint files that do not have the expected `epoch=1000-step=3493434.conf` filename format.
+- A summary of all voice type and quality combinations provided by the `.conf` file are now listed when the script is finished.
+
 #### **March 3 2025** - improvements to preprocessing workflow, fix for custom pronunciations not being used for training, new .conf files.
 - Added option to skip or reinitialize pre-processing when a preprocessed dataset is found in `training_folder`.
 - Discovered that although custom pronunciation rules had been compiling correctly inside the docker container, `piper_phonemize` had a second set of rules that it was using for preprocessing instead.  `container_apply_custom_rules.sh` has been updated to correct this issue.
