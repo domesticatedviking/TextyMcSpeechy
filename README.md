@@ -65,7 +65,7 @@ Read the [quick start guide](quick_start_guide.md) to learn how to build dataset
 ## System Requirements
  - A NVIDIA GPU with drivers capable of running CUDA is required. Training on CPU, while technically possible, is not officially supported.
  - A hard drive with sufficient storage capacity for the base installation (~15GB) and checkpoint files generated during training.  50gb of free space is suggested as a practical minimum.
- - This project is written entirely in shell script and is primarily intended for Linux users.   Windows users will need to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to run it.
+ - This project is written entirely in shell script and is primarily intended for Linux users.  Debian-based distros are recommended, issues have been reported with Arch.  Windows users will need to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to run it.
 
 ## Installation:
 1.  Check for currently installed Nvidia driver by running `nvidia-smi`.  If something like the image below shows up, you may be able to skip to step 3
