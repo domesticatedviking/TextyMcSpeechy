@@ -160,3 +160,11 @@ cython_debug/
 #.idea/
 piper/*
 *.ckpt
+
+# Ignore all directories inside tts_dojo/DATASETS/
+tts_dojo/DATASETS/*/
+
+# Ignore all directories inside tts_dojo/ that end with _dojo
+tts_dojo/*_dojo/
+
+dataset_recorder/wav/*.wav
