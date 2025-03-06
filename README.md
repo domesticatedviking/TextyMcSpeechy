@@ -18,7 +18,7 @@
 
 ## News
 #### **March 5 2025** - Fixed `download_defaults.sh` to handle `.ckpt` files that have non-conforming filenames.
-- `download_defaults.sh` now renames checkpoint files that do not have the required `epoch=1000-step=3493434.conf` filename format.
+- `download_defaults.sh` now renames checkpoint files that do not have the required `epoch=1000-step=3493434.ckpt` filename format.
 - A summary of all voice type and quality combinations provided by the `.conf` file are now listed when the script is finished.
 
 #### **March 3 2025** - improvements to preprocessing workflow, fix for custom pronunciations not being used for training, new .conf files.
