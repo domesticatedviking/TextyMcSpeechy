@@ -261,6 +261,7 @@ increase_interval(){
 # increases time between saving checkpoint files
    auto_save_rate=$((auto_save_rate + 1))
    checkpoints_until_save=$auto_save_rate
+   next_epoch_to_save=$((last_epoch_seen + auto_save_rate * PIPER_STEP))
 }
 
 
@@ -269,12 +270,13 @@ decrease_interval(){
    if [ "$auto_save_rate" -ge 2 ]; then
        auto_save_rate=$((auto_save_rate - 1))
        checkpoints_until_save=$auto_save_rate
+       next_epoch_to_save=$((last_epoch_seen + auto_save_rate * PIPER_STEP))
    fi
 }
 
 toggle_checkpoint_saving(){
 # turns automatic saving of checkpoints on and off
-   if [ "$auto_save_status" = "ON" ]; then 
+   if [ "$auto_save_status" = "ON" ]; then
        auto_save_status="OFF"
    else
        auto_save_status="ON"
