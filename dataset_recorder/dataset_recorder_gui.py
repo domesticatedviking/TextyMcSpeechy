@@ -231,62 +231,99 @@ class DatasetRecorder:
         params_frame = ttk.Frame(voice_settings_frame)
         params_frame.pack(fill=tk.X, padx=5, pady=5)
         
+        # Create a consistent layout for parameter controls
+        LABEL_WIDTH = 10
+        SLIDER_LENGTH = 150
+        ENTRY_WIDTH = 5
+        
         # First row of parameters
         params_row1 = ttk.Frame(params_frame)
         params_row1.pack(fill=tk.X, pady=(0, 5))
         
-        # Speed slider
-        ttk.Label(params_row1, text="Speed:").pack(side=tk.LEFT, padx=(0, 5))
+        # Speed slider with spinbox
+        ttk.Label(params_row1, text="Speed:", width=LABEL_WIDTH, anchor=tk.W).pack(side=tk.LEFT, padx=(0, 5))
         self.speed_var = tk.DoubleVar(value=self.speed)
         speed_slider = ttk.Scale(params_row1, from_=0.5, to=2.0, variable=self.speed_var, 
-                                orient=tk.HORIZONTAL, length=100)
+                                orient=tk.HORIZONTAL, length=SLIDER_LENGTH)
         speed_slider.pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Label(params_row1, textvariable=self.speed_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
         
-        # Stability slider
-        ttk.Label(params_row1, text="Stability:").pack(side=tk.LEFT, padx=(0, 5))
+        # Configure slider to update in steps of 0.01
+        speed_slider.bind("<ButtonRelease-1>", lambda e: self.round_slider_value(self.speed_var, 0.01))
+        
+        # Add spinbox for precise value entry
+        speed_spinbox = ttk.Spinbox(params_row1, from_=0.5, to=2.0, textvariable=self.speed_var, 
+                                   width=ENTRY_WIDTH, increment=0.01, format="%.2f")
+        speed_spinbox.pack(side=tk.LEFT, padx=(0, 15))
+        
+        # Stability slider with spinbox
+        ttk.Label(params_row1, text="Stability:", width=LABEL_WIDTH, anchor=tk.W).pack(side=tk.LEFT, padx=(0, 5))
         self.stability_var = tk.DoubleVar(value=self.stability)
         stability_slider = ttk.Scale(params_row1, from_=0.0, to=1.0, variable=self.stability_var, 
-                                    orient=tk.HORIZONTAL, length=100)
+                                    orient=tk.HORIZONTAL, length=SLIDER_LENGTH)
         stability_slider.pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Label(params_row1, textvariable=self.stability_var, width=4).pack(side=tk.LEFT)
+        
+        # Configure slider to update in steps of 0.01
+        stability_slider.bind("<ButtonRelease-1>", lambda e: self.round_slider_value(self.stability_var, 0.01))
+        
+        # Add spinbox for precise value entry
+        stability_spinbox = ttk.Spinbox(params_row1, from_=0.0, to=1.0, textvariable=self.stability_var, 
+                                       width=ENTRY_WIDTH, increment=0.01, format="%.2f")
+        stability_spinbox.pack(side=tk.LEFT)
         
         # Second row of parameters
         params_row2 = ttk.Frame(params_frame)
         params_row2.pack(fill=tk.X, pady=(0, 5))
         
-        # Similarity slider
-        ttk.Label(params_row2, text="Similarity:").pack(side=tk.LEFT, padx=(0, 5))
+        # Similarity slider with spinbox
+        ttk.Label(params_row2, text="Similarity:", width=LABEL_WIDTH, anchor=tk.W).pack(side=tk.LEFT, padx=(0, 5))
         self.similarity_var = tk.DoubleVar(value=self.similarity_boost)
         similarity_slider = ttk.Scale(params_row2, from_=0.0, to=1.0, variable=self.similarity_var, 
-                                     orient=tk.HORIZONTAL, length=100)
+                                     orient=tk.HORIZONTAL, length=SLIDER_LENGTH)
         similarity_slider.pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Label(params_row2, textvariable=self.similarity_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
         
-        # Style slider
-        ttk.Label(params_row2, text="Style:").pack(side=tk.LEFT, padx=(0, 5))
+        # Configure slider to update in steps of 0.01
+        similarity_slider.bind("<ButtonRelease-1>", lambda e: self.round_slider_value(self.similarity_var, 0.01))
+        
+        # Add spinbox for precise value entry
+        similarity_spinbox = ttk.Spinbox(params_row2, from_=0.0, to=1.0, textvariable=self.similarity_var, 
+                                        width=ENTRY_WIDTH, increment=0.01, format="%.2f")
+        similarity_spinbox.pack(side=tk.LEFT, padx=(0, 15))
+        
+        # Style slider with spinbox
+        ttk.Label(params_row2, text="Style:", width=LABEL_WIDTH, anchor=tk.W).pack(side=tk.LEFT, padx=(0, 5))
         self.style_var = tk.DoubleVar(value=self.style)
         style_slider = ttk.Scale(params_row2, from_=0.0, to=1.0, variable=self.style_var, 
-                                orient=tk.HORIZONTAL, length=100)
+                                orient=tk.HORIZONTAL, length=SLIDER_LENGTH)
         style_slider.pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Label(params_row2, textvariable=self.style_var, width=4).pack(side=tk.LEFT)
+        
+        # Configure slider to update in steps of 0.01
+        style_slider.bind("<ButtonRelease-1>", lambda e: self.round_slider_value(self.style_var, 0.01))
+        
+        # Add spinbox for precise value entry
+        style_spinbox = ttk.Spinbox(params_row2, from_=0.0, to=1.0, textvariable=self.style_var, 
+                                   width=ENTRY_WIDTH, increment=0.01, format="%.2f")
+        style_spinbox.pack(side=tk.LEFT)
         
         # Third row of parameters
         params_row3 = ttk.Frame(params_frame)
         params_row3.pack(fill=tk.X)
         
         # Speaker Boost checkbox
-        ttk.Label(params_row3, text="Speaker Boost:").pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Label(params_row3, text="Speaker Boost:", width=LABEL_WIDTH, anchor=tk.W).pack(side=tk.LEFT, padx=(0, 5))
         self.speaker_boost_var = tk.BooleanVar(value=self.use_speaker_boost)
         ttk.Checkbutton(params_row3, variable=self.speaker_boost_var).pack(side=tk.LEFT)
         
+        # Buttons frame
+        buttons_frame = ttk.Frame(params_frame)
+        buttons_frame.pack(fill=tk.X, pady=(10, 0))
+        
         # Apply button
-        ttk.Button(params_row3, text="Apply Changes", 
-                  command=self.apply_voice_settings).pack(side=tk.LEFT, padx=(15, 0))
+        ttk.Button(buttons_frame, text="Apply Changes", 
+                  command=self.apply_voice_settings).pack(side=tk.LEFT, padx=(0, 10))
         
         # Settings button
-        ttk.Button(params_row3, text="Voice Settings", 
-                  command=self.show_elevenlabs_settings).pack(side=tk.RIGHT, padx=(0, 5))
+        ttk.Button(buttons_frame, text="Voice Settings", 
+                  command=self.show_elevenlabs_settings).pack(side=tk.LEFT)
 
         # Text display frame
         text_frame = ttk.LabelFrame(self.main_frame, text="Current Phrase")
@@ -434,13 +471,19 @@ class DatasetRecorder:
                 self.current_index = i
                 break
 
+    def round_slider_value(self, var, step):
+        """Round a slider value to the nearest step"""
+        value = var.get()
+        rounded = round(value / step) * step
+        var.set(round(rounded, 2))  # Round to 2 decimal places for display
+        
     def apply_voice_settings(self):
         """Apply the current voice settings from the UI controls"""
         # Get values from UI controls
-        self.speed = self.speed_var.get()
-        self.stability = self.stability_var.get()
-        self.similarity_boost = self.similarity_var.get()
-        self.style = self.style_var.get()
+        self.speed = round(self.speed_var.get(), 2)
+        self.stability = round(self.stability_var.get(), 2)
+        self.similarity_boost = round(self.similarity_var.get(), 2)
+        self.style = round(self.style_var.get(), 2)
         self.use_speaker_boost = self.speaker_boost_var.get()
         
         # Save to .env file
