@@ -31,6 +31,8 @@ CHANNELS = 1
 RATE = 44100
 MAX_RECORDING_SECONDS = 30
 TRIM_SILENCE_MS = 50  # Milliseconds to trim from start and end
+VOICE_ID = "H6Ti9LTHoVP3jUkb7KKg" # ElevenLabs Voice ID
+PCM_SAMPLE_RATE = 22050  # ElevenLabs PCM sample rate
 
 class DatasetRecorder:
     def __init__(self, root):
@@ -428,14 +430,10 @@ class DatasetRecorder:
                 wf.close()
 
                 # Trim silence from the beginning and end
-                self.trim_wav(output_path)
+                # self.trim_wav(output_path)
 
                 self.recorded[self.current_index] = True
                 self.status_var.set(f"Saved recording to {filename}")
-
-                # Move to next unrecorded item if available
-                if self.current_index < len(self.filenames) - 1:
-                    self.next_item()
 
             except Exception as e:
                 self.status_var.set(f"Error saving recording: {e}")
@@ -691,7 +689,7 @@ class DatasetRecorder:
                 self.recorded[index] = True
 
                 # Trim the generated audio
-                self.trim_wav(output_path)
+                # self.trim_wav(output_path)
 
                 self.root.after(0, lambda: self.status_var.set(f"Generated audio for {os.path.basename(output_path)}"))
 
@@ -772,9 +770,7 @@ class DatasetRecorder:
 
     def text_to_speech_file(self, text, output_path):
         """Generate speech from text using ElevenLabs API and save to file"""
-        VOICE_ID = "H6Ti9LTHoVP3jUkb7KKg"
-        PCM_SAMPLE_RATE = 22050  # ElevenLabs PCM sample rate
-        URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}?output_format=pcm_22050"
+        URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}?output_format=pcm_{PCM_SAMPLE_RATE}"
 
         headers = {
             "xi-api-key": self.elevenlabs_api_key,
@@ -796,17 +792,17 @@ class DatasetRecorder:
         try:
             response = requests.post(URL, json=data, headers=headers)
             response.raise_for_status()
-            
+
             # The response is raw PCM data, we need to convert it to WAV
             pcm_data = response.content
-            
+
             # Create a WAV file with the PCM data
             with wave.open(output_path, 'wb') as wf:
                 wf.setnchannels(1)  # Mono
                 wf.setsampwidth(2)  # 16-bit
                 wf.setframerate(PCM_SAMPLE_RATE)  # 22050 Hz
                 wf.writeframes(pcm_data)
-            
+
             print(f'Generated {output_path} successfully.')
             return True
 
