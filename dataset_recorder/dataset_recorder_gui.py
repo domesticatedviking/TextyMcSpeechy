@@ -33,6 +33,7 @@ MAX_RECORDING_SECONDS = 30
 TRIM_SILENCE_MS = 50  # Milliseconds to trim from start and end
 VOICE_ID = "H6Ti9LTHoVP3jUkb7KKg" # ElevenLabs Voice ID
 PCM_SAMPLE_RATE = 22050  # ElevenLabs PCM sample rate
+PROCESSED_FLAG = ".processed"  # Flag file to mark successfully processed files
 
 class DatasetRecorder:
     def __init__(self, root):
@@ -261,10 +262,13 @@ class DatasetRecorder:
             messagebox.showerror("Error", f"Failed to load CSV file: {e}")
 
     def check_files(self):
-        """Check which files have already been recorded"""
+        """Check which files have already been properly processed"""
         for i, filename in enumerate(self.filenames):
-            path = os.path.join(self.output_dir, filename)
-            self.recorded[i] = os.path.isfile(path)
+            wav_path = os.path.join(self.output_dir, filename)
+            flag_path = os.path.join(self.output_dir, f"{os.path.splitext(filename)[0]}{PROCESSED_FLAG}")
+            
+            # Consider a file processed if both the WAV file exists and the flag file exists
+            self.recorded[i] = os.path.isfile(wav_path) and os.path.isfile(flag_path)
 
         # Find first unrecorded item
         for i, recorded in enumerate(self.recorded):
@@ -431,6 +435,11 @@ class DatasetRecorder:
 
                 # Trim silence from the beginning and end
                 # self.trim_wav(output_path)
+                
+                # Create a flag file to mark this as successfully processed
+                flag_path = os.path.join(self.output_dir, f"{os.path.splitext(filename)[0]}{PROCESSED_FLAG}")
+                with open(flag_path, 'w') as f:
+                    f.write(f"Recorded on {time.strftime('%Y-%m-%d %H:%M:%S')}")
 
                 self.recorded[self.current_index] = True
                 self.status_var.set(f"Saved recording to {filename}")
@@ -686,6 +695,11 @@ class DatasetRecorder:
             success = self.text_to_speech_file(text, output_path)
 
             if success:
+                # Create a flag file to mark this as successfully processed
+                flag_path = os.path.join(self.output_dir, f"{os.path.splitext(os.path.basename(output_path))[0]}{PROCESSED_FLAG}")
+                with open(flag_path, 'w') as f:
+                    f.write(f"Generated with ElevenLabs on {time.strftime('%Y-%m-%d %H:%M:%S')}")
+                
                 self.recorded[index] = True
 
                 # Trim the generated audio
@@ -753,6 +767,11 @@ class DatasetRecorder:
                 success = self.text_to_speech_file(phrase, output_path)
 
                 if success:
+                    # Create a flag file to mark this as successfully processed
+                    flag_path = os.path.join(self.output_dir, f"{os.path.splitext(os.path.basename(output_path))[0]}{PROCESSED_FLAG}")
+                    with open(flag_path, 'w') as f:
+                        f.write(f"Generated with ElevenLabs on {time.strftime('%Y-%m-%d %H:%M:%S')}")
+                    
                     self.recorded[idx] = True
                     success_count += 1
 
@@ -952,6 +971,14 @@ class DatasetRecorder:
                     ['sox', input_path, output_path, 'noisered', noise_profile, '0.21'],
                     check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
                 )
+                
+                # Copy the processed flag file if it exists
+                flag_name = f"{os.path.splitext(wav_file)[0]}{PROCESSED_FLAG}"
+                input_flag_path = os.path.join(input_dir, flag_name)
+                if os.path.exists(input_flag_path):
+                    output_flag_path = os.path.join(output_dir, flag_name)
+                    with open(input_flag_path, 'r') as src, open(output_flag_path, 'w') as dst:
+                        dst.write(src.read() + f"\nNoise removed on {time.strftime('%Y-%m-%d %H:%M:%S')}")
 
             self.root.after(0, lambda: messagebox.showinfo(
                 "Success", f"Processed {total_files} files. Cleaned files are in {output_dir}"))
