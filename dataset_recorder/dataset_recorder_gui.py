@@ -235,32 +235,57 @@ class DatasetRecorder:
         params_row1 = ttk.Frame(params_frame)
         params_row1.pack(fill=tk.X, pady=(0, 5))
         
+        # Speed slider
         ttk.Label(params_row1, text="Speed:").pack(side=tk.LEFT, padx=(0, 5))
-        self.speed_var = tk.StringVar(value=f"{self.speed:.2f}")
+        self.speed_var = tk.DoubleVar(value=self.speed)
+        speed_slider = ttk.Scale(params_row1, from_=0.5, to=2.0, variable=self.speed_var, 
+                                orient=tk.HORIZONTAL, length=100)
+        speed_slider.pack(side=tk.LEFT, padx=(0, 5))
         ttk.Label(params_row1, textvariable=self.speed_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
         
+        # Stability slider
         ttk.Label(params_row1, text="Stability:").pack(side=tk.LEFT, padx=(0, 5))
-        self.stability_var = tk.StringVar(value=f"{self.stability:.2f}")
-        ttk.Label(params_row1, textvariable=self.stability_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
-        
-        ttk.Label(params_row1, text="Similarity:").pack(side=tk.LEFT, padx=(0, 5))
-        self.similarity_var = tk.StringVar(value=f"{self.similarity_boost:.2f}")
-        ttk.Label(params_row1, textvariable=self.similarity_var, width=4).pack(side=tk.LEFT)
+        self.stability_var = tk.DoubleVar(value=self.stability)
+        stability_slider = ttk.Scale(params_row1, from_=0.0, to=1.0, variable=self.stability_var, 
+                                    orient=tk.HORIZONTAL, length=100)
+        stability_slider.pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Label(params_row1, textvariable=self.stability_var, width=4).pack(side=tk.LEFT)
         
         # Second row of parameters
         params_row2 = ttk.Frame(params_frame)
-        params_row2.pack(fill=tk.X)
+        params_row2.pack(fill=tk.X, pady=(0, 5))
         
+        # Similarity slider
+        ttk.Label(params_row2, text="Similarity:").pack(side=tk.LEFT, padx=(0, 5))
+        self.similarity_var = tk.DoubleVar(value=self.similarity_boost)
+        similarity_slider = ttk.Scale(params_row2, from_=0.0, to=1.0, variable=self.similarity_var, 
+                                     orient=tk.HORIZONTAL, length=100)
+        similarity_slider.pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Label(params_row2, textvariable=self.similarity_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
+        
+        # Style slider
         ttk.Label(params_row2, text="Style:").pack(side=tk.LEFT, padx=(0, 5))
-        self.style_var = tk.StringVar(value=f"{self.style:.2f}")
-        ttk.Label(params_row2, textvariable=self.style_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
+        self.style_var = tk.DoubleVar(value=self.style)
+        style_slider = ttk.Scale(params_row2, from_=0.0, to=1.0, variable=self.style_var, 
+                                orient=tk.HORIZONTAL, length=100)
+        style_slider.pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Label(params_row2, textvariable=self.style_var, width=4).pack(side=tk.LEFT)
         
-        ttk.Label(params_row2, text="Speaker Boost:").pack(side=tk.LEFT, padx=(0, 5))
-        self.speaker_boost_var = tk.StringVar(value="On" if self.use_speaker_boost else "Off")
-        ttk.Label(params_row2, textvariable=self.speaker_boost_var, width=4).pack(side=tk.LEFT)
+        # Third row of parameters
+        params_row3 = ttk.Frame(params_frame)
+        params_row3.pack(fill=tk.X)
+        
+        # Speaker Boost checkbox
+        ttk.Label(params_row3, text="Speaker Boost:").pack(side=tk.LEFT, padx=(0, 5))
+        self.speaker_boost_var = tk.BooleanVar(value=self.use_speaker_boost)
+        ttk.Checkbutton(params_row3, variable=self.speaker_boost_var).pack(side=tk.LEFT)
+        
+        # Apply button
+        ttk.Button(params_row3, text="Apply Changes", 
+                  command=self.apply_voice_settings).pack(side=tk.LEFT, padx=(15, 0))
         
         # Settings button
-        ttk.Button(params_row2, text="Settings", 
+        ttk.Button(params_row3, text="Voice Settings", 
                   command=self.show_elevenlabs_settings).pack(side=tk.RIGHT, padx=(0, 5))
 
         # Text display frame
@@ -409,6 +434,45 @@ class DatasetRecorder:
                 self.current_index = i
                 break
 
+    def apply_voice_settings(self):
+        """Apply the current voice settings from the UI controls"""
+        # Get values from UI controls
+        self.speed = self.speed_var.get()
+        self.stability = self.stability_var.get()
+        self.similarity_boost = self.similarity_var.get()
+        self.style = self.style_var.get()
+        self.use_speaker_boost = self.speaker_boost_var.get()
+        
+        # Save to .env file
+        try:
+            env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+            
+            # Read existing .env file if it exists
+            env_vars = {}
+            if os.path.exists(env_path):
+                with open(env_path, 'r') as f:
+                    for line in f:
+                        if '=' in line:
+                            key, value = line.strip().split('=', 1)
+                            env_vars[key] = value
+            
+            # Update settings
+            env_vars["ELEVENLABS_SPEED"] = str(self.speed)
+            env_vars["ELEVENLABS_STABILITY"] = str(self.stability)
+            env_vars["ELEVENLABS_SIMILARITY_BOOST"] = str(self.similarity_boost)
+            env_vars["ELEVENLABS_STYLE"] = str(self.style)
+            env_vars["ELEVENLABS_SPEAKER_BOOST"] = str(self.use_speaker_boost).lower()
+            
+            # Write back to .env file
+            with open(env_path, 'w') as f:
+                for key, value in env_vars.items():
+                    f.write(f"{key}={value}\n")
+            
+            self.status_var.set("Voice settings applied successfully")
+            
+        except Exception as e:
+            self.status_var.set(f"Error saving voice settings: {e}")
+    
     def update_ui(self):
         """Update UI elements based on current state"""
         # Update progress
@@ -1123,8 +1187,8 @@ class DatasetRecorder:
     def show_elevenlabs_settings(self):
         """Show dialog for ElevenLabs API settings"""
         dialog = tk.Toplevel(self.root)
-        dialog.title("ElevenLabs Settings")
-        dialog.geometry("600x500")
+        dialog.title("ElevenLabs Voice Settings")
+        dialog.geometry("600x400")
         dialog.transient(self.root)
         dialog.grab_set()
         
@@ -1191,61 +1255,6 @@ class DatasetRecorder:
         model_combo['values'] = ("eleven_multilingual_v2", "eleven_flash_v2_5")
         model_combo.pack(side=tk.LEFT, padx=(5, 0), fill=tk.X, expand=True)
         
-        # Voice Parameters tab
-        params_frame = ttk.Frame(notebook, padding=10)
-        notebook.add(params_frame, text="Voice Parameters")
-        
-        ttk.Label(params_frame, text="Voice Parameters",
-                 font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 10))
-        
-        # Speed slider
-        speed_frame = ttk.Frame(params_frame)
-        speed_frame.pack(fill=tk.X, pady=5)
-        
-        speed_var = tk.DoubleVar(value=self.speed)
-        ttk.Label(speed_frame, text="Speed:").pack(side=tk.LEFT, width=15)
-        ttk.Scale(speed_frame, from_=0.5, to=2.0, variable=speed_var, 
-                 orient=tk.HORIZONTAL).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        ttk.Label(speed_frame, textvariable=speed_var, width=5).pack(side=tk.LEFT)
-        
-        # Stability slider
-        stability_frame = ttk.Frame(params_frame)
-        stability_frame.pack(fill=tk.X, pady=5)
-        
-        stability_var = tk.DoubleVar(value=self.stability)
-        ttk.Label(stability_frame, text="Stability:").pack(side=tk.LEFT, width=15)
-        ttk.Scale(stability_frame, from_=0.0, to=1.0, variable=stability_var, 
-                 orient=tk.HORIZONTAL).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        ttk.Label(stability_frame, textvariable=stability_var, width=5).pack(side=tk.LEFT)
-        
-        # Similarity Boost slider
-        similarity_frame = ttk.Frame(params_frame)
-        similarity_frame.pack(fill=tk.X, pady=5)
-        
-        similarity_var = tk.DoubleVar(value=self.similarity_boost)
-        ttk.Label(similarity_frame, text="Similarity Boost:").pack(side=tk.LEFT, width=15)
-        ttk.Scale(similarity_frame, from_=0.0, to=1.0, variable=similarity_var, 
-                 orient=tk.HORIZONTAL).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        ttk.Label(similarity_frame, textvariable=similarity_var, width=5).pack(side=tk.LEFT)
-        
-        # Style slider
-        style_frame = ttk.Frame(params_frame)
-        style_frame.pack(fill=tk.X, pady=5)
-        
-        style_var = tk.DoubleVar(value=self.style)
-        ttk.Label(style_frame, text="Style:").pack(side=tk.LEFT, width=15)
-        ttk.Scale(style_frame, from_=0.0, to=1.0, variable=style_var, 
-                 orient=tk.HORIZONTAL).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        ttk.Label(style_frame, textvariable=style_var, width=5).pack(side=tk.LEFT)
-        
-        # Speaker Boost checkbox
-        speaker_frame = ttk.Frame(params_frame)
-        speaker_frame.pack(fill=tk.X, pady=5)
-        
-        speaker_var = tk.BooleanVar(value=self.use_speaker_boost)
-        ttk.Label(speaker_frame, text="Speaker Boost:").pack(side=tk.LEFT, width=15)
-        ttk.Checkbutton(speaker_frame, variable=speaker_var).pack(side=tk.LEFT)
-        
         # Buttons frame at the bottom
         buttons_frame = ttk.Frame(dialog)
         buttons_frame.pack(fill=tk.X, pady=10, padx=10)
@@ -1256,11 +1265,11 @@ class DatasetRecorder:
                       key_var.get(),
                       self.get_selected_voice_id(voice_listbox),
                       model_var.get(),
-                      speed_var.get(),
-                      stability_var.get(),
-                      similarity_var.get(),
-                      style_var.get(),
-                      speaker_var.get()
+                      self.speed,
+                      self.stability,
+                      self.similarity_boost,
+                      self.style,
+                      self.use_speaker_boost
                   )).pack(side=tk.LEFT, padx=(0, 5))
         
         # Save button
@@ -1269,11 +1278,6 @@ class DatasetRecorder:
                       key_var.get(),
                       self.get_selected_voice_id(voice_listbox),
                       model_var.get(),
-                      speed_var.get(),
-                      stability_var.get(),
-                      similarity_var.get(),
-                      style_var.get(),
-                      speaker_var.get(),
                       dialog
                   )).pack(side=tk.RIGHT)
 
@@ -1362,19 +1366,20 @@ class DatasetRecorder:
         try:
             # Save current settings
             current_settings = (
-                self.voice_id, self.model, self.speed, self.stability, 
-                self.similarity_boost, self.style, self.use_speaker_boost
+                self.elevenlabs_api_key, self.voice_id, self.model
             )
             
             # Temporarily set the new settings
             self.elevenlabs_api_key = api_key
             self.voice_id = voice_id
             self.model = model
-            self.speed = speed
-            self.stability = stability
-            self.similarity_boost = similarity
-            self.style = style
-            self.use_speaker_boost = speaker_boost
+            
+            # Use the current voice parameters from the UI
+            self.speed = self.speed_var.get()
+            self.stability = self.stability_var.get()
+            self.similarity_boost = self.similarity_var.get()
+            self.style = self.style_var.get()
+            self.use_speaker_boost = self.speaker_boost_var.get()
             
             # Generate test audio
             test_text = "This is a test of the ElevenLabs voice settings."
@@ -1392,8 +1397,7 @@ class DatasetRecorder:
         finally:
             # Restore original settings
             (
-                self.voice_id, self.model, self.speed, self.stability, 
-                self.similarity_boost, self.style, self.use_speaker_boost
+                self.elevenlabs_api_key, self.voice_id, self.model
             ) = current_settings
             
             # Clean up temp file after a delay (to allow playback)
@@ -1443,17 +1447,12 @@ class DatasetRecorder:
         except Exception as e:
             print(f"Error in test playback thread: {e}", file=sys.stderr)
     
-    def save_elevenlabs_settings(self, api_key, voice_id, model, speed, stability, similarity, style, speaker_boost, dialog):
+    def save_elevenlabs_settings(self, api_key, voice_id, model, dialog):
         """Save ElevenLabs API settings and voice parameters"""
         # Update instance variables
         self.elevenlabs_api_key = api_key
         self.voice_id = voice_id
         self.model = model
-        self.speed = speed
-        self.stability = stability
-        self.similarity_boost = similarity
-        self.style = style
-        self.use_speaker_boost = speaker_boost
         
         # Update voice name
         for voice in self.available_voices:
@@ -1479,11 +1478,18 @@ class DatasetRecorder:
             env_vars["ELEVENLABS_VOICE_ID"] = voice_id
             env_vars["ELEVENLABS_VOICE_NAME"] = self.voice_name
             env_vars["ELEVENLABS_MODEL"] = model
-            env_vars["ELEVENLABS_SPEED"] = str(speed)
-            env_vars["ELEVENLABS_STABILITY"] = str(stability)
-            env_vars["ELEVENLABS_SIMILARITY_BOOST"] = str(similarity)
-            env_vars["ELEVENLABS_STYLE"] = str(style)
-            env_vars["ELEVENLABS_SPEAKER_BOOST"] = str(speaker_boost).lower()
+            
+            # Keep existing voice parameter settings
+            if "ELEVENLABS_SPEED" not in env_vars:
+                env_vars["ELEVENLABS_SPEED"] = str(self.speed)
+            if "ELEVENLABS_STABILITY" not in env_vars:
+                env_vars["ELEVENLABS_STABILITY"] = str(self.stability)
+            if "ELEVENLABS_SIMILARITY_BOOST" not in env_vars:
+                env_vars["ELEVENLABS_SIMILARITY_BOOST"] = str(self.similarity_boost)
+            if "ELEVENLABS_STYLE" not in env_vars:
+                env_vars["ELEVENLABS_STYLE"] = str(self.style)
+            if "ELEVENLABS_SPEAKER_BOOST" not in env_vars:
+                env_vars["ELEVENLABS_SPEAKER_BOOST"] = str(self.use_speaker_boost).lower()
 
             # Write back to .env file
             with open(env_path, 'w') as f:
@@ -1493,13 +1499,8 @@ class DatasetRecorder:
             # Update display variables
             self.voice_name_var.set(self.voice_name)
             self.model_var.set(self.model)
-            self.speed_var.set(f"{self.speed:.2f}")
-            self.stability_var.set(f"{self.stability:.2f}")
-            self.similarity_var.set(f"{self.similarity_boost:.2f}")
-            self.style_var.set(f"{self.style:.2f}")
-            self.speaker_boost_var.set("On" if self.use_speaker_boost else "Off")
 
-            messagebox.showinfo("Success", "ElevenLabs settings saved successfully")
+            messagebox.showinfo("Success", "Voice settings saved successfully")
             dialog.destroy()
 
             # Update UI to enable/disable generate buttons
