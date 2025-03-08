@@ -57,7 +57,7 @@ fi
             
 quality=$(cat $QUALITY_FILE)
 if [ "$quality" = "L" ]; then
-    quality_str="low"
+    quality_str="x-low"  # `low` is not a parameter accepted by piper_train, only x-low
 elif [ "$quality" = "M" ]; then
     quality_str="medium"
 elif [ "$quality" = "H" ]; then
