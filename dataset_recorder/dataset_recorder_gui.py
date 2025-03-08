@@ -31,8 +31,16 @@ CHANNELS = 1
 RATE = 44100
 MAX_RECORDING_SECONDS = 30
 TRIM_SILENCE_MS = 50  # Milliseconds to trim from start and end
-VOICE_ID = "H6Ti9LTHoVP3jUkb7KKg" # ElevenLabs Voice ID
 PCM_SAMPLE_RATE = 22050  # ElevenLabs PCM sample rate
+
+# ElevenLabs default settings
+DEFAULT_VOICE_ID = "H6Ti9LTHoVP3jUkb7KKg"  # Default ElevenLabs Voice ID
+DEFAULT_MODEL = "eleven_multilingual_v2"
+DEFAULT_SPEED = 0.95
+DEFAULT_STABILITY = 1.0
+DEFAULT_SIMILARITY_BOOST = 1.0
+DEFAULT_STYLE = 1.0
+DEFAULT_USE_SPEAKER_BOOST = True
 
 # Keyboard shortcuts
 SHORTCUT_PREV = "Left"       # Previous item
@@ -63,6 +71,17 @@ class DatasetRecorder:
         self.frames = []
         self.waveform_data = []
         self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY", "")
+        
+        # ElevenLabs settings
+        self.voice_id = DEFAULT_VOICE_ID
+        self.voice_name = "Default Voice"
+        self.model = DEFAULT_MODEL
+        self.speed = DEFAULT_SPEED
+        self.stability = DEFAULT_STABILITY
+        self.similarity_boost = DEFAULT_SIMILARITY_BOOST
+        self.style = DEFAULT_STYLE
+        self.use_speaker_boost = DEFAULT_USE_SPEAKER_BOOST
+        self.available_voices = []
 
         # Audio playback variables
         self.is_playing = False
@@ -72,6 +91,36 @@ class DatasetRecorder:
         # Load environment variables
         load_dotenv()
         self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY", "")
+        
+        # Load voice settings from .env if available
+        self.voice_id = os.getenv("ELEVENLABS_VOICE_ID", DEFAULT_VOICE_ID)
+        self.voice_name = os.getenv("ELEVENLABS_VOICE_NAME", "Default Voice")
+        self.model = os.getenv("ELEVENLABS_MODEL", DEFAULT_MODEL)
+        
+        # Convert string values to appropriate types
+        try:
+            self.speed = float(os.getenv("ELEVENLABS_SPEED", DEFAULT_SPEED))
+        except (ValueError, TypeError):
+            self.speed = DEFAULT_SPEED
+            
+        try:
+            self.stability = float(os.getenv("ELEVENLABS_STABILITY", DEFAULT_STABILITY))
+        except (ValueError, TypeError):
+            self.stability = DEFAULT_STABILITY
+            
+        try:
+            self.similarity_boost = float(os.getenv("ELEVENLABS_SIMILARITY_BOOST", DEFAULT_SIMILARITY_BOOST))
+        except (ValueError, TypeError):
+            self.similarity_boost = DEFAULT_SIMILARITY_BOOST
+            
+        try:
+            self.style = float(os.getenv("ELEVENLABS_STYLE", DEFAULT_STYLE))
+        except (ValueError, TypeError):
+            self.style = DEFAULT_STYLE
+            
+        # Convert string to boolean
+        speaker_boost_str = os.getenv("ELEVENLABS_SPEAKER_BOOST", str(DEFAULT_USE_SPEAKER_BOOST).lower())
+        self.use_speaker_boost = speaker_boost_str.lower() in ('true', 'yes', '1', 't', 'y')
 
         # Create main frame
         self.main_frame = ttk.Frame(self.root, padding="10")
@@ -817,7 +866,7 @@ class DatasetRecorder:
 
     def text_to_speech_file(self, text, output_path):
         """Generate speech from text using ElevenLabs API and save to file"""
-        URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}?output_format=pcm_{PCM_SAMPLE_RATE}"
+        URL = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}?output_format=pcm_{PCM_SAMPLE_RATE}"
 
         headers = {
             "xi-api-key": self.elevenlabs_api_key,
@@ -826,13 +875,13 @@ class DatasetRecorder:
 
         data = {
             "text": text,
-            "model_id": "eleven_multilingual_v2",
+            "model_id": self.model,
             "voice_settings": {
-                "speed": 0.95,
-                "stability": 1,
-                "similarity_boost": 1,
-                "style": 1,
-                "use_speaker_boost": True
+                "speed": self.speed,
+                "stability": self.stability,
+                "similarity_boost": self.similarity_boost,
+                "style": self.style,
+                "use_speaker_boost": self.use_speaker_boost
             }
         }
 
@@ -1014,34 +1063,339 @@ class DatasetRecorder:
         """Show dialog for ElevenLabs API settings"""
         dialog = tk.Toplevel(self.root)
         dialog.title("ElevenLabs Settings")
-        dialog.geometry("500x200")
+        dialog.geometry("600x500")
         dialog.transient(self.root)
         dialog.grab_set()
-
-        ttk.Label(dialog, text="ElevenLabs API Settings",
-                 font=('TkDefaultFont', 12, 'bold')).pack(pady=(10, 20))
-
+        
+        # Create a notebook with tabs
+        notebook = ttk.Notebook(dialog)
+        notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # API Key tab
+        api_frame = ttk.Frame(notebook, padding=10)
+        notebook.add(api_frame, text="API Key")
+        
+        ttk.Label(api_frame, text="ElevenLabs API Key",
+                 font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 10))
+        
         # API Key
-        key_frame = ttk.Frame(dialog)
-        key_frame.pack(fill=tk.X, padx=20, pady=5)
-
+        key_frame = ttk.Frame(api_frame)
+        key_frame.pack(fill=tk.X, pady=5)
+        
         ttk.Label(key_frame, text="API Key:").pack(side=tk.LEFT)
         key_var = tk.StringVar(value=self.elevenlabs_api_key)
         key_entry = ttk.Entry(key_frame, textvariable=key_var, width=40, show="*")
         key_entry.pack(side=tk.LEFT, padx=(5, 0), fill=tk.X, expand=True)
-
+        
         # Show/hide password
         show_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(key_frame, text="Show", variable=show_var,
                        command=lambda: key_entry.config(show="" if show_var.get() else "*")).pack(side=tk.LEFT, padx=(5, 0))
-
+        
+        # Fetch voices button
+        ttk.Button(api_frame, text="Fetch Available Voices",
+                  command=lambda: self.fetch_elevenlabs_voices(key_var.get(), voice_listbox)).pack(pady=(10, 0))
+        
+        # Voice Selection tab
+        voice_frame = ttk.Frame(notebook, padding=10)
+        notebook.add(voice_frame, text="Voice Selection")
+        
+        ttk.Label(voice_frame, text="Select Voice",
+                 font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 10))
+        
+        # Voice selection listbox with scrollbar
+        voice_list_frame = ttk.Frame(voice_frame)
+        voice_list_frame.pack(fill=tk.BOTH, expand=True)
+        
+        scrollbar = ttk.Scrollbar(voice_list_frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        voice_listbox = tk.Listbox(voice_list_frame, yscrollcommand=scrollbar.set, height=10)
+        voice_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.config(command=voice_listbox.yview)
+        
+        # Populate the listbox with available voices
+        voice_listbox.insert(tk.END, f"{self.voice_name} (current)")
+        
+        # Model selection
+        model_frame = ttk.Frame(voice_frame)
+        model_frame.pack(fill=tk.X, pady=(10, 0))
+        
+        ttk.Label(model_frame, text="Model:").pack(side=tk.LEFT)
+        model_var = tk.StringVar(value=self.model)
+        model_combo = ttk.Combobox(model_frame, textvariable=model_var, state="readonly")
+        model_combo['values'] = ("eleven_multilingual_v2", "eleven_flash_v2_5")
+        model_combo.pack(side=tk.LEFT, padx=(5, 0), fill=tk.X, expand=True)
+        
+        # Voice Parameters tab
+        params_frame = ttk.Frame(notebook, padding=10)
+        notebook.add(params_frame, text="Voice Parameters")
+        
+        ttk.Label(params_frame, text="Voice Parameters",
+                 font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 10))
+        
+        # Speed slider
+        speed_frame = ttk.Frame(params_frame)
+        speed_frame.pack(fill=tk.X, pady=5)
+        
+        speed_var = tk.DoubleVar(value=self.speed)
+        ttk.Label(speed_frame, text="Speed:").pack(side=tk.LEFT, width=15)
+        ttk.Scale(speed_frame, from_=0.5, to=2.0, variable=speed_var, 
+                 orient=tk.HORIZONTAL).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+        ttk.Label(speed_frame, textvariable=speed_var, width=5).pack(side=tk.LEFT)
+        
+        # Stability slider
+        stability_frame = ttk.Frame(params_frame)
+        stability_frame.pack(fill=tk.X, pady=5)
+        
+        stability_var = tk.DoubleVar(value=self.stability)
+        ttk.Label(stability_frame, text="Stability:").pack(side=tk.LEFT, width=15)
+        ttk.Scale(stability_frame, from_=0.0, to=1.0, variable=stability_var, 
+                 orient=tk.HORIZONTAL).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+        ttk.Label(stability_frame, textvariable=stability_var, width=5).pack(side=tk.LEFT)
+        
+        # Similarity Boost slider
+        similarity_frame = ttk.Frame(params_frame)
+        similarity_frame.pack(fill=tk.X, pady=5)
+        
+        similarity_var = tk.DoubleVar(value=self.similarity_boost)
+        ttk.Label(similarity_frame, text="Similarity Boost:").pack(side=tk.LEFT, width=15)
+        ttk.Scale(similarity_frame, from_=0.0, to=1.0, variable=similarity_var, 
+                 orient=tk.HORIZONTAL).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+        ttk.Label(similarity_frame, textvariable=similarity_var, width=5).pack(side=tk.LEFT)
+        
+        # Style slider
+        style_frame = ttk.Frame(params_frame)
+        style_frame.pack(fill=tk.X, pady=5)
+        
+        style_var = tk.DoubleVar(value=self.style)
+        ttk.Label(style_frame, text="Style:").pack(side=tk.LEFT, width=15)
+        ttk.Scale(style_frame, from_=0.0, to=1.0, variable=style_var, 
+                 orient=tk.HORIZONTAL).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+        ttk.Label(style_frame, textvariable=style_var, width=5).pack(side=tk.LEFT)
+        
+        # Speaker Boost checkbox
+        speaker_frame = ttk.Frame(params_frame)
+        speaker_frame.pack(fill=tk.X, pady=5)
+        
+        speaker_var = tk.BooleanVar(value=self.use_speaker_boost)
+        ttk.Label(speaker_frame, text="Speaker Boost:").pack(side=tk.LEFT, width=15)
+        ttk.Checkbutton(speaker_frame, variable=speaker_var).pack(side=tk.LEFT)
+        
+        # Buttons frame at the bottom
+        buttons_frame = ttk.Frame(dialog)
+        buttons_frame.pack(fill=tk.X, pady=10, padx=10)
+        
+        # Test button
+        ttk.Button(buttons_frame, text="Test Voice",
+                  command=lambda: self.test_voice_settings(
+                      key_var.get(),
+                      self.get_selected_voice_id(voice_listbox),
+                      model_var.get(),
+                      speed_var.get(),
+                      stability_var.get(),
+                      similarity_var.get(),
+                      style_var.get(),
+                      speaker_var.get()
+                  )).pack(side=tk.LEFT, padx=(0, 5))
+        
         # Save button
-        ttk.Button(dialog, text="Save",
-                  command=lambda: self.save_elevenlabs_settings(key_var.get(), dialog)).pack(pady=(20, 10))
+        ttk.Button(buttons_frame, text="Save Settings",
+                  command=lambda: self.save_elevenlabs_settings(
+                      key_var.get(),
+                      self.get_selected_voice_id(voice_listbox),
+                      model_var.get(),
+                      speed_var.get(),
+                      stability_var.get(),
+                      similarity_var.get(),
+                      style_var.get(),
+                      speaker_var.get(),
+                      dialog
+                  )).pack(side=tk.RIGHT)
 
-    def save_elevenlabs_settings(self, api_key, dialog):
-        """Save ElevenLabs API settings"""
+    def fetch_elevenlabs_voices(self, api_key, listbox):
+        """Fetch available voices from ElevenLabs API"""
+        if not api_key:
+            messagebox.showerror("Error", "Please enter an API key first")
+            return
+            
+        try:
+            # Clear the listbox
+            listbox.delete(0, tk.END)
+            
+            # Make API request
+            url = "https://api.elevenlabs.io/v1/voices"
+            headers = {"xi-api-key": api_key}
+            params = {"show_legacy": "false"}
+            
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            
+            data = response.json()
+            voices = data.get("voices", [])
+            
+            if not voices:
+                messagebox.showinfo("Info", "No voices found for this account")
+                return
+                
+            # Store voices and populate listbox
+            self.available_voices = voices
+            
+            # Add current voice at the top
+            current_voice_found = False
+            for voice in voices:
+                if voice["voice_id"] == self.voice_id:
+                    listbox.insert(tk.END, f"{voice['name']} (current)")
+                    current_voice_found = True
+                else:
+                    listbox.insert(tk.END, voice["name"])
+            
+            if not current_voice_found:
+                listbox.insert(0, f"{self.voice_name} (current)")
+                
+            # Select the current voice
+            for i in range(listbox.size()):
+                if "(current)" in listbox.get(i):
+                    listbox.selection_set(i)
+                    listbox.see(i)
+                    break
+                    
+            messagebox.showinfo("Success", f"Found {len(voices)} voices")
+            
+        except requests.exceptions.RequestException as e:
+            messagebox.showerror("Error", f"Failed to fetch voices: {e}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error processing voices: {e}")
+    
+    def get_selected_voice_id(self, listbox):
+        """Get the voice ID for the selected voice in the listbox"""
+        selection = listbox.curselection()
+        if not selection:
+            return self.voice_id
+            
+        selected_name = listbox.get(selection[0])
+        if "(current)" in selected_name:
+            selected_name = selected_name.replace(" (current)", "")
+            
+        # Find the voice ID by name
+        for voice in self.available_voices:
+            if voice["name"] == selected_name:
+                return voice["voice_id"]
+                
+        # If not found, return the current voice ID
+        return self.voice_id
+    
+    def test_voice_settings(self, api_key, voice_id, model, speed, stability, similarity, style, speaker_boost):
+        """Test the current voice settings with a sample phrase"""
+        if not api_key:
+            messagebox.showerror("Error", "Please enter an API key first")
+            return
+            
+        # Create a temporary file for the test audio
+        temp_fd, temp_path = tempfile.mkstemp(suffix='.wav')
+        os.close(temp_fd)
+        
+        try:
+            # Save current settings
+            current_settings = (
+                self.voice_id, self.model, self.speed, self.stability, 
+                self.similarity_boost, self.style, self.use_speaker_boost
+            )
+            
+            # Temporarily set the new settings
+            self.elevenlabs_api_key = api_key
+            self.voice_id = voice_id
+            self.model = model
+            self.speed = speed
+            self.stability = stability
+            self.similarity_boost = similarity
+            self.style = style
+            self.use_speaker_boost = speaker_boost
+            
+            # Generate test audio
+            test_text = "This is a test of the ElevenLabs voice settings."
+            success = self.text_to_speech_file(test_text, temp_path)
+            
+            if success:
+                # Play the test audio
+                self.play_audio_file(temp_path)
+            else:
+                messagebox.showerror("Error", "Failed to generate test audio")
+                
+        except Exception as e:
+            messagebox.showerror("Error", f"Error testing voice: {e}")
+            
+        finally:
+            # Restore original settings
+            (
+                self.voice_id, self.model, self.speed, self.stability, 
+                self.similarity_boost, self.style, self.use_speaker_boost
+            ) = current_settings
+            
+            # Clean up temp file after a delay (to allow playback)
+            self.root.after(10000, lambda: os.unlink(temp_path) if os.path.exists(temp_path) else None)
+    
+    def play_audio_file(self, file_path):
+        """Play an audio file without affecting the main UI state"""
+        try:
+            # Create a new thread for playback
+            threading.Thread(
+                target=self._play_audio_file_thread,
+                args=(file_path,),
+                daemon=True
+            ).start()
+        except Exception as e:
+            print(f"Error playing test audio: {e}", file=sys.stderr)
+    
+    def _play_audio_file_thread(self, file_path):
+        """Thread function for playing an audio file"""
+        try:
+            # Create a new PyAudio instance for this playback
+            p = pyaudio.PyAudio()
+            
+            with wave.open(file_path, 'rb') as wf:
+                # Create stream
+                stream = p.open(
+                    format=p.get_format_from_width(wf.getsampwidth()),
+                    channels=wf.getnchannels(),
+                    rate=wf.getframerate(),
+                    output=True
+                )
+                
+                # Read and play data
+                chunk_size = 1024
+                data = wf.readframes(chunk_size)
+                
+                while data:
+                    stream.write(data)
+                    data = wf.readframes(chunk_size)
+                
+                # Clean up
+                stream.stop_stream()
+                stream.close()
+            
+            p.terminate()
+            
+        except Exception as e:
+            print(f"Error in test playback thread: {e}", file=sys.stderr)
+    
+    def save_elevenlabs_settings(self, api_key, voice_id, model, speed, stability, similarity, style, speaker_boost, dialog):
+        """Save ElevenLabs API settings and voice parameters"""
+        # Update instance variables
         self.elevenlabs_api_key = api_key
+        self.voice_id = voice_id
+        self.model = model
+        self.speed = speed
+        self.stability = stability
+        self.similarity_boost = similarity
+        self.style = style
+        self.use_speaker_boost = speaker_boost
+        
+        # Update voice name
+        for voice in self.available_voices:
+            if voice["voice_id"] == voice_id:
+                self.voice_name = voice["name"]
+                break
 
         # Save to .env file
         try:
@@ -1056,22 +1410,30 @@ class DatasetRecorder:
                             key, value = line.strip().split('=', 1)
                             env_vars[key] = value
 
-            # Update API key
+            # Update settings
             env_vars["ELEVENLABS_API_KEY"] = api_key
+            env_vars["ELEVENLABS_VOICE_ID"] = voice_id
+            env_vars["ELEVENLABS_VOICE_NAME"] = self.voice_name
+            env_vars["ELEVENLABS_MODEL"] = model
+            env_vars["ELEVENLABS_SPEED"] = str(speed)
+            env_vars["ELEVENLABS_STABILITY"] = str(stability)
+            env_vars["ELEVENLABS_SIMILARITY_BOOST"] = str(similarity)
+            env_vars["ELEVENLABS_STYLE"] = str(style)
+            env_vars["ELEVENLABS_SPEAKER_BOOST"] = str(speaker_boost).lower()
 
             # Write back to .env file
             with open(env_path, 'w') as f:
                 for key, value in env_vars.items():
                     f.write(f"{key}={value}\n")
 
-            messagebox.showinfo("Success", "API key saved successfully")
+            messagebox.showinfo("Success", "ElevenLabs settings saved successfully")
             dialog.destroy()
 
             # Update UI to enable/disable generate buttons
             self.update_ui()
 
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to save API key: {e}")
+            messagebox.showerror("Error", f"Failed to save settings: {e}")
 
     def show_about(self):
         """Show about dialog"""
