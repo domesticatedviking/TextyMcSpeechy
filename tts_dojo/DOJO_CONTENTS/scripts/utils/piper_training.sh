@@ -11,6 +11,9 @@ SETTINGS_FILE="SETTINGS.txt"
 # flag file that overrides the use of pretrained checkpoints
 TRAIN_FROM_SCRATCH_FILE="../target_voice_dataset/.SCRATCH"
 
+# file containing quality setting for this dojo set by link_dataset.sh
+QUALITY_FILE="../target_voice_dataset/.QUALITY"
+
 # folder where piper creates checkpoint files.   
 # Must be purged prior to starting training run to ensure new checkpoints always arrive in checkpoints/version_0 folder 
 LIGHTNING_LOGS_LOCATION="../training_folder/lightning_logs"
@@ -44,6 +47,26 @@ else
     exit 1 
 fi
 
+# check for .QUALITY file created by previous run
+
+if [ ! -e "$QUALITY_FILE" ]; then
+    echo "        Unable to proceed - file missing: $QUALITY_FILE"
+    echo "        Please reconfigure this dojo's dataset.  Exiting."
+    exit 1
+fi
+            
+quality=$(cat $QUALITY_FILE)
+if [ "$quality" = "L" ]; then
+    quality_str="low"
+elif [ "$quality" = "M" ]; then
+    quality_str="medium"
+elif [ "$quality" = "H" ]; then
+    quality_str="high"
+else
+    echo "ERROR: $QUALITY_FILE contents invalid.  Exiting."
+    exit 1
+fi
+
 
 
 # Check if the starting checkpoint parameter is provided
@@ -67,7 +90,8 @@ docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
     --num-test-examples 0 \
     --max_epochs 30000 \
     --checkpoint-epochs $PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS \
-    --precision 32
+    --precision 32 \
+    --quality $quality_str
 "
 }
 
@@ -83,13 +107,15 @@ docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
     --max_epochs 30000 \
     --resume_from_checkpoint "$starting_checkpoint" \
     --checkpoint-epochs $PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS \
-    --precision 32
+    --precision 32 \
+    --quality $quality_str
 "
 }
 
 # purge checkpoint folder to ensure consistent location
 rm -r $LIGHTNING_LOGS_LOCATION >/dev/null 2>&1
-echo ".SCRATCH file = $TRAIN_FROM_SCRATCH" 
+echo "Train from scratch = $TRAIN_FROM_SCRATCH"
+echo "           Quality = $quality_str" 
 
 if [ $TRAIN_FROM_SCRATCH == "true" ]; then
     echo
