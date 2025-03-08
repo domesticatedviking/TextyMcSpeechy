@@ -95,7 +95,7 @@ class DatasetRecorder:
 
         # Bind window close event
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        
+
     def bind_shortcuts(self):
         """Bind keyboard shortcuts to actions"""
         self.root.bind(f"<{SHORTCUT_PREV}>", lambda e: self.previous_item())
@@ -187,10 +187,10 @@ class DatasetRecorder:
 
         self.prev_btn = ttk.Button(nav_frame, text=f"Previous ({SHORTCUT_PREV})", command=self.previous_item, state=tk.DISABLED)
         self.prev_btn.pack(side=tk.LEFT, padx=(0, 5))
-        
+
         # Current item display
         self.item_var = tk.StringVar(value="0/0")
-        ttk.Label(nav_frame, textvariable=self.item_var, width=8, anchor=tk.CENTER, 
+        ttk.Label(nav_frame, textvariable=self.item_var, width=8, anchor=tk.CENTER,
                  font=('TkDefaultFont', 10, 'bold')).pack(side=tk.LEFT, padx=5)
 
         self.next_btn = ttk.Button(nav_frame, text=f"Next ({SHORTCUT_NEXT})", command=self.next_item, state=tk.DISABLED)
@@ -200,11 +200,11 @@ class DatasetRecorder:
         action_frame = ttk.Frame(control_frame)
         action_frame.pack(side=tk.LEFT)
 
-        self.record_btn = ttk.Button(action_frame, text=f"Record ({SHORTCUT_RECORD})", 
+        self.record_btn = ttk.Button(action_frame, text=f"Record ({SHORTCUT_RECORD})",
                                     command=self.toggle_recording, state=tk.DISABLED)
         self.record_btn.pack(side=tk.LEFT, padx=(0, 5))
 
-        self.play_btn = ttk.Button(action_frame, text=f"Play ({SHORTCUT_PLAY})", 
+        self.play_btn = ttk.Button(action_frame, text=f"Play ({SHORTCUT_PLAY})",
                                   command=self.play_audio, state=tk.DISABLED)
         self.play_btn.pack(side=tk.LEFT, padx=(0, 5))
 
@@ -309,7 +309,7 @@ class DatasetRecorder:
         if total > 0:
             self.progress_bar["maximum"] = total
             self.progress_bar["value"] = recorded
-            
+
             # Update current item display
             self.item_var.set(f"{self.current_index + 1}/{total}")
 
@@ -353,7 +353,7 @@ class DatasetRecorder:
         # Only allow recording if the button is enabled
         if self.record_btn.cget('state') == tk.DISABLED:
             return
-            
+
         if self.is_recording:
             self.stop_recording()
         else:
@@ -476,6 +476,7 @@ class DatasetRecorder:
         self.update_ui()
 
     def trim_wav(self, file_path):
+        # FIXME: this is broken
         """Trim silence from the beginning and end of a WAV file"""
         try:
             # Create a temporary file
@@ -588,7 +589,7 @@ class DatasetRecorder:
         # Only allow playing if the button is enabled
         if self.play_btn.cget('state') == tk.DISABLED:
             return
-            
+
         if self.is_playing:
             self.stop_playback()
             return
@@ -683,7 +684,7 @@ class DatasetRecorder:
         """Navigate to the previous item"""
         if self.prev_btn.cget('state') == tk.DISABLED:
             return
-            
+
         if self.current_index > 0:
             self.current_index -= 1
             self.update_ui()
@@ -692,7 +693,7 @@ class DatasetRecorder:
         """Navigate to the next item"""
         if self.next_btn.cget('state') == tk.DISABLED:
             return
-            
+
         if self.current_index < len(self.filenames) - 1:
             self.current_index += 1
             self.update_ui()
@@ -701,7 +702,7 @@ class DatasetRecorder:
         """Generate audio for the current item using ElevenLabs API"""
         if self.generate_btn.cget('state') == tk.DISABLED:
             return
-            
+
         if not self.elevenlabs_api_key:
             self.show_elevenlabs_settings()
             return
@@ -739,10 +740,6 @@ class DatasetRecorder:
                 # self.trim_wav(output_path)
 
                 self.root.after(0, lambda: self.status_var.set(f"Generated audio for {os.path.basename(output_path)}"))
-
-                # Move to next item if available
-                if index < len(self.filenames) - 1:
-                    self.current_index = index + 1
             else:
                 self.root.after(0, lambda: self.status_var.set("Failed to generate audio"))
 
@@ -757,7 +754,7 @@ class DatasetRecorder:
         """Generate audio for all missing items"""
         if self.generate_all_btn.cget('state') == tk.DISABLED:
             return
-            
+
         if not self.elevenlabs_api_key:
             self.show_elevenlabs_settings()
             return
@@ -807,7 +804,7 @@ class DatasetRecorder:
                     success_count += 1
 
                     # Trim the generated audio
-                    self.trim_wav(output_path)
+                    # self.trim_wav(output_path)
 
                 # Small delay to avoid rate limiting
                 time.sleep(0.5)
