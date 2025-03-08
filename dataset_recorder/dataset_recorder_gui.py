@@ -773,11 +773,14 @@ class DatasetRecorder:
     def text_to_speech_file(self, text, output_path):
         """Generate speech from text using ElevenLabs API and save to file"""
         VOICE_ID = "H6Ti9LTHoVP3jUkb7KKg"  # Adam pre-made voice
-        URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}?output_format=pcm_22050"
+        
+        # Request MP3 format instead of PCM for better compatibility
+        URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
 
         headers = {
             "xi-api-key": self.elevenlabs_api_key,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Accept": "audio/mpeg"  # Request MP3 format
         }
 
         data = {
@@ -795,13 +798,30 @@ class DatasetRecorder:
         try:
             response = requests.post(URL, json=data, headers=headers)
             response.raise_for_status()
-
-            with open(output_path, "wb") as f:
-                f.write(response.content)
-
-            print(f'Generated {output_path} sucessfully.')
-            sys.exit(1)
-            return True
+            
+            # Save MP3 to a temporary file
+            temp_fd, temp_mp3 = tempfile.mkstemp(suffix='.mp3')
+            os.close(temp_fd)
+            
+            try:
+                # Write the MP3 data to the temp file
+                with open(temp_mp3, "wb") as f:
+                    f.write(response.content)
+                
+                # Convert MP3 to WAV using ffmpeg
+                subprocess.run(
+                    ['ffmpeg', '-y', '-i', temp_mp3, '-acodec', 'pcm_s16le', 
+                     '-ar', str(RATE), '-ac', str(CHANNELS), output_path],
+                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                )
+                
+                print(f'Generated {output_path} successfully.')
+                return True
+                
+            finally:
+                # Clean up temp file
+                if os.path.exists(temp_mp3):
+                    os.unlink(temp_mp3)
 
         except requests.exceptions.RequestException as e:
             print(f"Error generating audio: {e}", file=sys.stderr)
