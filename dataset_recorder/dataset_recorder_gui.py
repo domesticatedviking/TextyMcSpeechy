@@ -22,6 +22,7 @@ import numpy as np
 from dotenv import load_dotenv
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import io
 
 # Constants
 CHUNK = 1024
@@ -52,6 +53,11 @@ class DatasetRecorder:
         self.frames = []
         self.waveform_data = []
         self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY", "")
+        
+        # Audio playback variables
+        self.is_playing = False
+        self.play_thread = None
+        self.play_stream = None
 
         # Load environment variables
         load_dotenv()
@@ -546,24 +552,96 @@ class DatasetRecorder:
         self.canvas.draw()
 
     def play_audio(self):
-        """Play the current audio file"""
+        """Play the current audio file using PyAudio"""
+        if self.is_playing:
+            self.stop_playback()
+            return
+            
         if self.current_index < len(self.filenames):
             filename = self.filenames[self.current_index]
             file_path = os.path.join(self.output_dir, filename)
 
             if os.path.isfile(file_path):
                 try:
-                    # Use a separate thread to avoid blocking the UI
-                    threading.Thread(
-                        target=lambda: subprocess.run(['aplay', file_path],
-                                                     stdout=subprocess.DEVNULL,
-                                                     stderr=subprocess.DEVNULL),
+                    # Change button text
+                    self.play_btn.config(text="Stop Playback")
+                    self.is_playing = True
+                    
+                    # Start playback in a separate thread
+                    self.play_thread = threading.Thread(
+                        target=self.play_audio_thread,
+                        args=(file_path,),
                         daemon=True
-                    ).start()
-
+                    )
+                    self.play_thread.start()
+                    
                     self.status_var.set(f"Playing {filename}")
+                    
+                    # Check if playback has finished
+                    self.root.after(100, self.check_playback_finished)
+                    
                 except Exception as e:
                     self.status_var.set(f"Error playing audio: {e}")
+                    self.is_playing = False
+                    self.play_btn.config(text="Play")
+    
+    def play_audio_thread(self, file_path):
+        """Thread function for audio playback"""
+        try:
+            # Open the WAV file
+            with wave.open(file_path, 'rb') as wf:
+                # Create PyAudio stream for playback
+                self.play_stream = self.p.open(
+                    format=self.p.get_format_from_width(wf.getsampwidth()),
+                    channels=wf.getnchannels(),
+                    rate=wf.getframerate(),
+                    output=True
+                )
+                
+                # Read data in chunks and play
+                chunk_size = 1024
+                data = wf.readframes(chunk_size)
+                
+                while data and self.is_playing:
+                    self.play_stream.write(data)
+                    data = wf.readframes(chunk_size)
+                
+                # Clean up
+                self.play_stream.stop_stream()
+                self.play_stream.close()
+                self.play_stream = None
+        
+        except Exception as e:
+            print(f"Error in playback thread: {e}", file=sys.stderr)
+        
+        finally:
+            self.is_playing = False
+    
+    def check_playback_finished(self):
+        """Check if audio playback has finished and update UI accordingly"""
+        if not self.is_playing:
+            self.play_btn.config(text="Play")
+        else:
+            # Check again after a short delay
+            self.root.after(100, self.check_playback_finished)
+    
+    def stop_playback(self):
+        """Stop audio playback"""
+        if self.is_playing:
+            self.is_playing = False
+            
+            # Wait for playback thread to finish
+            if self.play_thread and self.play_thread.is_alive():
+                self.play_thread.join(0.5)  # Wait up to 0.5 seconds
+            
+            # Close the stream if it's still open
+            if self.play_stream:
+                self.play_stream.stop_stream()
+                self.play_stream.close()
+                self.play_stream = None
+            
+            self.play_btn.config(text="Play")
+            self.status_var.set("Playback stopped")
 
     def previous_item(self):
         """Navigate to the previous item"""
@@ -718,12 +796,30 @@ class DatasetRecorder:
         try:
             response = requests.post(URL, json=data, headers=headers)
             response.raise_for_status()
-
-            with open(output_path, "wb") as f:
-                f.write(response.content)
-            print(f'Generated {output_path} sucessfully.')
-            sys.exit(1)
-            return True
+            
+            # ElevenLabs returns MP3 data, we need to convert it to WAV
+            # First save the MP3 to a temporary file
+            temp_fd, temp_mp3 = tempfile.mkstemp(suffix='.mp3')
+            os.close(temp_fd)
+            
+            try:
+                with open(temp_mp3, "wb") as f:
+                    f.write(response.content)
+                
+                # Convert MP3 to WAV using ffmpeg
+                subprocess.run(
+                    ['ffmpeg', '-y', '-i', temp_mp3, '-acodec', 'pcm_s16le', 
+                     '-ar', str(RATE), '-ac', str(CHANNELS), output_path],
+                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                )
+                
+                print(f'Generated {output_path} successfully.')
+                return True
+                
+            finally:
+                # Clean up temp file
+                if os.path.exists(temp_mp3):
+                    os.unlink(temp_mp3)
 
         except requests.exceptions.RequestException as e:
             print(f"Error generating audio: {e}", file=sys.stderr)
@@ -966,6 +1062,9 @@ For more information, visit the documentation.
 
     def on_closing(self):
         """Handle window closing"""
+        # Stop any ongoing playback
+        self.stop_playback()
+        
         # Clean up audio resources
         if self.p:
             self.p.terminate()
