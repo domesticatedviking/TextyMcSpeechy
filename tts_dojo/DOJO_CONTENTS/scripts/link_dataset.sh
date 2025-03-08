@@ -139,8 +139,9 @@ get_quality_choice(){
     clear
     answer=""
     echo -e  "Please select a quality level for the model that will be built in this dojo:\n"
-    echo -e  "    [L]ow     - (use if generating speech on raspberry pi or other slower device)"
-    echo -e  "    [M]edium"
+    echo -e  "Note that huggingface does not presently supply compatible pretrained checkpoints for low quality models\n"
+    echo -e  "    [L]ow     - (only use if supplying your own low quality pretrained checkpoint or training from scratch)"
+    echo -e  "    [M]edium - recommended for most users"
     echo -e  "    [H]igh"
     echo
     echo -ne "     "
@@ -179,8 +180,8 @@ get_scratch_choice(){
     echo -e  "        However, training from scratch may be a good option if there are no pretrained models in your language yet.\n"
     echo
     echo -e  "    How would you like to train this model?\n"
-    echo -e  "    [1] Train using a pretrained checkpoint file (recommended)?"
-    echo -e  "    [2] Train model from scratch?"
+    echo -e  "    [1] Train using a pretrained checkpoint file (recommended if possible)"
+    echo -e  "    [2] Train model from scratch"
     echo
     echo -ne "     "
     while [ "$answer" = "" ]; do
