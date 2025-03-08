@@ -121,6 +121,15 @@ class DatasetRecorder:
         # Convert string to boolean
         speaker_boost_str = os.getenv("ELEVENLABS_SPEAKER_BOOST", str(DEFAULT_USE_SPEAKER_BOOST).lower())
         self.use_speaker_boost = speaker_boost_str.lower() in ('true', 'yes', '1', 't', 'y')
+        
+        # Display variables for voice settings
+        self.voice_name_var = None
+        self.model_var = None
+        self.speed_var = None
+        self.stability_var = None
+        self.similarity_var = None
+        self.style_var = None
+        self.speaker_boost_var = None
 
         # Create main frame
         self.main_frame = ttk.Frame(self.root, padding="10")
@@ -201,6 +210,58 @@ class DatasetRecorder:
 
         self.progress_bar = ttk.Progressbar(progress_frame, orient=tk.HORIZONTAL, length=300, mode='determinate')
         self.progress_bar.pack(side=tk.LEFT, padx=(10, 0), fill=tk.X, expand=True)
+        
+        # Voice settings frame
+        voice_settings_frame = ttk.LabelFrame(self.main_frame, text="ElevenLabs Voice Settings")
+        voice_settings_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        # Voice info
+        voice_info_frame = ttk.Frame(voice_settings_frame)
+        voice_info_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        ttk.Label(voice_info_frame, text="Voice:").pack(side=tk.LEFT, padx=(0, 5))
+        self.voice_name_var = tk.StringVar(value=self.voice_name)
+        ttk.Label(voice_info_frame, textvariable=self.voice_name_var, font=('TkDefaultFont', 9, 'bold')).pack(side=tk.LEFT, padx=(0, 15))
+        
+        ttk.Label(voice_info_frame, text="Model:").pack(side=tk.LEFT, padx=(0, 5))
+        self.model_var = tk.StringVar(value=self.model)
+        ttk.Label(voice_info_frame, textvariable=self.model_var, font=('TkDefaultFont', 9, 'bold')).pack(side=tk.LEFT)
+        
+        # Voice parameters
+        params_frame = ttk.Frame(voice_settings_frame)
+        params_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        # First row of parameters
+        params_row1 = ttk.Frame(params_frame)
+        params_row1.pack(fill=tk.X, pady=(0, 5))
+        
+        ttk.Label(params_row1, text="Speed:").pack(side=tk.LEFT, padx=(0, 5))
+        self.speed_var = tk.StringVar(value=f"{self.speed:.2f}")
+        ttk.Label(params_row1, textvariable=self.speed_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
+        
+        ttk.Label(params_row1, text="Stability:").pack(side=tk.LEFT, padx=(0, 5))
+        self.stability_var = tk.StringVar(value=f"{self.stability:.2f}")
+        ttk.Label(params_row1, textvariable=self.stability_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
+        
+        ttk.Label(params_row1, text="Similarity:").pack(side=tk.LEFT, padx=(0, 5))
+        self.similarity_var = tk.StringVar(value=f"{self.similarity_boost:.2f}")
+        ttk.Label(params_row1, textvariable=self.similarity_var, width=4).pack(side=tk.LEFT)
+        
+        # Second row of parameters
+        params_row2 = ttk.Frame(params_frame)
+        params_row2.pack(fill=tk.X)
+        
+        ttk.Label(params_row2, text="Style:").pack(side=tk.LEFT, padx=(0, 5))
+        self.style_var = tk.StringVar(value=f"{self.style:.2f}")
+        ttk.Label(params_row2, textvariable=self.style_var, width=4).pack(side=tk.LEFT, padx=(0, 15))
+        
+        ttk.Label(params_row2, text="Speaker Boost:").pack(side=tk.LEFT, padx=(0, 5))
+        self.speaker_boost_var = tk.StringVar(value="On" if self.use_speaker_boost else "Off")
+        ttk.Label(params_row2, textvariable=self.speaker_boost_var, width=4).pack(side=tk.LEFT)
+        
+        # Settings button
+        ttk.Button(params_row2, text="Settings", 
+                  command=self.show_elevenlabs_settings).pack(side=tk.RIGHT, padx=(0, 5))
 
         # Text display frame
         text_frame = ttk.LabelFrame(self.main_frame, text="Current Phrase")
@@ -1092,16 +1153,19 @@ class DatasetRecorder:
         ttk.Checkbutton(key_frame, text="Show", variable=show_var,
                        command=lambda: key_entry.config(show="" if show_var.get() else "*")).pack(side=tk.LEFT, padx=(5, 0))
         
-        # Fetch voices button
-        ttk.Button(api_frame, text="Fetch Available Voices",
-                  command=lambda: self.fetch_elevenlabs_voices(key_var.get(), voice_listbox)).pack(pady=(10, 0))
-        
         # Voice Selection tab
         voice_frame = ttk.Frame(notebook, padding=10)
         notebook.add(voice_frame, text="Voice Selection")
         
         ttk.Label(voice_frame, text="Select Voice",
                  font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 10))
+        
+        # Fetch voices button at the top of the voice selection tab
+        fetch_frame = ttk.Frame(voice_frame)
+        fetch_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        ttk.Button(fetch_frame, text="Fetch Available Voices",
+                  command=lambda: self.fetch_elevenlabs_voices(key_var.get(), voice_listbox)).pack(side=tk.LEFT)
         
         # Voice selection listbox with scrollbar
         voice_list_frame = ttk.Frame(voice_frame)
@@ -1425,6 +1489,15 @@ class DatasetRecorder:
             with open(env_path, 'w') as f:
                 for key, value in env_vars.items():
                     f.write(f"{key}={value}\n")
+
+            # Update display variables
+            self.voice_name_var.set(self.voice_name)
+            self.model_var.set(self.model)
+            self.speed_var.set(f"{self.speed:.2f}")
+            self.stability_var.set(f"{self.stability:.2f}")
+            self.similarity_var.set(f"{self.similarity_boost:.2f}")
+            self.style_var.set(f"{self.style:.2f}")
+            self.speaker_boost_var.set("On" if self.use_speaker_boost else "Off")
 
             messagebox.showinfo("Success", "ElevenLabs settings saved successfully")
             dialog.destroy()
