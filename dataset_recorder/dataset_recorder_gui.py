@@ -34,6 +34,14 @@ TRIM_SILENCE_MS = 50  # Milliseconds to trim from start and end
 VOICE_ID = "H6Ti9LTHoVP3jUkb7KKg" # ElevenLabs Voice ID
 PCM_SAMPLE_RATE = 22050  # ElevenLabs PCM sample rate
 
+# Keyboard shortcuts
+SHORTCUT_PREV = "Left"       # Previous item
+SHORTCUT_NEXT = "Right"      # Next item
+SHORTCUT_RECORD = "r"        # Record/stop recording
+SHORTCUT_PLAY = "space"      # Play/stop playback
+SHORTCUT_GENERATE = "g"      # Generate with ElevenLabs
+SHORTCUT_GENERATE_ALL = "a"  # Generate all missing
+
 class DatasetRecorder:
     def __init__(self, root):
         self.root = root
@@ -82,8 +90,20 @@ class DatasetRecorder:
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
+        # Bind keyboard shortcuts
+        self.bind_shortcuts()
+
         # Bind window close event
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
+    def bind_shortcuts(self):
+        """Bind keyboard shortcuts to actions"""
+        self.root.bind(f"<{SHORTCUT_PREV}>", lambda e: self.previous_item())
+        self.root.bind(f"<{SHORTCUT_NEXT}>", lambda e: self.next_item())
+        self.root.bind(f"<{SHORTCUT_RECORD}>", lambda e: self.toggle_recording())
+        self.root.bind(f"<{SHORTCUT_PLAY}>", lambda e: self.play_audio())
+        self.root.bind(f"<{SHORTCUT_GENERATE}>", lambda e: self.generate_audio())
+        self.root.bind(f"<{SHORTCUT_GENERATE_ALL}>", lambda e: self.generate_all_missing())
 
     def create_menu(self):
         menubar = tk.Menu(self.root)
@@ -165,27 +185,34 @@ class DatasetRecorder:
         nav_frame = ttk.Frame(control_frame)
         nav_frame.pack(side=tk.LEFT, padx=(0, 10))
 
-        self.prev_btn = ttk.Button(nav_frame, text="Previous", command=self.previous_item, state=tk.DISABLED)
+        self.prev_btn = ttk.Button(nav_frame, text=f"Previous ({SHORTCUT_PREV})", command=self.previous_item, state=tk.DISABLED)
         self.prev_btn.pack(side=tk.LEFT, padx=(0, 5))
+        
+        # Current item display
+        self.item_var = tk.StringVar(value="0/0")
+        ttk.Label(nav_frame, textvariable=self.item_var, width=8, anchor=tk.CENTER, 
+                 font=('TkDefaultFont', 10, 'bold')).pack(side=tk.LEFT, padx=5)
 
-        self.next_btn = ttk.Button(nav_frame, text="Next", command=self.next_item, state=tk.DISABLED)
+        self.next_btn = ttk.Button(nav_frame, text=f"Next ({SHORTCUT_NEXT})", command=self.next_item, state=tk.DISABLED)
         self.next_btn.pack(side=tk.LEFT)
 
         # Action buttons
         action_frame = ttk.Frame(control_frame)
         action_frame.pack(side=tk.LEFT)
 
-        self.record_btn = ttk.Button(action_frame, text="Record", command=self.toggle_recording, state=tk.DISABLED)
+        self.record_btn = ttk.Button(action_frame, text=f"Record ({SHORTCUT_RECORD})", 
+                                    command=self.toggle_recording, state=tk.DISABLED)
         self.record_btn.pack(side=tk.LEFT, padx=(0, 5))
 
-        self.play_btn = ttk.Button(action_frame, text="Play", command=self.play_audio, state=tk.DISABLED)
+        self.play_btn = ttk.Button(action_frame, text=f"Play ({SHORTCUT_PLAY})", 
+                                  command=self.play_audio, state=tk.DISABLED)
         self.play_btn.pack(side=tk.LEFT, padx=(0, 5))
 
-        self.generate_btn = ttk.Button(action_frame, text="Generate with ElevenLabs",
+        self.generate_btn = ttk.Button(action_frame, text=f"Generate with ElevenLabs ({SHORTCUT_GENERATE})",
                                       command=self.generate_audio, state=tk.DISABLED)
         self.generate_btn.pack(side=tk.LEFT, padx=(0, 5))
 
-        self.generate_all_btn = ttk.Button(action_frame, text="Generate All Missing",
+        self.generate_all_btn = ttk.Button(action_frame, text=f"Generate All Missing ({SHORTCUT_GENERATE_ALL})",
                                           command=self.generate_all_missing, state=tk.DISABLED)
         self.generate_all_btn.pack(side=tk.LEFT)
 
@@ -282,6 +309,9 @@ class DatasetRecorder:
         if total > 0:
             self.progress_bar["maximum"] = total
             self.progress_bar["value"] = recorded
+            
+            # Update current item display
+            self.item_var.set(f"{self.current_index + 1}/{total}")
 
         # Update phrase text
         if self.filenames:
@@ -320,6 +350,10 @@ class DatasetRecorder:
 
     def toggle_recording(self):
         """Start or stop recording"""
+        # Only allow recording if the button is enabled
+        if self.record_btn.cget('state') == tk.DISABLED:
+            return
+            
         if self.is_recording:
             self.stop_recording()
         else:
@@ -331,7 +365,7 @@ class DatasetRecorder:
             return
 
         self.is_recording = True
-        self.record_btn.config(text="Stop Recording")
+        self.record_btn.config(text=f"Stop Recording ({SHORTCUT_RECORD})")
         self.frames = []
         self.waveform_data = []
 
@@ -407,7 +441,7 @@ class DatasetRecorder:
             return
 
         self.is_recording = False
-        self.record_btn.config(text="Record")
+        self.record_btn.config(text=f"Record ({SHORTCUT_RECORD})")
 
         # Close the audio stream
         if self.stream:
@@ -551,6 +585,10 @@ class DatasetRecorder:
 
     def play_audio(self):
         """Play the current audio file using PyAudio"""
+        # Only allow playing if the button is enabled
+        if self.play_btn.cget('state') == tk.DISABLED:
+            return
+            
         if self.is_playing:
             self.stop_playback()
             return
@@ -562,7 +600,7 @@ class DatasetRecorder:
             if os.path.isfile(file_path):
                 try:
                     # Change button text
-                    self.play_btn.config(text="Stop Playback")
+                    self.play_btn.config(text=f"Stop Playback ({SHORTCUT_PLAY})")
                     self.is_playing = True
 
                     # Start playback in a separate thread
@@ -581,7 +619,7 @@ class DatasetRecorder:
                 except Exception as e:
                     self.status_var.set(f"Error playing audio: {e}")
                     self.is_playing = False
-                    self.play_btn.config(text="Play")
+                    self.play_btn.config(text=f"Play ({SHORTCUT_PLAY})")
 
     def play_audio_thread(self, file_path):
         """Thread function for audio playback"""
@@ -618,7 +656,7 @@ class DatasetRecorder:
     def check_playback_finished(self):
         """Check if audio playback has finished and update UI accordingly"""
         if not self.is_playing:
-            self.play_btn.config(text="Play")
+            self.play_btn.config(text=f"Play ({SHORTCUT_PLAY})")
         else:
             # Check again after a short delay
             self.root.after(100, self.check_playback_finished)
@@ -638,23 +676,32 @@ class DatasetRecorder:
                 self.play_stream.close()
                 self.play_stream = None
 
-            self.play_btn.config(text="Play")
+            self.play_btn.config(text=f"Play ({SHORTCUT_PLAY})")
             self.status_var.set("Playback stopped")
 
     def previous_item(self):
         """Navigate to the previous item"""
+        if self.prev_btn.cget('state') == tk.DISABLED:
+            return
+            
         if self.current_index > 0:
             self.current_index -= 1
             self.update_ui()
 
     def next_item(self):
         """Navigate to the next item"""
+        if self.next_btn.cget('state') == tk.DISABLED:
+            return
+            
         if self.current_index < len(self.filenames) - 1:
             self.current_index += 1
             self.update_ui()
 
     def generate_audio(self):
         """Generate audio for the current item using ElevenLabs API"""
+        if self.generate_btn.cget('state') == tk.DISABLED:
+            return
+            
         if not self.elevenlabs_api_key:
             self.show_elevenlabs_settings()
             return
@@ -708,6 +755,9 @@ class DatasetRecorder:
 
     def generate_all_missing(self):
         """Generate audio for all missing items"""
+        if self.generate_all_btn.cget('state') == tk.DISABLED:
+            return
+            
         if not self.elevenlabs_api_key:
             self.show_elevenlabs_settings()
             return
