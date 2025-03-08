@@ -5,20 +5,22 @@ DOJO_NAME=$(awk -F'/' '{print $(NF)}' <<< "$PWD")
 VOICE_NAME=$(awk -F'/' '{print $(NF)}' <<< "$PWD" | sed 's/_dojo$//')
 DOJO_DIR="."
 
-#path to expected location of dataset configuration
+#path to expected location of dataset configuration 
 DATASET_CONF="target_voice_dataset/dataset.conf"
 TRAIN_FROM_SCRATCH_FILE="target_voice_dataset/.SCRATCH"
+LIGHTNING_LOGS_CHECKPOINT_FOLDER="training_folder/lightning_logs/version_0/checkpoints"
+VOICE_CHECKPOINTS_FOLDER="voice_checkpoints"
 has_linked_dataset=false
 
-# Prevent execution in DOJO_CONTENTS - used only when making new dojos.
+# Prevent execution in DOJO_CONTENTS - used only when making new dojos.  
 this_dir=$(pwd)
 dir_only=$(basename "$this_dir")
 if [ $dir_only = "DOJO_CONTENTS" ]; then
    echo -e "${RED}The DOJO_CONTENTS folder is used as a template for other dojos."
    echo -e "You should not run any scripts inside of DOJO_CONTENTS"
-   echo
+   echo 
    echo -e "Instead, run 'newdojo.sh' <voice name> to create a new dojo"
-   echo -e "and train your models in that folder."
+   echo -e "and train your models in that folder." 
    echo
    echo -e "Exiting${RESET}"
    exit 1
@@ -31,7 +33,7 @@ if [ -e $color_file ]; then
 else
     echo "$0 - color_file not found"
     echo "     expected location: $settings_file"
-    echo
+    echo 
     echo "exiting"
     exit 1
 fi
@@ -62,7 +64,7 @@ dir_size_in_gb() {
     local dir_path="$1"
     if [ -d "$dir_path" ]; then
         local size_in_kb=$(du -sk "$dir_path" | cut -f1)
-        local size_in_gb=$(LC_NUMERIC=C echo "scale=2; $size_in_kb / 1024 / 1024" | bc)
+        local size_in_gb=$(echo "scale=2; $size_in_kb / 1024 / 1024" | bc)
         printf "%7.2f\n" "$size_in_gb"
     else
         echo "Invalid directory"
@@ -71,7 +73,7 @@ dir_size_in_gb() {
 
 check_for_linked_dataset(){
 # Checks whether current dojo is already associated with a voice dataset
-    has_linked_dataset=false
+    has_linked_dataset=false   
     if [ -e "$DATASET_CONF" ]; then
         dataset_path=$(dirname $(readlink -f "$DATASET_CONF"))
         # check for .QUALITY file created by previous run
@@ -81,7 +83,7 @@ check_for_linked_dataset(){
             echo "        Dataset must be reconfigured."
             return 1
         fi
-
+            
         quality=$(cat $quality_path)
         if [ "$quality" = "L" ]; then
             quality_str="low"
@@ -97,13 +99,13 @@ check_for_linked_dataset(){
             echo "Warning: .SCRATCH file not found at: $TRAIN_FROM_SCRATCH_FILE ."
         fi
 
-
+   
         source $DATASET_CONF # reads variables stored in dataset.conf
         echo "        Found linked dataset."
         has_linked_dataset=true
     fi
 }
-
+    
 show_linked_dataset(){
         echo
         echo "        This dojo is currently configured to use the following dataset"
@@ -113,7 +115,7 @@ show_linked_dataset(){
         echo "        voice type            : $DEFAULT_VOICE_TYPE"
         echo "        espeak-ng language    : $ESPEAK_LANGUAGE_IDENTIFIER"
         echo "        dataset location      : $dataset_path"
-        echo
+        echo 
         echo "        Dojo-specific settings"
         echo
         echo "        quality               : $quality_str"
@@ -134,12 +136,56 @@ confirm_or_change_dataset(){
     fi
 }
 
+
+check_and_copy_ckpt() {
+    local source_folder="$LIGHTNING_LOGS_CHECKPOINT_FOLDER"
+    local dest_folder="$VOICE_CHECKPOINTS_FOLDER"
+
+    # Check if .ckpt file exists in source folder
+    local ckpt_file=$(find "$source_folder" -maxdepth 1 -type f -name "*.ckpt" | head -n 1) 2>&1
+
+    if [[ -z "$ckpt_file" ]]; then
+        #echo "No .ckpt file found in $source_folder."
+        echo "    Dojo is clean.  Proceeding."
+        echo
+        return 0
+    fi
+
+    local ckpt_filename=$(basename "$ckpt_file")
+
+    # Check if the same file exists in destination folder
+    if [[ -f "$dest_folder/$ckpt_filename" ]]; then
+        echo "    Dojo is ready.  Proceeding."
+        echo
+        return 0
+    else
+        echo
+        echo "    An unsaved checkpoint from a previous session was found in $ckpt_file."
+        echo "    It will be deleted when training starts unless you save it now."
+        echo
+        read -p "    Do you want to save it? (y/n): " choice
+        if [[ "$choice" =~ ^[Yy]$ ]]; then
+            cp "$ckpt_file" "$dest_folder/"
+            echo "        $ckpt_filename was saved in $dest_folder."
+            echo
+        else
+            echo
+            echo "    Proceeding."
+            echo
+        fi
+    fi
+}
+
+
 # MAIN PROGRAM
 
 clear
 echo -e "    ${BOLD_PURPLE}TextyMcspeechy TTS Dojo${RESET}"
 echo
+echo "    Checking for unsaved data from previous training session "
+check_and_copy_ckpt
 echo -e "    Checking dojo for linked dataset"
+
 check_for_linked_dataset
 
 if [ "$has_linked_dataset" = "true" ]; then
@@ -160,13 +206,13 @@ echo
 
 # Execute the preprocessing script
 bash ./scripts/preprocess_dataset.sh
-check_exit_status
+check_exit_status  
 
 # Run the training session
 bash ./scripts/train.sh
-check_exit_status
+check_exit_status 
 
-# Show exit message after training
+# Show exit message after training 
 clear
 echo
 echo "Thank you for using TextyMcSpeechy."
@@ -179,9 +225,9 @@ echo -e "${CYAN}$(dir_size_in_gb ./archived_checkpoints) GB in ${GREEN}archived_
 echo -e "${CYAN}$(dir_size_in_gb ./archived_tts_voices) GB in ${GREEN}archived_tts_voices${RESET}"
 echo
 echo -e "Please remember to delete any files you don't need."
-echo
+echo 
 echo "Shutting down textmcspeechy-piper docker container, please wait..."
-docker container stop textymcspeechy-piper >/dev/null
+docker container stop textymcspeechy-piper >/dev/null     
 echo "Done."
 echo
 exit 0
