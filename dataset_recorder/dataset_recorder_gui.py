@@ -773,6 +773,7 @@ class DatasetRecorder:
     def text_to_speech_file(self, text, output_path):
         """Generate speech from text using ElevenLabs API and save to file"""
         VOICE_ID = "H6Ti9LTHoVP3jUkb7KKg"
+        PCM_SAMPLE_RATE = 22050  # ElevenLabs PCM sample rate
         URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}?output_format=pcm_22050"
 
         headers = {
@@ -795,19 +796,25 @@ class DatasetRecorder:
         try:
             response = requests.post(URL, json=data, headers=headers)
             response.raise_for_status()
-
-            with open(output_path, "wb") as f:
-                f.write(response.content)
-
-            print(f'Generated {output_path} sucessfully.')
-            sys.exit(1)
+            
+            # The response is raw PCM data, we need to convert it to WAV
+            pcm_data = response.content
+            
+            # Create a WAV file with the PCM data
+            with wave.open(output_path, 'wb') as wf:
+                wf.setnchannels(1)  # Mono
+                wf.setsampwidth(2)  # 16-bit
+                wf.setframerate(PCM_SAMPLE_RATE)  # 22050 Hz
+                wf.writeframes(pcm_data)
+            
+            print(f'Generated {output_path} successfully.')
             return True
 
         except requests.exceptions.RequestException as e:
             print(f"Error generating audio: {e}", file=sys.stderr)
             return False
-        except subprocess.CalledProcessError as e:
-            print(f"Error converting audio: {e}", file=sys.stderr)
+        except Exception as e:
+            print(f"Error saving audio: {e}", file=sys.stderr)
             return False
 
     def disable_ui_during_operation(self):
