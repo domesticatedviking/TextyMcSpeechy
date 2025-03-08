@@ -459,13 +459,15 @@ class DatasetRecorder:
             new_duration = duration - (trim_sec * 2)
             
             if new_duration <= 0:
-                raise Exception("Audio too short to trim")
+                self.status_var.set("Audio too short to trim, keeping original")
+                return
             
-            # Trim using ffmpeg
+            # Trim using ffmpeg - use pcm_s16le codec to ensure WAV compatibility
             subprocess.run(
                 ['ffmpeg', '-y', '-i', file_path, '-ss', f'00:00:00.{TRIM_SILENCE_MS:03d}', 
-                 '-t', str(new_duration), '-c', 'copy', temp_path],
-                capture_output=True
+                 '-t', str(new_duration), '-acodec', 'pcm_s16le', '-ar', str(RATE), 
+                 '-ac', str(CHANNELS), temp_path],
+                capture_output=True, check=True
             )
             
             # Replace the original file
@@ -475,18 +477,44 @@ class DatasetRecorder:
             # Load the trimmed waveform
             self.load_waveform(file_path)
             
+        except subprocess.CalledProcessError as e:
+            self.status_var.set(f"Error trimming audio: {e.stderr.decode() if e.stderr else str(e)}")
         except Exception as e:
             self.status_var.set(f"Error trimming audio: {str(e)}")
     
     def load_waveform(self, file_path):
         """Load and display a waveform from a WAV file"""
         try:
-            with wave.open(file_path, 'rb') as wf:
-                # Read the first 10 seconds or the entire file, whichever is shorter
-                n_frames = min(wf.getnframes(), 10 * wf.getframerate())
-                frames = wf.readframes(n_frames)
-                audio_data = np.frombuffer(frames, dtype=np.int16)
+            # Check if the file is a valid WAV file
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(f"File not found: {file_path}")
                 
+            # Use ffmpeg to convert the file to raw PCM data for visualization
+            # This is more robust than using wave.open directly
+            temp_fd, temp_path = tempfile.mkstemp(suffix='.raw')
+            os.close(temp_fd)
+            
+            try:
+                # Convert to raw PCM using ffmpeg
+                result = subprocess.run(
+                    ['ffmpeg', '-y', '-i', file_path, '-f', 's16le', '-acodec', 'pcm_s16le', 
+                     '-ar', str(RATE), '-ac', '1', temp_path],
+                    capture_output=True, check=True
+                )
+                
+                # Read the raw PCM data
+                with open(temp_path, 'rb') as f:
+                    raw_data = f.read()
+                
+                # Convert to numpy array
+                audio_data = np.frombuffer(raw_data, dtype=np.int16)
+                
+                # Limit to first 10 seconds for display
+                max_samples = 10 * RATE
+                if len(audio_data) > max_samples:
+                    audio_data = audio_data[:max_samples]
+                
+                # Plot the waveform
                 self.ax.clear()
                 self.ax.set_ylim(-32768, 32768)
                 self.ax.plot(range(len(audio_data)), audio_data, color='green')
@@ -494,7 +522,15 @@ class DatasetRecorder:
                 self.ax.set_yticks([])
                 self.ax.set_title(os.path.basename(file_path))
                 self.canvas.draw()
+                
+            finally:
+                # Clean up temp file
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
         
+        except subprocess.CalledProcessError as e:
+            self.status_var.set(f"Error processing audio file: {e.stderr.decode() if e.stderr else str(e)}")
+            self.clear_waveform()
         except Exception as e:
             self.status_var.set(f"Error loading waveform: {str(e)}")
             self.clear_waveform()
@@ -683,13 +719,34 @@ class DatasetRecorder:
             response = requests.post(URL, json=data, headers=headers)
             response.raise_for_status()
             
-            with open(output_path, "wb") as f:
-                f.write(response.content)
+            # ElevenLabs returns MP3 data, we need to convert it to WAV
+            # First save the MP3 to a temporary file
+            temp_fd, temp_mp3 = tempfile.mkstemp(suffix='.mp3')
+            os.close(temp_fd)
             
-            return True
+            try:
+                with open(temp_mp3, "wb") as f:
+                    f.write(response.content)
+                
+                # Convert MP3 to WAV using ffmpeg
+                subprocess.run(
+                    ['ffmpeg', '-y', '-i', temp_mp3, '-acodec', 'pcm_s16le', 
+                     '-ar', str(RATE), '-ac', str(CHANNELS), output_path],
+                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                )
+                
+                return True
+                
+            finally:
+                # Clean up temp file
+                if os.path.exists(temp_mp3):
+                    os.unlink(temp_mp3)
         
         except requests.exceptions.RequestException as e:
             print(f"Error generating audio: {e}", file=sys.stderr)
+            return False
+        except subprocess.CalledProcessError as e:
+            print(f"Error converting audio: {e}", file=sys.stderr)
             return False
     
     def disable_ui_during_operation(self):
