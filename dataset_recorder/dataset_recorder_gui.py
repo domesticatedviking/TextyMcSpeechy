@@ -405,12 +405,16 @@ class DatasetRecorder:
         )
 
         if file_path:
-            self.csv_file = file_path
-            self.csv_label.config(text=os.path.basename(file_path))
-            self.load_metadata(file_path)
-            self.check_files()
-            self.update_ui()
-            self.status_var.set(f"Loaded {len(self.filenames)} items from {os.path.basename(file_path)}")
+            self.status_var.set(f"Loading CSV file: {os.path.basename(file_path)}...")
+            if self.load_metadata(file_path):
+                self.csv_file = file_path
+                self.csv_label.config(text=os.path.basename(file_path))
+                self.check_files()
+                self.update_ui()
+                self.status_var.set(f"Loaded {len(self.filenames)} items from {os.path.basename(file_path)}")
+            else:
+                # If load_metadata failed, don't update the UI
+                self.status_var.set(f"Failed to load CSV file: {os.path.basename(file_path)}")
 
     def set_output_dir(self):
         """Set the output directory for WAV files"""
@@ -430,11 +434,69 @@ class DatasetRecorder:
             if not os.path.exists(self.output_dir):
                 os.makedirs(self.output_dir)
 
+    def validate_csv(self, csv_file):
+        """Validate CSV file format and return error message if invalid"""
+        try:
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                lines = [line.strip() for line in f if line.strip()]
+                
+                if not lines:
+                    return "CSV file is empty"
+                
+                # Check each line for proper format
+                line_numbers = set()
+                for i, line in enumerate(lines, 1):
+                    parts = line.strip().split('|')
+                    
+                    # Check if line has at least two parts
+                    if len(parts) < 2:
+                        return f"Line {i} does not have the required format 'number|text'"
+                    
+                    # Check if first part is a number
+                    if not parts[0].strip().isdigit():
+                        return f"Line {i} does not start with a valid number: '{parts[0]}'"
+                    
+                    # Check if second part has content
+                    if not parts[1].strip():
+                        return f"Line {i} has an empty text field"
+                    
+                    # Check for duplicate line numbers
+                    line_num = int(parts[0].strip())
+                    if line_num in line_numbers:
+                        return f"Duplicate line number {line_num} found"
+                    
+                    line_numbers.add(line_num)
+                
+                # Check for sequential numbering (optional, comment out if not needed)
+                expected_numbers = set(range(1, len(lines) + 1))
+                missing = expected_numbers - line_numbers
+                extra = line_numbers - expected_numbers
+                
+                if missing:
+                    return f"Missing line numbers: {', '.join(map(str, sorted(missing)))}"
+                
+                if extra:
+                    return f"Unexpected line numbers: {', '.join(map(str, sorted(extra)))}"
+                
+                return None  # No errors
+                
+        except UnicodeDecodeError:
+            return "CSV file has invalid encoding. Please use UTF-8."
+        except Exception as e:
+            return f"Error validating CSV: {str(e)}"
+
     def load_metadata(self, csv_file):
         """Load metadata from CSV file"""
         self.filenames = []
         self.phrases = []
         self.recorded = []
+
+        # Validate CSV format first
+        error_msg = self.validate_csv(csv_file)
+        if error_msg:
+            self.status_var.set(f"CSV validation failed: {error_msg}")
+            messagebox.showerror("CSV Format Error", error_msg)
+            return False
 
         try:
             with open(csv_file, 'r', encoding='utf-8') as f:
@@ -456,8 +518,12 @@ class DatasetRecorder:
                     self.recorded.append(False)
 
             self.current_index = 0
+            return True
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load CSV file: {e}")
+            error_msg = f"Failed to load CSV file: {e}"
+            self.status_var.set(error_msg)
+            messagebox.showerror("Error", error_msg)
+            return False
 
     def check_files(self):
         """Check which files have already been recorded"""
