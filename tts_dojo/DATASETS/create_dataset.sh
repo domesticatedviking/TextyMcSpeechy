@@ -300,71 +300,49 @@ check_metadata(){
 }
 
 locate_highest_rate_folder() {
-# determine which folder has files with highest sampling rate (use these for resampling)
-    input_path="$DATASET_DIR"/"$input_dir"
-    # Check if input directory is defined
-    if [ -z "$input_dir" ]; then
-        echo "Input directory not specified."
-        exit 1
-    else
-        :
-        # could log something here
-    fi
-
-    # Check if input directory exists
-    if [ ! -d "$input_path" ]; then
-        echo "Directory $input_dir does not exist."
-        exit 1
-    fi
+    input_path="$DATASET_DIR/$input_dir"
+    highest_rate=0
+    highest_rate_folders=()
     pattern="^($(IFS='|'; echo "${supported_formats[*]}"))_[0-9]+$"
+    
     while IFS= read -r folder; do
-        # Extract the basename of the folder
         folder_name=$(basename "$folder")
- 
-        # Ensure the folder name matches the pattern <audio file format>_<sampling_rate>
         if [[ "$folder_name" =~ $pattern ]]; then
-            #echo "Found a sorted folder: $folder_name"
-            # Extract sampling rate from folder name
             sampling_rate=$(echo "$folder_name" | awk -F'_' '{print $2}')
-        
-            # Ensure sampling_rate is a valid integer
             if [[ "$sampling_rate" =~ ^[0-9]+$ ]]; then
-                # Compare sampling rates
                 if (( sampling_rate > highest_rate )); then
-                    highest_rate="$sampling_rate"
-                    highest_rate_folder="$folder"
+                    highest_rate=$sampling_rate
+                    highest_rate_folders=("$folder")
+                elif (( sampling_rate == highest_rate )); then
+                    highest_rate_folders+=("$folder")
                 fi
-            else
-                :
-                # Invalid sampling rate
             fi
-        else
-            :
-            # Folder does not match pattern
         fi
     done < <(find "$input_path" -type d -name '*_*')
-
-    # Print the highest sampling rate folder
-    if [ -n "$highest_rate_folder" ]; then
-        echo "Highest sampling rate folder: $highest_rate_folder"
+    
+    if [ ${#highest_rate_folders[@]} -gt 0 ]; then
+        echo "Highest sampling rate: $highest_rate"
+        echo "Highest rate folders found:"
+        for folder in "${highest_rate_folders[@]}"; do
+            echo "  $folder"
+        done
     else
-        echo "No directories found matching the pattern '*_*' in $input_dir."
+        echo "No directories found matching pattern '*_*' in $input_dir."
     fi
 }
 
-
 ensure_piper_sampling_rates(){
-# ensure wav_16000 and wav_22050 exist
-     if [ ! -z "$highest_rate_folder" ]; then
-         echo -e "\nGenerating wav_16000 files\n"
-         resample_convert "$highest_rate_folder" "wav_16000"
-         echo -e "\nGenerating wav_22050 files\n"
-         resample_convert "$highest_rate_folder" "wav_22050"
-     else
+    if [ ${#highest_rate_folders[@]} -gt 0 ]; then
+         for folder in "${highest_rate_folders[@]}"; do
+             echo -e "\nGenerating wav_16000 files from $folder\n"
+             resample_convert "$folder" "wav_16000"
+             echo -e "\nGenerating wav_22050 files from $folder\n"
+             resample_convert "$folder" "wav_22050"
+         done
+    else
          echo "Error - no highest rate folder was found."
-     fi
+    fi
 }
-
 
 verify_wav_files_against_metadata(){
 # make sure files referenced in metadata.csv are present in directory
