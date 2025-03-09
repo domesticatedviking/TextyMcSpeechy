@@ -17,6 +17,13 @@
 - https://www.hackster.io/news/erik-bjorgan-makes-voice-cloning-easy-with-the-applio-and-piper-based-textymcspeechy-e9bcef4246fb
 
 ## News
+#### **March 8 2025** - A simpler option for pretrained checkpoints
+- `download_defaults.sh` now can use a `generic` language pack to download checkpoints that can be used as the starting point for training voices in any language. This option may exchange a bit of voice quality for convenience, but it will make it easier for new users to get started.
+- Please note that there don't appear to be any compatible `low` quality pretrained checkpoints available on huggingface right now.  This means that only `medium` and `high` quality voices will be able to be built from downloaded pretrained checkpoint files.  You can still train a `low` quality model from scratch and use one of its checkpoints as a pretrained checkpoint for future models.
+- `run_training.sh` now offers to save any unsaved checkpoint found in `training_folder` before wiping it, which will make it easier to resume dojos if they crash due to insufficient memory.
+- `piper_training.sh` now correctly applies the quality parameter.
+- teaser: [esauvisky](github.com/esauvisky) has been up to some truly exciting stuff in the pull requests that should make building custom voice datasets vastly easier. Can't wait to see it in action.
+
 #### **March 5 2025** - Fixed `download_defaults.sh` to handle `.ckpt` files that have non-conforming filenames.
 - `download_defaults.sh` now uses heuristics to rename checkpoint files that do not have the required `epoch=1000-step=3493434.ckpt` filename format.
 - A summary of all voice type and quality combinations provided by the `.conf` file are now listed when the script is finished.
