@@ -42,9 +42,9 @@ script_run_container_boilerplate(){
     echo "#!/bin/bash" > $tf
     echo "# run_container.sh:  This script provides a single alias to one of the available ways of starting a docker container." >> $tf
     echo "#" >> $tf
-    echo "# use one of the following options in this script: " >> $tf
-    echo '# bash prebuilt_container_run.sh "$@" # launches prebuilt docker images which you downloaded ' >> $tf
-    echo '#    bash local_container_run.sh "$@" # launches images you built locally ' >> $tf
+    echo "# use one of the following options in this script:" >> $tf
+    echo '# bash prebuilt_container_run.sh "$@" # launches prebuilt docker images which you downloaded' >> $tf
+    echo '#    bash local_container_run.sh "$@" # launches images you built locally' >> $tf
     echo "" >> $tf
 }
 
