@@ -69,7 +69,7 @@ update_json() {
        '.audio.quality = $quality_value |
         .language.code = $lang_code |
         .dataset = $dataset' \
-       "$filename" > tmp.json && mv tmp.json "$filename"
+       "$filename" > tmp.json && mv tmp.json "$filename" && chown 1000:1000 "$filename"
 }
 
 
