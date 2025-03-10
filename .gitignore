@@ -168,3 +168,5 @@ tts_dojo/DATASETS/*/
 tts_dojo/*_dojo/
 
 dataset_recorder/wav/*.wav
+
+tts_dojo/PRETRAINED_CHECKPOINTS/default/.ESPEAK_LANGUAGE
