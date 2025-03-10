@@ -7,6 +7,7 @@ trap "kill 0" SIGINT
 set +e # Exit immediately if any command returns a non-zero exit code
 
 SETTINGS_FILE="SETTINGS.txt"
+GPU_CONF_FILE=".gpu"
 
 # flag file that overrides the use of pretrained checkpoints
 TRAIN_FROM_SCRATCH_FILE="../target_voice_dataset/.SCRATCH"
@@ -37,6 +38,12 @@ else
     echo 
     echo "press <enter> to exit"
     exit 1
+fi
+
+
+# Safely source the .gpu file if it exists (no error if it doesn't)
+if [ -f "$GPU_CONF_FILE" ]; then
+  source "$GPU_CONF_FILE"
 fi
 
 
@@ -76,11 +83,18 @@ if [ -z "$1" ]; then
 fi
 
 starting_checkpoint=$1
-   
+  
+
+# Determine the container name based on GPU_ID from the .gpu file.
+if [ -n "$GPU_ID" ]; then
+  CONTAINER_NAME="textymcspeechy-piper-$GPU_ID"
+else
+  CONTAINER_NAME="textymcspeechy-piper"
+fi 
 
 # run piper training in docker container (textymcspeechy-piper)
 train_from_scratch(){
-docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
+docker exec "$CONTAINER_NAME" bash -c "cd /app/piper/src/python \
     && python -m piper_train \
     --dataset-dir "/app/tts_dojo/$DOJO_NAME/training_folder/" \
     --accelerator gpu \
@@ -96,7 +110,7 @@ docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
 }
 
 train_from_pretrained(){
-docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python \
+docker exec "$CONTAINER_NAME" bash -c "cd /app/piper/src/python \
     && python -m piper_train \
     --dataset-dir "/app/tts_dojo/$DOJO_NAME/training_folder/" \
     --accelerator gpu \

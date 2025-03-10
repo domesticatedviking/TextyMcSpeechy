@@ -43,8 +43,8 @@ script_run_container_boilerplate(){
     echo "# run_container.sh:  This script provides a single alias to one of the available ways of starting a docker container." >> $tf
     echo "#" >> $tf
     echo "# use one of the following options in this script: " >> $tf
-    echo "# bash prebuilt_container_run.sh  # launches prebuilt docker images which you downloaded " >> $tf
-    echo "#    bash local_container_run.sh  # launches images you built locally " >> $tf
+    echo '# bash prebuilt_container_run.sh "$@" # launches prebuilt docker images which you downloaded ' >> $tf
+    echo '#    bash local_container_run.sh "$@" # launches images you built locally ' >> $tf
     echo "" >> $tf
 }
 
@@ -121,7 +121,7 @@ if [[ "$response" == 1 ]]; then
     echo 
     echo "The TTS dojo will automatically launch the docker image when you start training a model"
     script_run_container_boilerplate
-    echo "bash prebuilt_container_run.sh" >> $RUN_CONTAINER_SCRIPT_NAME
+    echo 'bash prebuilt_container_run.sh "$@"' >> $RUN_CONTAINER_SCRIPT_NAME
     echo "done."
     echo
 elif [[ "$response" == 2 ]]; then
@@ -129,7 +129,7 @@ elif [[ "$response" == 2 ]]; then
     echo 
     echo "The TTS dojo will automatically launch the docker image when you start training a model"
     script_run_container_boilerplate
-    echo "bash local_container_run.sh" >> $RUN_CONTAINER_SCRIPT_NAME
+    echo 'bash local_container_run.sh "$@"' >> $RUN_CONTAINER_SCRIPT_NAME
     echo "done."
 fi
 
