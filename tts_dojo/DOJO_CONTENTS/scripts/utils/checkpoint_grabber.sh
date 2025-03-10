@@ -99,6 +99,8 @@ export_model(){
     if [ ! -d "$voice_folder_path" ]; then
         mkdir -p "$voice_folder_path"
     fi
+
+    chown -R 1000:1000 "$voice_folder_path"
    
     # send an "enter" keystroke to the exporter pane to end the "read" command that is preventing a command prompt from displaying
     tmux send-keys -t "${TMUX_EXPORTER_PANE:-0.3}" Enter  

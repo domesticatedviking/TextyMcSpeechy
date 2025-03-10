@@ -43,6 +43,9 @@ echo "Populating with : '$PWD/DOJO_CONTENTS'"
 # the DOJO_CONTENTS directory is copied as the base structure for all new dojos.
 cp -r ./DOJO_CONTENTS/* ./$DIRECTORY
 
+echo "Setting proper permissions on: '$PWD/$DIRECTORY'"
+chown -R 1000:1000 ./$DIRECTORY
+
 echo
 echo -e "  Dojo is ready! You will find it here:  ${CYAN}${DOJO_DIR}${RESET}"
 echo
