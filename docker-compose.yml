@@ -14,4 +14,4 @@ services:
     user: "${TMS_USER_ID:-1000}:${TMS_GROUP_ID:-1000}"
     tty: true
     ports:
-      - "6006:6006"  # Open tensorboard server port
+      - "${HOST_TENSORBOARD_PORT:-6006}:6006"  # Expose tensorboard server on host port (6006+GPU_ID if provided)

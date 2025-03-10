@@ -2,17 +2,20 @@
 # prebuilt_container_run.sh  - Launches a prebuilt image of textymcspeechy-piper
 #
 # Usage:
-#   ./prebuilt_container_run.sh              # Use all available GPUs
-#   ./prebuilt_container_run.sh 0            # Use only GPU with ID 0
+#   ./prebuilt_container_run.sh              # Use all available GPUs, host tensorboard port 6006
+#   ./prebuilt_container_run.sh 0            # Use only GPU with ID 0, host tensorboard port 6006+0 (6006)
+#   ./prebuilt_container_run.sh 1            # Use only GPU with ID 1, host tensorboard port 6007
 
 # If a GPU ID is provided as the first argument, use it; otherwise, use "all"
 if [ -n "$1" ]; then
     GPU_ID=$1
     CONTAINER_NAME="textymcspeechy-piper-${GPU_ID}"
     NVIDIA_DEVICES="$GPU_ID"
+    HOST_TENSORBOARD_PORT=$((6006 + GPU_ID))
 else
     CONTAINER_NAME="textymcspeechy-piper"
     NVIDIA_DEVICES="all"
+    HOST_TENSORBOARD_PORT=6006
 fi
 
 # Path to script that sets which custom pronunciation rules will be applied when the container is brought up
@@ -64,7 +67,7 @@ echo "Starting Docker container: $CONTAINER_NAME"
 echo "              Using image: $IMAGE_NAME"
 echo "          Running as user: UID=$TMS_USER_ID, GID=$TMS_GROUP_ID"
 echo "          Mounting volume: $TMS_VOLUME_PATH:/app/tts_dojo"
-echo "                    Ports: Exposing 6006 for TensorBoard"
+echo "                    Ports: Host port $HOST_TENSORBOARD_PORT mapped to container port 6006 for TensorBoard"
 echo "                    GPUs: NVIDIA_VISIBLE_DEVICES set to $NVIDIA_DEVICES"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -90,7 +93,7 @@ docker run --rm -d \
   --env NVIDIA_DRIVER_CAPABILITIES=compute,utility \
   --user "$TMS_USER_ID:$TMS_GROUP_ID" \
   --tty \
-  -p 6006:6006 \
+  -p ${HOST_TENSORBOARD_PORT}:6006 \
   $IMAGE_NAME
 
 # Check if the container is running
