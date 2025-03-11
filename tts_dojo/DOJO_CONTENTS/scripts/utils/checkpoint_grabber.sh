@@ -30,7 +30,7 @@ fi
 
 
 # path to temporary file on host that communicates arrival of new checkpoint file between inotify and main process.
-NEW_CHECKPOINT_SIGNAL_FILE="/tmp/newcheckpoint.txt"
+NEW_CHECKPOINT_SIGNAL_FILE="$(readlink -f "$(dirname "$0")/../../voice_checkpoints/.NEWCHECKPOINT_INOTIFY")"
 echo "" >$NEW_CHECKPOINT_SIGNAL_FILE
 last_file_processed=""
 
