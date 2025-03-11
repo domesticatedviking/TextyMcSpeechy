@@ -80,7 +80,7 @@ update_selection(){
     count_diff=$((new_count - old_count))  #check if files added since last update
   
     # ensure that selected item stays the same
-    if [ $count_diff -gt 0 ] && [ $old_count ne 0 ]; then
+    if [ $count_diff -gt 0 ] && [ $old_count -ne 0 ]; then
         if [ "$sort_order" = "descending" ]; then
             # descending sort order means dir index 0 contains the newest file
             # To keep selection constant, need to add to selection as list grows
