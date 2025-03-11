@@ -100,7 +100,7 @@ docker run --rm -d \
 if [ $? -eq 0 ]; then
     echo "Container $CONTAINER_NAME started successfully."
     # Apply any custom pronunciation rules configured to run automatically
-    $AUTOMATIC_ESPEAK_RULE_SCRIPT
+    $AUTOMATIC_ESPEAK_RULE_SCRIPT "$CONTAINER_NAME"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 else
     echo "Failed to start the container."

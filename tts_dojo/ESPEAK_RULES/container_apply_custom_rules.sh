@@ -10,7 +10,7 @@
 #
 # this script requires root access to the docker container
 # call it with the command below (substitute appropriate language for "en")
-# docker exec -u root -it textymcspeechy-piper "/app/tts_dojo/ESPEAK_RULES/apply_custom_rules.sh en > apply_rules.log"  
+# docker exec -u root -it textymcspeechy-piper "/app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh en > apply_rules.log"  
 
 LANGUAGES=$1  # this will be a string.  Multiple languages can be separated with spaces (eg. "en ru it de")
 LOGFILE=$2
@@ -29,7 +29,7 @@ IFS=' ' read -r -a language_array <<< "$LANGUAGES"
 
 
 show_launch_command(){
-echo "docker exec -u root -it textymcspeechy-piper \"/app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh <language prefix> $LOGFILE\""
+echo "docker exec -u root -it textymcspeechy-piper \"/app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh <language prefix> > $LOGFILE\""
 echo "eg:    docker exec -u root -it textymcspeechy-piper \"/app/tts_dojo/ESPEAK_RULES/container_apply_custom_rules.sh en > $LOGFILE\""
 }
 
