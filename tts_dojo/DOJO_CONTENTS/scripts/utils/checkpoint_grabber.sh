@@ -23,8 +23,8 @@ last_file_processed=""
 
 
 # load settings
-if [ -e $SETTINGS_FILE ]; then
-    source $SETTINGS_FILE
+if [ -e "$SETTINGS_FILE" ]; then
+    source "$SETTINGS_FILE"
 else
     echo "$0 - settings not found"
     echo "     expected location: $SETTINGS_FILE"
@@ -37,16 +37,16 @@ DATASET_CONF_FILE="../target_voice_dataset/dataset.conf"
 QUALITY_FILE="../target_voice_dataset/.QUALITY"
 quality=""
 
-if [[ -f $QUALITY_FILE ]]; then
-    QUALITY_CODE=$(cat $QUALITY_FILE)
+if [[ -f "$QUALITY_FILE" ]]; then
+    QUALITY_CODE=$(cat "$QUALITY_FILE")
 else
     echo "Error: .QUALITY file not found."
     exit 1
 fi
 
 # Load dataset.conf
-if [ -e $DATASET_CONF_FILE ]; then
-    source $DATASET_CONF_FILE
+if [ -e "$DATASET_CONF_FILE" ]; then
+    source "$DATASET_CONF_FILE"
 else
     echo "$0 - dataset.conf not found"
     echo "     expected location: $DATASET_CONF_FILE"
@@ -71,7 +71,7 @@ fi
 
 clear # clear the screen
 # load constants from values sourced from SETTINGS, supply defaults if not specified
-PIPER_STEP=$PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS
+PIPER_STEP=${PIPER_SAVE_CHECKPOINT_EVERY_N_EPOCHS:5}
 MIN_GB=${SETTINGS_GRABBER_MINIMUM_DRIVE_SPACE_GB:-20}
 MIN_GB_WARNING=${DRIVE_SPACE_WARNING_THRESHOLD_GB:-10}
 MINIMUM_DRIVE_SPACE=$((MIN_GB * 1024 * 1024))  # 20 GB in KB
