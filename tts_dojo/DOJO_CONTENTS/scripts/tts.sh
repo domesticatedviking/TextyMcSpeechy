@@ -6,6 +6,20 @@ output_file="output_audio.wav"
 # Infer names from parent dir
 DOJO_NAME=$(awk -F'/' '{print $(NF-1)}' <<< "$PWD")
 VOICE_NAME=$(awk -F'/' '{print $(NF-1)}' <<< "$PWD" | sed 's/_dojo$//')
+
+GPU_CONF_FILE="$(dirname "$0")/.gpu"
+if [ -f "$GPU_CONF_FILE" ]; then
+    # Source silently (if the .gpu file exists, it will set GPU_ID)
+    source "$GPU_CONF_FILE"
+fi
+
+# Set container name based on whether GPU_ID is defined
+if [ -n "$GPU_ID" ]; then
+    CONTAINER_NAME="textymcspeechy-piper-$GPU_ID"
+else
+    CONTAINER_NAME="textymcspeechy-piper"
+fi
+
 echo "Starting tts.sh"
 
 # Check for text argument
@@ -55,7 +69,7 @@ if [ -z "$onnx_path" ]; then
 fi
 
 # Generate the audio file with Piper in the docker container
-docker exec -it textymcspeechy-piper bash -c "cd /app/tts_dojo/${DOJO_NAME}/scripts && \
+docker exec -it "$CONTAINER_NAME" bash -c "cd /app/tts_dojo/${DOJO_NAME}/scripts && \
 echo \"$text\" | piper -m \"$onnx_path\" --output_file \"$output_file\""
 
 # Inform the user and attempt to play the audio file

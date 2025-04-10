@@ -39,9 +39,12 @@ Please check out this useful [guide to producing custom espeak pronunciations](/
 
 ##  Manual Usage:
 ```
-# Run this command on the host computer to manually apply a ruleset to a running textymcspeechy-piper container.
+# Run this command on the host computer to manually apply a ruleset to a running 'textymcspeechy-piper' container.
 
-./apply_custom_rules.sh en    # substitute other language codes for en as needed. 
+./apply_custom_rules.sh en textymcspeechy-piper   # substitute other language codes for en as needed, but pass it with quotes "en it"
+
+# If your container has different name, like textymcspeechy-piper-1 (on multi-GPU set-up) use it like
+./apply_custom_rules.sh en textymcspeechy-piper-1   # the container name is the 2nd parameter
 ```
    
 ## Advanced Notes:

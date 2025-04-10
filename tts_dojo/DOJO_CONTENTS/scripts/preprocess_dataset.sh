@@ -10,9 +10,22 @@ SAMPLING_RATE_FILE=".SAMPLING_RATE"
 MAX_WORKERS_FILE=".MAX_WORKERS"
 MASTER_SETTINGS_FILE="../../DOJO_CONTENTS/scripts/$SETTINGS_FILE" #relative to this dojo's scripts dir
 DATASET_CONF_FILE="../target_voice_dataset/dataset.conf" 
+GPU_CONF_FILE=".gpu"
 
 cd scripts # needed to ensure relative paths are built properly
 set +e # Exit immediately if any command returns a non-zero exit code
+
+# Safely source the .gpu file if it exists (no error if it doesn't)
+if [ -f "$GPU_CONF_FILE" ]; then
+  source "$GPU_CONF_FILE"
+fi
+
+# Determine the container name based on GPU_ID from the .gpu file.
+if [ -n "$GPU_ID" ]; then
+  CONTAINER_NAME="textymcspeechy-piper-$GPU_ID"
+else
+  CONTAINER_NAME="textymcspeechy-piper"
+fi
 
 #.SAMPLING_RATE and .MAX_WORKERS are stored in <voice>_dojo/scripts by link_dataset.sh
 if [[ -f $SAMPLING_RATE_FILE ]]; then
@@ -161,7 +174,7 @@ echo
 
 # Run the piper preprocessing script inside of the textymspeechy-piper docker container.
 # note:  /app/piper/src/python refers to a path inside the container. 
-docker exec textymcspeechy-piper bash -c "
+docker exec "$CONTAINER_NAME" bash -c "
   cd /app/piper/src/python && \
   python3 -m piper_train.preprocess \
     --language ${ESPEAK_LANGUAGE_IDENTIFIER} \

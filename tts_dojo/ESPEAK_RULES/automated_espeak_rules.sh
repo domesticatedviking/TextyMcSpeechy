@@ -3,6 +3,13 @@
 # allows user to choose which espeak pronunciation rules will be set up automatically when the container is launched.
 # this script is normally run by "prebuilt_container_run.sh"
 
+# Ensure the container name is passed as the first argument
+if [ -z "$1" ]; then
+    echo "Usage: $0 <container_name>"
+    exit 1
+fi
+CONTAINER_NAME="$1"
+
 # ALWAYS_CONFIGURE_LANGUAGES determines which ruleset(s) will be compiled when the container starts.
 #    eg: "en"     - compiles english ruleset   
 #    eg: "en it"  - compiles english and italian rulesets 
@@ -17,9 +24,8 @@ AUTO_APPLY_CUSTOM_ESPEAK_RULES=false
 # path to main script that applies custom rules (default: "./apply_custom_rules.sh")
 APPLY_CUSTOM_RULESET_SCRIPT="./apply_custom_rules.sh"
 
-# path to logfile  (default: "tts_dojo/ESPEAK_RULES/container_apply_custom_rules.log")
-# 
-CUSTOM_RULESET_SCRIPT_LOGFILE="./container_apply_custom_rules.log"
+# path to logfile  (default: "tts_dojo/ESPEAK_RULES/container_apply_custom_rules-textymcspeechy-piper-1.log")
+CUSTOM_RULESET_SCRIPT_LOGFILE="./container_apply_custom_rules-${CONTAINER_NAME}.log"
 
 
 auto_apply_espeak(){
@@ -32,8 +38,8 @@ auto_apply_espeak(){
     # Conditionally apply custom espeak rules
     if [ "$AUTO_APPLY_CUSTOM_ESPEAK_RULES" = true ]; then
     # Run the script with the specified language
-        echo "Applying custom eSpeak rules for language: $ALWAYS_CONFIGURE_LANGUAGES"
-        $APPLY_CUSTOM_RULESET_SCRIPT "${ALWAYS_CONFIGURE_LANGUAGES}" "$CUSTOM_RULESET_SCRIPT_LOGFILE" > /dev/null 2>&1
+        echo "Applying custom eSpeak rules for language: $ALWAYS_CONFIGURE_LANGUAGES in container $CONTAINER_NAME"
+        $APPLY_CUSTOM_RULESET_SCRIPT "${ALWAYS_CONFIGURE_LANGUAGES}" "$CONTAINER_NAME" "$CUSTOM_RULESET_SCRIPT_LOGFILE" > /dev/null 2>&1
         if [ $? -gt 0 ]; then
             echo
             echo "WARNING: Problem installing custom espeak rules." 

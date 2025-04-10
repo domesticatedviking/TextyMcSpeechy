@@ -18,6 +18,7 @@ ARCHIVED_TTS_VOICES_DIRNAME="archived_tts_voices"
 ARCHIVED_TTS_VOICES="$DOJO_DIR/$ARCHIVED_TTS_VOICES_DIRNAME"
 LIGHTNING_LOGS_LOCATION="./training_folder/lightning_logs"
 TRAIN_FROM_SCRATCH_FILE="./target_voice_dataset/.SCRATCH"
+GPU_CONF_FILE="scripts/.gpu"
 
 # init global vars
 highest_saved_epoch_ckpt=""
@@ -42,7 +43,12 @@ else
     read
 fi
 
-
+load_gpu_config(){
+    # Safely source the .gpu file if it exists (no error if it doesn't)
+    if [ -f "$GPU_CONF_FILE" ]; then
+        source "$GPU_CONF_FILE"
+    fi
+}
 
 load_settings(){
 # load training settings from SETTINGS_FILE
@@ -587,78 +593,76 @@ get_starting_checkpoint_recommendation(){
 }
 
 start_tmux_layout(){
-# Set up tmux windows that will be used to display all of the concurrent processes used during training.
-    
-    tmux new-session -s training -d # start tmux session named "training" in detached mode
-    tmux set-option -g mouse on     # turn on mouse scrolling
-    tmux send-keys -t training "tmux set -g pane-border-status top" Enter   # Turn on pane labels
+    # Determine the tmux session name based on GPU_ID. If GPU_ID is defined, append it.
+    if [ -n "$GPU_ID" ]; then
+        TMUX_SESSION_NAME="training-$GPU_ID"
+    else
+        TMUX_SESSION_NAME="training"
+    fi
 
-    tmux split-window -v -t training # split screen into two rows
-    tmux send-keys -t training "tmux resize-pane -t 0.0 -U 34" Enter  # shrink the top pane 
-    tmux send-keys -t training "tmux resize-pane -t 0.0 -R 42" Enter  
+    # Start a new tmux session with the computed name in detached mode
+    tmux new-session -s "$TMUX_SESSION_NAME" -d
 
-    tmux split-window -h -t 0.0     # split top row into 2 columns
+    # Set mouse option only for this session
+    tmux set-option -t "$TMUX_SESSION_NAME" mouse on
 
-    #split the bottom pane into 2 columns horizontally and resize it.
-    tmux split-window -h -t 0.2
-    tmux send-keys -t training "tmux resize-pane -t 0.2 -U 24" Enter  # shrink the top pane 
+    # Set pane-border status for this session
+    tmux send-keys -t "$TMUX_SESSION_NAME" "tmux set-option -g pane-border-status top" Enter
 
+    # Split screen into two rows in the session
+    tmux split-window -v -t "$TMUX_SESSION_NAME"
 
-    tmux split-window -v -t 0.2
-    #tmux send-keys -t training "tmux resize-pane -t 0.2 -L 25" Enter
-    #tmux send-keys -t training "tmux resize-pane -t 0.2 -L 15" Enter
-    
-    #tmux split-window -v -t 0.3
-    #tmux split-window -v -t 0.2
-    tmux split-window -v -t 0.3
-    
-    tmux send-keys -t training "tmux resize-pane -t $TMUX_CONTROL_PANE -U 10" Enter  # shrink the top pane 
-    # label each pane
+    # Resize top pane using explicit target within the session
+    tmux send-keys -t "$TMUX_SESSION_NAME":0.0 "tmux resize-pane -U 34" Enter
+    tmux send-keys -t "$TMUX_SESSION_NAME":0.0 "tmux resize-pane -R 42" Enter
 
-    tmux select-pane -t "${TMUX_TRAINING_PANE:-0.0}" -T "${TMUX_TRAINING_PANE_TITLE:-'PIPER TRAINING RAW OUTPUT'}"
-    tmux select-pane -t "${TMUX_TENSORBOARD_PANE:-0.1}" -T "${TMUX_TENSORBOARD_PANE_TITLE:-'TENSORBOARD SERVER'}"
-    tmux select-pane -t "${TMUX_EXPORTER_PANE:-0.2}" -T "${TMUX_EXPORTER_PANE_TITLE:-'VOICE EXPORTER'}"
-    tmux select-pane -t "${TMUX_GRABBER_PANE:-0.3}" -T "${TMUX_GRABBER_PANE_TITLE:-'CHECKPOINT GRABBER'}"
-    tmux select-pane -t "${TMUX_CONTROL_PANE:-0.4}" -T "${TMUX_CONTROL_PANE_TITLE:-'CONTROL CONSOLE'}"
-    tmux select-pane -t "${TMUX_TESTER_PANE:-0.5}" -T "${TMUX_TESTER_PANE_TITLE:-'VOICE TESTER'}"
+    # Split the top row into 2 columns with an explicit target
+    tmux split-window -h -t "$TMUX_SESSION_NAME":0.0
 
+    # Split the bottom pane (pane 0.2) into two columns
+    tmux split-window -h -t "$TMUX_SESSION_NAME":0.2
+    tmux send-keys -t "$TMUX_SESSION_NAME":0.2 "tmux resize-pane -U 24" Enter
+
+    # Split the pane 0.2 vertically and also split pane 0.3 vertically
+    tmux split-window -v -t "$TMUX_SESSION_NAME":0.2
+    tmux split-window -v -t "$TMUX_SESSION_NAME":0.3
+
+    # Example of resizing a control pane (if using TMUX_CONTROL_PANE variable)
+    tmux send-keys -t "$TMUX_SESSION_NAME" "tmux resize-pane -t \$TMUX_CONTROL_PANE -U 10" Enter
+
+    # Label individual panes using fully qualified session targets
+    tmux select-pane -t "$TMUX_SESSION_NAME:${TMUX_TRAINING_PANE:-0.0}" -T "${TMUX_TRAINING_PANE_TITLE:-'PIPER TRAINING RAW OUTPUT'}"
+    tmux select-pane -t "$TMUX_SESSION_NAME:${TMUX_TENSORBOARD_PANE:-0.1}" -T "${TMUX_TENSORBOARD_PANE_TITLE:-'TENSORBOARD SERVER'}"
+    tmux select-pane -t "$TMUX_SESSION_NAME:${TMUX_EXPORTER_PANE:-0.2}" -T "${TMUX_EXPORTER_PANE_TITLE:-'VOICE EXPORTER'}"
+    tmux select-pane -t "$TMUX_SESSION_NAME:${TMUX_GRABBER_PANE:-0.3}" -T "${TMUX_GRABBER_PANE_TITLE:-'CHECKPOINT GRABBER'}"
+    tmux select-pane -t "$TMUX_SESSION_NAME:${TMUX_CONTROL_PANE:-0.4}" -T "${TMUX_CONTROL_PANE_TITLE:-'CONTROL CONSOLE'}"
+    tmux select-pane -t "$TMUX_SESSION_NAME:${TMUX_TESTER_PANE:-0.5}" -T "${TMUX_TESTER_PANE_TITLE:-'VOICE TESTER'}"
 }
 
-
 start_tmux_processes(){
-    # start the training script in pane 0.0    
-    tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "source $VENV_ACTIVATE" Enter
+    # Determine the tmux session name based on GPU_ID. If GPU_ID is defined, append it.
+    if [ -n "$GPU_ID" ]; then
+        TMUX_SESSION_NAME="training-$GPU_ID"
+    else
+        TMUX_SESSION_NAME="training"
+    fi
 
-    # trainer_starting_checkpoint is an absolute path on the host. Use it to build a path that will work in the container if it exists
-    #echo "Trainer starting checkpoint was:  $trainer_starting_checkpoint"
-    #echo "current dir was                :  $PWD"
-    
-    
+    # Launch the training processes in the correct panes using fully qualified tmux targets.
+    tmux send-keys -t "$TMUX_SESSION_NAME:${TMUX_TRAINING_PANE:-0.0}" "source $VENV_ACTIVATE" Enter
+
+    # If a starting checkpoint exists (and can be mapped to the container), construct its docker path.
     if [[ -n "$trainer_starting_checkpoint" && -e "../$trainer_starting_checkpoint" ]]; then
         docker_starting_checkpoint_path=$(make_docker_path "$trainer_starting_checkpoint")
     else
         docker_starting_checkpoint_path=""
     fi
-  
-    
-    # launch utils/piper_training.sh on the host which will manage training within the docker container 
-    tmux send-keys -t "${TMUX_TRAINING_PANE:-0.0}" "utils/piper_training.sh $docker_starting_checkpoint_path" Enter
 
-    # launch the tensorboard server via utils/run_tensorboard_server.sh.
-    tmux send-keys -t "${TMUX_TENSORBOARD_PANE:-0.1}" "bash utils/run_tensorboard_server.sh $DOJO_NAME" Enter
-
-    # clear the the voice exporter pane and display ready message. 
-    tmux send-keys -t "${TMUX_EXPORTER_PANE:-0.2}" "clear && echo 'Ready to export voice models' && read " Enter
-
-    # launch the checkpoint grabber (checkpoint_grabber.sh)
-    tmux send-keys -t "${TMUX_GRABBER_PANE:-0.3}" "bash utils/checkpoint_grabber.sh --save_every ${AUTO_SAVE_EVERY_NTH_CHECKPOINT_FILE} ../voice_checkpoints" Enter
-    
-    # launch the control console (/utils/_control_console.sh)
-    tmux send-keys -t "${TMUX_CONTROL_PANE:-0.5}" "bash utils/_control_console.sh" Enter
-    
-    # launch the voice tester
-    tmux send-keys -t "${TMUX_TESTER_PANE:-0.4}" "bash voice_tester.sh" Enter
-    
+    tmux send-keys -t "$TMUX_SESSION_NAME:${TMUX_TRAINING_PANE:-0.0}" "utils/piper_training.sh $docker_starting_checkpoint_path" Enter
+    tmux send-keys -t "$TMUX_SESSION_NAME:${TMUX_TENSORBOARD_PANE:-0.1}" "bash utils/run_tensorboard_server.sh $DOJO_NAME" Enter
+    tmux send-keys -t "$TMUX_SESSION_NAME:${TMUX_EXPORTER_PANE:-0.2}" "clear && echo 'Ready to export voice models' && read" Enter
+    tmux send-keys -t "$TMUX_SESSION_NAME:${TMUX_GRABBER_PANE:-0.3}" "bash utils/checkpoint_grabber.sh --save_every ${AUTO_SAVE_EVERY_NTH_CHECKPOINT_FILE} ../voice_checkpoints" Enter
+    tmux send-keys -t "$TMUX_SESSION_NAME:${TMUX_CONTROL_PANE:-0.4}" "bash utils/_control_console.sh" Enter
+    tmux send-keys -t "$TMUX_SESSION_NAME:${TMUX_TESTER_PANE:-0.5}" "bash voice_tester.sh" Enter
 }
 
 
@@ -728,6 +732,7 @@ show_tips(){
 # * MAIN PROGRAM **********************************************************
 clear
 load_settings
+load_gpu_config
 load_colors
 verify_dirs_exist
 empty_checkpoint_folder

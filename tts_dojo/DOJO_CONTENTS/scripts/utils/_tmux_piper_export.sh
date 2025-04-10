@@ -54,6 +54,20 @@ else
     exit 1
 fi
 
+GPU_CONF_FILE=".gpu"
+
+# Safely source the .gpu file if it exists (no error if it doesn't)
+if [ -f "$GPU_CONF_FILE" ]; then
+  source "$GPU_CONF_FILE"
+fi
+
+# Determine the container name based on GPU_ID from the .gpu file.
+if [ -n "$GPU_ID" ]; then
+  CONTAINER_NAME="textymcspeechy-piper-$GPU_ID"
+else
+  CONTAINER_NAME="textymcspeechy-piper"
+fi
+
 update_json() {
     local language_code="$1"
     local quality="$2"
@@ -85,7 +99,7 @@ create_piper_voice(){
     container_destination=/app/tts_dojo/${dojo_name}/tts_voices/$(dirname "$destination" | xargs basename)/$(basename "$destination")
 
     # run the export script on the docker container (only creates .onnx file from .ckpt)
-    docker exec textymcspeechy-piper bash -c "cd /app/piper/src/python && python3 -m piper_train.export_onnx $container_checkpoint $container_destination" 
+    docker exec "$CONTAINER_NAME" bash -c "cd /app/piper/src/python && python3 -m piper_train.export_onnx $container_checkpoint $container_destination" 
     
     # finish the export by copying .onnx.json file to destination folder on host
     cp ../training_folder/config.json "$destination.json"

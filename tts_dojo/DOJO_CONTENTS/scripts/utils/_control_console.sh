@@ -7,6 +7,18 @@ DOJO_DIR=$(basename "$(dirname "$PWD")")  # this script runs from <name>_dojo/sc
 VOICE_NAME=$(echo "$DOJO_DIR" | sed 's/_dojo$//')
 SETTINGS_FILE="SETTINGS.txt"
 COLOR_FILE=".colors"
+GPU_CONF_FILE=".gpu"
+
+# Safely source the .gpu file if it exists (no error if it doesn't)
+if [ -f "$GPU_CONF_FILE" ]; then
+  source "$GPU_CONF_FILE"
+fi
+
+if [ -n "$GPU_ID" ]; then
+    TMUX_SESSION_NAME="training-$GPU_ID"
+else
+    TMUX_SESSION_NAME="training"
+fi
 
 # load settings
 if [ -e $SETTINGS_FILE ]; then
@@ -24,7 +36,7 @@ if [ -e $COLOR_FILE ]; then
     source $COLOR_FILE
 else
     echo "$0 - COLOR_FILE not found"
-    echo "     expected location: $settings_file"
+    echo "     expected location: $COLOR_FILE"
     echo 
     echo "exiting"
     exit 1
@@ -36,15 +48,13 @@ clear
 initial_space=$(df -BG --output=avail "$PWD" | tail -n 1 | tr -d 'G')
 initial_time=$(date +%s)
 
-
 space_remaining() {
-# get the available disk space in GB
+    # get the available disk space in GB
     df -BG --output=avail "$PWD" | tail -n 1 | tr -d 'G'
 }
 
-
 dir_size_in_gb() {
-# calculate the total size of a directory in GB
+    # calculate the total size of a directory in GB
     local dir_path="$1"
     if [ -d "$dir_path" ]; then
         local size_in_kb=$(du -sk "$dir_path" | cut -f1)
@@ -55,9 +65,8 @@ dir_size_in_gb() {
     fi
 }
 
-
 gb_per_minute() {
-# calculate the amount of space being used per minute in GB
+    # calculate the amount of space being used per minute in GB
     local current_space=$(space_remaining)
     local current_time=$(date +%s)
     local elapsed_time=$((current_time - initial_time))
@@ -78,9 +87,8 @@ gb_per_minute() {
     echo "$rate_per_minute"
 }
 
-
 time_until_full() {
-# calculate the time until the drive will be full at the current usage rate
+    # calculate the time until the drive will be full at the current usage rate
     local remaining_space=$(space_remaining)
     local usage_rate=$(gb_per_minute)
     if (( $(echo "$usage_rate == 0" | bc -l) )); then
@@ -94,19 +102,19 @@ time_until_full() {
 }
 
 kill_session() {
-    tmux kill-session
+    tmux kill-session -t "$TMUX_SESSION_NAME"
 }
 
 # Define the target pane to send keys to
 VOICE_TESTER_PANE="$TMUX_TESTER_PANE"  # specified in SETTINGS.txt
 
 show_legend() {
-# Display legend of forwarded keys
+    # Display legend of forwarded keys
     echo -e "${RED}WARNING: This program could fill your entire hard drive if you aren't paying attention.${RESET}"
     echo -e "${RED}         Every checkpoint file you save is over ${CYAN}800MB${RESET}."
     echo
-    echo -e "Use ${CYAN}'tmux kill-session'${RESET} to shut all processes down from any terminal window"
-    echo -e "To change to adjacent window without a mouse, use <CTRL> B followed by an arrow key."
+    echo -e "Use ${CYAN}'tmux kill-session -t $TMUX_SESSION_NAME'${RESET} to shut all processes down from any terminal window"
+    echo -e "To change to an adjacent window without a mouse, use <CTRL> B followed by an arrow key."
     echo -e "save [t]mux layout, [r]estore tmux layout"
     echo
     echo -e "To [q]uit training, select this pane and press [Q]."
@@ -119,19 +127,15 @@ show_stats() {
     time_full=$(time_until_full)
     dir_size=$(dir_size_in_gb $DOJO_DIR)      
     echo -e "${YELLOW}${GREEN}${remaining}${YELLOW} GB of storage remaining.  Using ${GREEN}${gb_min}${YELLOW} GB/min.    Approx time until full: ${GREEN}${time_full}${RESET}"
-
 }
 
 save_tmux_layout(){
-# save the current arrangement of tmux window panes
-    bash save_tmux_layout.sh
+    bash save_tmux_layout.sh "$TMUX_SESSION_NAME"
 }
 
 restore_tmux_layout(){
-# restores a previous layout of tmux window panes from .tmux_layout file
-    bash restore_tmux_layout.sh
+    bash restore_tmux_layout.sh "$TMUX_SESSION_NAME"
 }
-
 
 # Function to clean up on termination
 cleanup() {
@@ -146,7 +150,6 @@ trap cleanup SIGINT SIGTERM
 if [ -f ".tmux_layout" ]; then
     restore_tmux_layout
 fi
-
 
 # Main loop
 last_refresh_time=0
@@ -171,5 +174,5 @@ while true; do
             [tT]) save_tmux_layout ;;
             *) ;;
         esac
-fi
+    fi
 done
